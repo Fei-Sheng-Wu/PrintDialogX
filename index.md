@@ -2,7 +2,7 @@
 
 Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731/). Please do not infringe in any form.
 
-📥 [Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll)
+[Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll)
 
 ## Why you Use This
 
