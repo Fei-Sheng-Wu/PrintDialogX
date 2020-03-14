@@ -1,10 +1,14 @@
 # PrintDialog
 
-Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731). Please do not infringe in any form.
+Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731/). Please do not infringe in any form.
 
-## How to use
+## Why you Use This
 
-It is easy to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog)**, the codes below shows an example.
+This is powerful and beautiful custom print dialog. It can almost provide any print settings, in the [latest vension](https://github.com/Jet20070731/PrintDialog/tree/1.2.9.0/). It can almost do anything what the Windows default print dialog can do. But the different between them is this custom print dialog have preview in real time. You can preview the print result when you adjust the settings. So you can use this instead the Windows default print dialog, and this is even better than it.
+
+## How to Use This
+
+It is easy to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, the codes below shows an example.
 
 Initialize the document
 ```c#
@@ -79,6 +83,10 @@ else
 ```
 
 For full example project see [PrintDialog 1.2.9 Example Project](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialogExample.zip).
+
+### Others
+
+There are also some other helpers in the [DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll), such as **PaperHelper**(Get the actual size of all specified paper sizes), **PrinterHelper**(Get default printer, printer list, printer status), **NameInfoHelper**(Get the name info of enum members for some print settings).
 
 ## License
 
