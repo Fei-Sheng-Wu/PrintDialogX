@@ -12,7 +12,8 @@ This is powerful and beautiful custom print dialog. It can almost provide any pr
 
 It is easy to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, the codes below shows an example.
 
-Initialize the document
+Initialize the document.
+
 ```c#
 //Define document inner margin;
 int margin = 60;
@@ -36,6 +37,7 @@ fixedDocument.Pages.Add(new PageContent() { Child = fixedPage });
 ```
 
 And show dialog.
+
 ```c#
 //Initialize PrintDialog and set its properties
 PrintDialog.PrintDialog printDialog = new PrintDialog.PrintDialog()
@@ -83,6 +85,10 @@ else
     MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 }
 ```
+
+It will look like this. _(Only difference is the document.)_
+
+![The PrintDialog Example Image](https://repository-images.githubusercontent.com/237794840/431f8000-660c-11ea-9936-f4ef89565bca)
 
 For full example project see [PrintDialog 1.2.9 Example Project](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialogExample.zip).
 
