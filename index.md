@@ -2,6 +2,8 @@
 
 Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731/). Please do not infringe in any form.
 
+📥 [Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll)
+
 ## Why you Use This
 
 This is powerful and beautiful custom print dialog. It can almost provide any print settings, in the [latest vension](https://github.com/Jet20070731/PrintDialog/tree/1.2.9.0/). It can almost do anything what the Windows default print dialog can do. But the different between them is this custom print dialog have preview in real time. You can preview the print result when you adjust the settings. So you can use this instead the Windows default print dialog, and this is even better than it.
