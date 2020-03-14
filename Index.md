@@ -1,37 +1,85 @@
-## Welcome to GitHub Pages
+# PrintDialog
 
-You can use the [editor on GitHub](https://github.com/Jet20070731/PrintDialog/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731). Please do not infringe in any form.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+## How to use
 
-### Markdown
+It is easy to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog)**, the codes below shows an example.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Initialize the document
+```c#
+//Define document inner margin;
+int margin = 60;
 
-```markdown
-Syntax highlighted code block
+//Create a new document
+//PrintDialog can only print and preview a FixedDocument
+FixedDocument fixedDocument = new FixedDocument();
+fixedDocument.DocumentPaginator.PageSize = PaperHelper.PaperHelper.GetPaperSize(System.Printing.PageMediaSizeName.ISOA4); //Use PaperHelper class to get A4 page size
 
-# Header 1
-## Header 2
-### Header 3
+//Create a new page and set its size
+FixedPage fixedPage = new FixedPage()
+{
+    Width = fixedDocument.DocumentPaginator.PageSize.Width,
+    Height = fixedDocument.DocumentPaginator.PageSize.Height
+};
 
-- Bulleted
-- List
+//Put somthing into fixedPage...
 
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+//Put page into document
+fixedDocument.Pages.Add(new PageContent() { Child = fixedPage });
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+And show dialog.
+```c#
+//Initialize PrintDialog and set its properties
+PrintDialog.PrintDialog printDialog = new PrintDialog.PrintDialog()
+{
+    Owner = this, //Set PrintDialog's owner
+    Title = "Test Print", //Set PrintDialog's title
+    Icon = null, //Set PrintDialog's icon ( Null means use default icon )
+    Topmost = true, //Allow PrintDialog at top most
+    ShowInTaskbar = false, //Don't allow PrintDialog show in taskbar
+    ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog resize
+    WindowStartupLocation = WindowStartupLocation.CenterScreen, //PrintDialog's startup location is center of the screen
 
-### Jekyll Themes
+    PrintDocument = fixedDocument, //Set document that need to print
+    DocumentName = "Test Document", //Set document name that will display in print list.
+    DefaultSettings = new PrintDialog.PrintDialogSettings() //Set default settings. Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that use printer default settings
+    {
+        Layout = PrintSettings.PageOrientation.Portrait,
+        Color = PrintSettings.PageColor.Color,
+        Quality = PrintSettings.PageQuality.Normal,
+        PageSize = PrintSettings.PageSize.ISOA4,
+        PageType = PrintSettings.PageType.Plain,
+        TwoSided = PrintSettings.TwoSided.TwoSidedLongEdge
+    },
+    //Or DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings(),
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Jet20070731/PrintDialog/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+    AllowScaleOption = true, //Allow scale option
+    AllowPagesOption = true, //Allow pages option (contains "All Pages", "Current Page", and "Custom Pages")
+    AllowTwoSidedOption = true, //Allow two-sided option
+    AllowPagesPerSheetOption = true, //Allow pages per sheet option
+    AllowPageOrderOption = true, //Allow page order option
+    AllowMoreSettingsExpander = true //Allow more settings expander
+};
 
-### Support or Contact
+//Show PrintDialog
+//It may need a longer time to connect printers
+//But after first time, it will faster
+if (printDialog.ShowDialog() == true)
+{
+    //When Print button clicked, document printed and window closed
+    MessageBox.Show("Document printed.\nIt need " + printDialog.TotalSheets + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+}
+else
+{
+    //When Cancel button clicked and window closed
+    MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+}
+```
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+For full example project see [PrintDialog 1.2.9 Example Project](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialogExample.zip).
+
+## License
+
+This project has a [MIT License](https://github.com/Jet20070731/PrintDialog/blob/master/LICENSE.txt).
