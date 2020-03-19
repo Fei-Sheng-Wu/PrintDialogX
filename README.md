@@ -2,11 +2,11 @@
 
 Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731/). Please do not infringe in any form.
 
-[Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll)
+[Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.3.7.0/PrintDialog.dll)
 
 ## Why You Use This
 
-This is powerful and beautiful custom print dialog. It can almost provide any print settings, in the [latest vension](https://github.com/Jet20070731/PrintDialog/tree/1.2.9.0/). It can almost do anything what the Windows default print dialog can do. But the different between them is this custom print dialog have preview in real time. You can preview the print result when you adjust the settings. So you can use this instead the Windows default print dialog, and this is even better than it.
+This is powerful and beautiful custom print dialog. It can almost provide any print settings, in the [latest vension](https://github.com/Jet20070731/PrintDialog/tree/1.3.7.0/). It can almost do anything what the Windows default print dialog can do. But the different between them is this custom print dialog have preview in real time. You can preview the print result when you adjust the settings. So you can use this instead the Windows default print dialog, and this is even better than it.
 
 ## How to Use This
 
@@ -21,7 +21,7 @@ int margin = 60;
 //Create a new document
 //PrintDialog can only print and preview a FixedDocument
 FixedDocument fixedDocument = new FixedDocument();
-fixedDocument.DocumentPaginator.PageSize = PaperHelper.PaperHelper.GetPaperSize(System.Printing.PageMediaSizeName.ISOA4); //Use PaperHelper class to get A4 page size
+fixedDocument.DocumentPaginator.PageSize = PaperHelper.PaperHelper.GetPaperSize(System.Printing.PageMediaSizeName.ISOA4, true); //Use PaperHelper class to get A4 page size
 
 //Create a new page and set its size
 FixedPage fixedPage = new FixedPage()
@@ -52,7 +52,8 @@ PrintDialog.PrintDialog printDialog = new PrintDialog.PrintDialog()
 
     PrintDocument = fixedDocument, //Set document that need to print
     DocumentName = "Test Document", //Set document name that will display in print list.
-    DefaultSettings = new PrintDialog.PrintDialogSettings() //Set default settings. Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that use printer default settings
+    DocumentMargin = margin, //Set document margin info.
+    DefaultSettings = new PrintDialog.PrintDialogSettings() //Set default settings.
     {
         Layout = PrintSettings.PageOrientation.Portrait,
         Color = PrintSettings.PageColor.Color,
@@ -90,11 +91,11 @@ It will look like this. _(Only difference is the document.)_
 
 ![The PrintDialog Example Image](https://repository-images.githubusercontent.com/237794840/431f8000-660c-11ea-9936-f4ef89565bca)
 
-For full example project see [PrintDialog 1.2.9 Example Project](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialogExample.zip).
+For full example project see [PrintDialog 1.3.7 Example Project](https://github.com/Jet20070731/PrintDialog/tree/1.3.7.0/PrintDialogExample).
 
 ### Others
 
-There are also some other helpers in the [DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.2.9.0/PrintDialog.dll), such as **PaperHelper**(Get the actual size of all specified paper sizes), **PrinterHelper**(Get default printer, printer list, printer status), **NameInfoHelper**(Get the name info of enum members for some print settings).
+There are also some other helpers in the [DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.3.7.0/PrintDialog.dll), such as **PaperHelper**(Get the actual size of all specified paper sizes), **PrinterHelper**(Get default printer, printer list, printer status), **NameInfoHelper**(Get the name info of enum members for some print settings).
 
 ## License
 
