@@ -1,6 +1,6 @@
-# PrintDialog
+# PrintDialogX
 
-Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialogX/)**, this is a open source project. Free to commercial use.
+Welcome to use **[PrintDialogX](https://github.com/Jet20070731/PrintDialogX/)**, this is a open source project. Free to commercial use.
 
 ## Why You Use
 
@@ -8,7 +8,7 @@ This is powerful and beautiful custom print dialog. It can almost provide any pr
 
 ## How to Use
 
-It is easy to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, you can find an example in [the folder](https://github.com/Jet20070731/PrintDialogX/tree/1.4.2.0/PrintDialog).
+It is easy to use **[PrintDialogX](https://github.com/Jet20070731/PrintDialog/)**, you can find an example in [the folder](https://github.com/Jet20070731/PrintDialogX/tree/1.4.2.0/PrintDialog).
 
 ## License
 
