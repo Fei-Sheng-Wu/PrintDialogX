@@ -99,4 +99,4 @@ There are also some other helpers in the [DLL file](https://github.com/Jet200707
 
 ## License
 
-This project has a [MIT License](https://github.com/Jet20070731/PrintDialog/blob/master/LICENSE.txt).
+This project is under the [MIT License](https://github.com/Jet20070731/PrintDialog/blob/master/LICENSE.txt).
