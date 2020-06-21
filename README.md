@@ -1,8 +1,8 @@
 # PrintDialog
 
-Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Its author is [Jet Wang](https://github.com/Jet20070731/). Please do not infringe in any form.
+Welcome to use **[PrintDialog](https://github.com/Jet20070731/PrintDialog/)**, this is a open source project. Free to commercial use.
 
-[Click here to download the DLL file](https://github.com/Jet20070731/PrintDialog/blob/1.3.7.0/PrintDialog.dll)
+[Click here to download the DLL library file](https://github.com/Jet20070731/PrintDialog/blob/1.3.7.0/PrintDialog.dll)
 
 ## Why You Use
 
@@ -87,7 +87,7 @@ else
 }
 ```
 
-It will look like this. _(Only difference is the document.)_
+It will look like this. _(Only difference is the document in it.)_
 
 ![The PrintDialog Example Image](https://repository-images.githubusercontent.com/237794840/431f8000-660c-11ea-9936-f4ef89565bca)
 
