@@ -10,8 +10,8 @@ This is powerful and beautiful custom print dialog. It can almost provide any pr
 
 ## How to Use
 
-It is easy to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialog/)**, you can find an example in [the folder](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/1.4.2.0/PrintDialog).
+It is easy to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialogX/)**, you can find an example in [the folder](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/1.4.2.0/PrintDialogX).
 
 ## License
 
-This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialog/blob/master/LICENSE.txt).
+This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt).
