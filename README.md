@@ -1,6 +1,8 @@
 # PrintDialogX
 
-[![Maintenance](https://img.shields.io/badge/Maintained-No-red.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/)
+[![Maintenance](https://img.shields.io/badge/Maintained-✖-red.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/)
+[![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
+[![Subsystem](https://img.shields.io/badge/Subsystem-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 
 Welcome to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialogX/)**, this is a open source project. Free to commercial use.
