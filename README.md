@@ -1,6 +1,6 @@
 # PrintDialogX
 
-[![Maintenance](https://img.shields.io/badge/Maintained-No-red.svg)](https://github.com/Fei-Sheng-Wu/PrintDialogX/)
+[![Maintenance](https://img.shields.io/badge/Maintained-No-red.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/)
 
 Welcome to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialogX/)**, this is a open source project. Free to commercial use.
 
