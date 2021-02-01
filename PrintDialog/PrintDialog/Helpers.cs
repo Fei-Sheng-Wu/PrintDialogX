@@ -510,7 +510,7 @@ namespace PrintDialogX.PaperHelper
         /// Get actual paper size.
         /// </summary>
         /// <param name="pageSizeName">Paper size name.</param>
-        /// <param name="isAdvanced">Use advanced calculate formula pr not.</param>
+        /// <param name="isAdvanced">Use advanced calculate formula or not.</param>
         /// <returns>Paper size.</returns>
         public static Size GetPaperSize(PageMediaSizeName pageSizeName, bool isAdvanced)
         {
