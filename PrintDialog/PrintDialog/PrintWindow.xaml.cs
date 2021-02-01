@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Timers;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Documents;
@@ -24,8 +23,6 @@ namespace PrintDialogX.PrintControl
             }
         }
 
-        private bool isLoading;
-        private string loadingType;
         private PrintPage printPage;
 
         private readonly FixedDocument _document;
@@ -48,12 +45,6 @@ namespace PrintDialogX.PrintControl
         {
             InitializeComponent();
 
-            this.Width = SystemParameters.PrimaryScreenWidth * 0.7;
-            this.Height = SystemParameters.PrimaryScreenHeight * 0.7;
-
-            this.UpdateLayout();
-            PrintPage.DoEvents();
-
             _document = document;
             _documentName = documentName;
             _pageMargin = pageMargin;
@@ -69,80 +60,35 @@ namespace PrintDialogX.PrintControl
             _allowAddNewPrinerComboBoxItem = allowAddNewPrinerComboBoxItem;
             _allowPrinterPreferencesButton = allowPrinterPreferencesButton;
             _getDocumentWhenReloadDocumentMethod = getDocumentWhenReloadDocumentMethod;
+
+            if (_loading == false)
+            {
+                mainFrame.Content = null;
+                BeginSettingAndPreviewing();
+            }
+
+            this.Width = SystemParameters.PrimaryScreenWidth * 0.65;
+            this.Height = SystemParameters.PrimaryScreenHeight * 0.7;
+
+            this.UpdateLayout();
+            PrintPage.DoEvents();
         }
 
         protected override void OnContentRendered(EventArgs e)
         {
             base.OnContentRendered(e);
 
-            if (_loading == false)
+            if (_loading == true)
             {
                 this.UpdateLayout();
                 PrintPage.DoEvents();
-
-                BeginSettingAndPreviewing();
-            }
-            else
-            {
-                this.UpdateLayout();
-                PrintPage.DoEvents();
-
-                isLoading = true;
-                loadingType = "Decrease";
-
-                Timer loadingTimer = new Timer(50);
-                loadingTimer.Elapsed += LoadingTimer_Elapsed;
-                loadingTimer.Start();
 
                 _loadingAction();
             }
         }
 
-        private void LoadingTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            if (isLoading == true)
-            {
-                if (loadingType == "Decrease")
-                {
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        iconImage.Opacity -= 0.05;
-                    }));
-                    PrintPage.DoEvents();
-
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        if (iconImage.Opacity == 0.3)
-                        {
-                            loadingType = "Increase";
-                        }
-                    }));
-                }
-                else if (loadingType == "Increase")
-                {
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        iconImage.Opacity += 0.05;
-                    }));
-                    PrintPage.DoEvents();
-
-                    Dispatcher.BeginInvoke(new Action(() => {
-                        if (iconImage.Opacity == 1)
-                        {
-                            loadingType = "Decrease";
-                        }
-                    }));
-                }
-            }
-            else
-            {
-                (sender as Timer).Stop();
-                (sender as Timer).Close();
-                (sender as Timer).Dispose();
-            }
-        }
-
         internal void BeginSettingAndPreviewing()
         {
-            isLoading = false;
-
             printPage = new PrintPage(_document, _documentName, _pageMargin, _defaultSettings, _allowPagesOption, _allowScaleOption, _allowTwoSidedOption, _allowPagesPerSheetOption, _allowPageOrderOption, _allowMoreSettingsExpander, _allowAddNewPrinerComboBoxItem, _allowPrinterPreferencesButton, _getDocumentWhenReloadDocumentMethod);
 
             mainFrame.Navigate(printPage);
@@ -155,8 +101,6 @@ namespace PrintDialogX.PrintControl
 
         internal void BeginSettingAndPreviewing(FixedDocument document, string documentName, double pageMargin, PrintDialog.PrintDialogSettings defaultSettings, bool allowPagesOption, bool allowScaleOption, bool allowTwoSidedOption, bool allowPagesPerSheetOption, bool allowPageOrderOption, bool allowMoreSettingsExpander, bool allowAddNewPrinerComboBoxItem, bool allowPrinterPreferencesButton, Func<PrintDialog.DocumentInfo, List<PageContent>> getDocumentWhenReloadDocumentMethod)
         {
-            isLoading = false;
-
             printPage = new PrintPage(document, documentName, pageMargin, defaultSettings, allowPagesOption, allowScaleOption, allowTwoSidedOption, allowPagesPerSheetOption, allowPageOrderOption, allowMoreSettingsExpander, allowAddNewPrinerComboBoxItem, allowPrinterPreferencesButton, getDocumentWhenReloadDocumentMethod);
 
             mainFrame.Navigate(printPage);
