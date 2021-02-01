@@ -10,9 +10,10 @@
 
     <Frame x:Name="mainFrame" NavigationUIVisibility="Hidden">
         <Frame.Content>
-            <Grid Grid.ColumnSpan="2" Background="#FFF0F0F0">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Vertical">
                 <Image x:Name="iconImage" MaxWidth="256" MaxHeight="256" Stretch="UniformToFill" Source="Resources/WindowIcons/Icon 256x256.png"></Image>
-            </Grid>
+                <TextBlock Text="Generating Document ..." HorizontalAlignment="Center" FontSize="20" Margin="0,20,0,0"/>
+            </StackPanel>
         </Frame.Content>
     </Frame>
 </Window>
