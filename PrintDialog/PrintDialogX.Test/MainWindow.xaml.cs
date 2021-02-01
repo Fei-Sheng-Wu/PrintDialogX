@@ -6,11 +6,9 @@ using System.Windows.Documents;
 
 namespace PrintDialogX.Test
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        //Global variable used to store the instance of the print dialog
         PrintDialogX.PrintDialog.PrintDialog printDialog;
 
         public MainWindow()
@@ -18,22 +16,27 @@ namespace PrintDialogX.Test
             InitializeComponent();
         }
 
-        private void TestButtonClick(object sender, RoutedEventArgs e)
+        #region Test1ButtonClick (test PrintDialogX with built-in show-while-generate-document feature)
+
+        private void Test1ButtonClick(object sender, RoutedEventArgs e)
         {
+            //Test1ButtonClick method
+            //Test PrintDialogX with built-in show-while-generate-document feature
+
             //Initialize a PrintDialog and set its properties
             printDialog = new PrintDialogX.PrintDialog.PrintDialog
             {
                 Owner = this, //Set PrintDialog's owner
                 Title = "Test Print", //Set PrintDialog's title
-                Icon = null, //Set PrintDialog's icon ( Null means use default icon )
+                Icon = null, //Set PrintDialog's icon (null means use the default icon)
                 Topmost = false, //Don't allow PrintDialog at top most
                 ShowInTaskbar = true,//Don't allow PrintDialog show in taskbar
                 ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog resize
                 WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is center of the owner
             };
 
-            //Show PrintDialog and begin to loading document
-            if (printDialog.ShowDialog(true, LoadingDocument) == true)
+            //Show PrintDialog and begin to generating document
+            if (printDialog.ShowDialog(true, GeneratingDocument) == true)
             {
                 //When Print button clicked, document printed and window closed
                 MessageBox.Show("Document printed.\nIt need " + printDialog.TotalSheets + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
@@ -45,9 +48,9 @@ namespace PrintDialogX.Test
             }
         }
 
-        private void LoadingDocument()
+        private void GeneratingDocument()
         {
-            //Create a new document ( A document contains many pages )
+            //Create a new document (a document contains many pages)
             //PrintDialog can only print and preview a FixedDocument
             //Here are some codes to make a document, if you already know how to do it, you can skip it or put your document instead
             FixedDocument fixedDocument = new FixedDocument();
@@ -68,49 +71,18 @@ namespace PrintDialogX.Test
                 };
 
                 //Create a StackPanel and make it cover entire page
-                //FixedPage can contains any UIElement. But VerticalAlignment="Stretch" or HorizontalAlignment="Stretch" doesn't work, so you need calculate its size to make it cover page
-                StackPanel stackPanel = new StackPanel()
-                {
-                    Orientation = Orientation.Vertical,
-                    Background = Brushes.LightYellow,
-                    Width = fixedDocument.DocumentPaginator.PageSize.Width - margin * 2, //Width = Page width - (Left margin + Right margin)
-                    Height = fixedDocument.DocumentPaginator.PageSize.Height - margin * 2 //Height = Page height - (Top margin + Bottom margin)
-                };
+                StackPanel stackPanel = CreateContent(fixedDocument.DocumentPaginator.PageSize.Width, fixedDocument.DocumentPaginator.PageSize.Height, margin);
 
-                //Put some elements into StackPanel ( As same way as normal and it may have styles, but triggers and animations don't work )
-                stackPanel.Children.Add(new TextBlock() { Text = "This is " + (i + 1).ToString() + " Page Title", FontWeight = FontWeights.Bold, FontSize = 28, TextAlignment = TextAlignment.Center, Margin = new Thickness(0, 5, 0, 35) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some regular text.", Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some bold text.", FontWeight = FontWeights.Bold, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some italic text.", FontStyle = FontStyles.Italic, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some different color text.", Foreground = Brushes.Red, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock()
-                {
-                    Text = "This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.",
-                    MaxWidth = stackPanel.Width,
-                    TextWrapping = TextWrapping.Wrap,
-                    Margin = new Thickness(0, 5, 0, 5)
-                }); //You need to set MaxWidth and TextWrapping properties to make a multi-line paragraph.
-                stackPanel.Children.Add(new Button() { Content = "This is a button.", Margin = new Thickness(0, 5, 0, 5), Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
-                stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Black, Background = Brushes.DarkGray, Foreground = Brushes.White, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Orange, Background = Brushes.Yellow, Foreground = Brushes.OrangeRed, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBox() { Text = "This is a textbox, but you can't type text in FixedDocument.", Margin = new Thickness(0, 5, 0, 5), Width = 550, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
-
-                //Set element's margin ( You can set top, bottom, left and right. But usually, we only set top and left )
-                //FixedPage doesn't have Margin or Padding property, so if you want a inner margin, you can use a container control ( Like Grid, StackPanel, WrapPanel, etc ) to contains any element in the page and set its margin.
-                //You can use Margin property to make same thing, but the best way is use FixedPage.SetTop, FixedPage.SetLeft, FixedPage.SetBottom and FixedPage.SetRight methods
-                FixedPage.SetTop(stackPanel, margin); //Top margin
-                FixedPage.SetLeft(stackPanel, margin); //Left margin
-
-                //Add element into page
-                //You can add many elements into page, but at here we only add one
+                //Add the StackPanel into the page
+                //You can add as many elements as you want into the page, but at here we only need to add one
                 fixedPage.Children.Add(stackPanel);
 
-                //Add page into document
-                //You can't just add FixedPage into FixedDocument, you need use PageContent to contains FixedPage
+                //Add the page into the document
+                //You can't just add FixedPage into FixedDocument, you need use PageContent to host the FixedPage
                 fixedDocument.Pages.Add(new PageContent() { Child = fixedPage });
             }
 
-            //Set PrintDialog's properties
+            //Setup PrintDialog's properties
             printDialog.Document = fixedDocument; //Set document that need to print
             printDialog.DocumentName = "Test Document"; //Set document name that will display in print list.
             printDialog.DocumentMargin = margin; //Set document margin info.
@@ -125,7 +97,7 @@ namespace PrintDialogX.Test
                 PagesPerSheet = 1,
                 PageOrder = PrintDialogX.PrintSettings.PageOrder.Horizontal
             };
-            //Or DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings(),
+            //Or printDialog.DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
 
             printDialog.AllowScaleOption = true; //Allow scale option
             printDialog.AllowPagesOption = true; //Allow pages option (contains "All Pages", "Current Page", and "Custom Pages")
@@ -136,64 +108,190 @@ namespace PrintDialogX.Test
             printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
             printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
 
-            printDialog.CustomReloadDocumentMethod = ReloadDocumentMethod; //Set the method that will use to get document when reload document. You can only change the content in the pages.
+            printDialog.CustomReloadDocumentMethod = ReloadDocumentMethod; //Set the method that will use to recreate the document when print settings changed.
 
             //Switch the current running PrintDialog's page into settings and preview page
             printDialog.LoadingEnd();
         }
 
+        #endregion
+
+        #region Test2ButtonClick (test PrintDialogX by generate document before display the print dialog)
+
+        private void Test2ButtonClick(object sender, RoutedEventArgs e)
+        {
+            //Test2ButtonClick method
+            //Test PrintDialogX by generate document before display the print dialog
+
+            //Initialize a PrintDialog and set its properties
+            printDialog = new PrintDialogX.PrintDialog.PrintDialog
+            {
+                Owner = this, //Set PrintDialog's owner
+                Title = "Test Print", //Set PrintDialog's title
+                Icon = null, //Set PrintDialog's icon (null means  the default icon)
+                Topmost = false, //Don't allow PrintDialog at top most
+                ShowInTaskbar = true,//Don't allow PrintDialog show in taskbar
+                ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog resize
+                WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is center of the owner
+            };
+
+            //Create a new document (a document contains many pages)
+            //PrintDialog can only print and preview a FixedDocument
+            //Here are some codes to make a document, if you already know how to do it, you can skip it or put your document instead
+            FixedDocument fixedDocument = new FixedDocument();
+            fixedDocument.DocumentPaginator.PageSize = PrintDialogX.PaperHelper.PaperHelper.GetPaperSize(System.Printing.PageMediaSizeName.ISOA4, true); //Use PaperHelper class to get A4 page size
+
+            //Define document inner margin;
+            double margin = 60;
+
+            //Loop 5 times to add 5 pages.
+            for (int i = 0; i < 5; i++)
+            {
+                //Create a new page and set its size
+                //Page's size is equals document's size
+                FixedPage fixedPage = new FixedPage()
+                {
+                    Width = fixedDocument.DocumentPaginator.PageSize.Width,
+                    Height = fixedDocument.DocumentPaginator.PageSize.Height
+                };
+
+                //Create a StackPanel and make it cover entire page
+                StackPanel stackPanel = CreateContent(fixedDocument.DocumentPaginator.PageSize.Width, fixedDocument.DocumentPaginator.PageSize.Height, margin);
+
+                //Add the StackPanel into the page
+                //You can add as many elements as you want into the page, but at here we only need to add one
+                fixedPage.Children.Add(stackPanel);
+
+                //Add the page into the document
+                //You can't just add FixedPage into FixedDocument, you need use PageContent to host the FixedPage
+                fixedDocument.Pages.Add(new PageContent() { Child = fixedPage });
+            }
+
+            //Setup PrintDialog's properties
+            printDialog.Document = fixedDocument; //Set document that need to print
+            printDialog.DocumentName = "Test Document"; //Set document name that will display in print list
+            printDialog.DocumentMargin = margin; //Set document margin info.
+            printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings() //Set default settings. Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that use printer default settings
+            {
+                Layout = PrintDialogX.PrintSettings.PageOrientation.Portrait,
+                Color = PrintDialogX.PrintSettings.PageColor.Color,
+                Quality = PrintDialogX.PrintSettings.PageQuality.Normal,
+                PageSize = PrintDialogX.PrintSettings.PageSize.ISOA4,
+                PageType = PrintDialogX.PrintSettings.PageType.Plain,
+                TwoSided = PrintDialogX.PrintSettings.TwoSided.TwoSidedLongEdge,
+                PagesPerSheet = 1,
+                PageOrder = PrintDialogX.PrintSettings.PageOrder.Horizontal
+            };
+            //Or printDialog.DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
+
+            printDialog.AllowScaleOption = true; //Allow scale option
+            printDialog.AllowPagesOption = true; //Allow pages option (contains "All Pages", "Current Page", and "Custom Pages")
+            printDialog.AllowTwoSidedOption = true; //Allow two-sided option
+            printDialog.AllowPagesPerSheetOption = true; //Allow pages per sheet option
+            printDialog.AllowPageOrderOption = true; //Allow page order option
+            printDialog.AllowAddNewPrinterButton = true; //Allow add new printer button in printer list
+            printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
+            printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
+
+            printDialog.CustomReloadDocumentMethod = ReloadDocumentMethod; //Set the method that will use to recreate the document when print settings changed
+
+            //Show PrintDialog
+            if (printDialog.ShowDialog(false, null) == true)
+            {
+                //When Print button clicked, document printed and window closed
+                MessageBox.Show("Document printed.\nIt need " + printDialog.TotalSheets + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            }
+            else
+            {
+                //When Cancel button clicked and window closed
+                MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            }
+        }
+
+        #endregion
+
+        #region Common Methods (generate page content for document)
+
+        private StackPanel CreateContent(double width, double height, double margin)
+        {
+            //Create a StackPanel and make it cover entire page
+            //FixedPage can contains any UIElement. But VerticalAlignment="Stretch" or HorizontalAlignment="Stretch" doesn't work, so you need calculate its size to make it cover the entire page
+            StackPanel stackPanel = new StackPanel()
+            {
+                Orientation = Orientation.Vertical,
+                Background = Brushes.LightYellow,
+                Width = width - margin * 2, //Width = Page width - (left margin + right margin)
+                Height = height - margin * 2 //Height = Page height - (top margin + bottom margin)
+            };
+
+            //Put some elements into StackPanel (as same way as normal and they have styles, but triggers and animations don't work)
+            //You can include any control that override the UIElement class
+            stackPanel.Children.Add(new TextBlock() { Text = "This is the page title", FontWeight = FontWeights.Bold, FontSize = 28, TextAlignment = TextAlignment.Center, Margin = new Thickness(10, 5, 10, 35) });
+            stackPanel.Children.Add(new TextBlock() { Text = "These are some regular text.", Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new TextBlock() { Text = "These are some bold text.", FontWeight = FontWeights.Bold, Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new TextBlock() { Text = "These are some italic text.", FontStyle = FontStyles.Italic, Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new TextBlock() { Text = "These are some different colored text.", Foreground = Brushes.Red, Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new TextBlock()
+            {
+                Text = "This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.",
+                MaxWidth = stackPanel.Width,
+                TextWrapping = TextWrapping.Wrap,
+                Margin = new Thickness(10, 5, 10, 5)
+            }); //You need to set MaxWidth and TextWrapping properties to make a multi-line paragraph.
+            //Buttons, textboxes, and other controls can also works
+            stackPanel.Children.Add(new Button() { Content = "This is a button.", Margin = new Thickness(10, 5, 10, 5), Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
+            stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Black, Background = Brushes.DarkGray, Foreground = Brushes.White, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Orange, Background = Brushes.Yellow, Foreground = Brushes.OrangeRed, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(10, 5, 10, 5) });
+            stackPanel.Children.Add(new TextBox() { Text = "This is a textbox, but you can't type text in FixedDocument.", Margin = new Thickness(10, 5, 10, 5), Width = 550, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
+
+            //Set element's margin (you can set both top, bottom, left and right. But usually, we only set top and left)
+            //FixedPage doesn't have Margin or Padding property, so if you want a inner margin, you can use a container control to contains any element in the page and set its margin.
+            //You can use Margin property to archive same effect, but the best way is use FixedPage.SetTop, FixedPage.SetLeft, FixedPage.SetBottom and FixedPage.SetRight methods
+            FixedPage.SetTop(stackPanel, 60); //Top margin
+            FixedPage.SetLeft(stackPanel, 60); //Left margin
+
+            //Return the StackPanel
+            return stackPanel;
+        }
+
+        #endregion
+
+        #region Print Dialog Callback (recreate pages with specific print settings)
+
         private List<PageContent> ReloadDocumentMethod(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
         {
-            //The PrintDialog.CustomReloadDocumentMethod property's value set as this method
-            //This method can make the StackPanel cover the page with different margin
-            //You must set a parameter and its type is PrintDialog.DocumentInfo
-            //You can use this parameter to get the current document settings
+            //Callback method used to recreate the page contents follow the specific settings
+            //Not necessary for some documents
+            //You need to receive a parameter as PrintDialog.DocumentInfo
+            //You can use this parameter to get the current print settings setted by user
+            //This method will only be called when the print settings changed
             //And this method must return a list of PageContent that include each page content in order
             List<PageContent> pages = new List<PageContent>();
 
             for (int i = 0; i < 5; i++)
             {
+                //Calculate the page size (you do not need to recreate the page with the specific page size passed back by from the print settings if you don't want to)
                 Size pageSize = PrintDialogX.PaperHelper.PaperHelper.GetPaperSize(System.Printing.PageMediaSizeName.ISOA4, true);
 
+                //Create a new page
                 FixedPage fixedPage = new FixedPage()
                 {
                     Width = pageSize.Width,
                     Height = pageSize.Height
                 };
 
-                StackPanel stackPanel = new StackPanel()
-                {
-                    Orientation = Orientation.Vertical,
-                    Background = Brushes.LightYellow,
-                    Width = pageSize.Width - documentInfo.Margin.Value * 2, //Important code, it makes StackPanel cover the page with different margin
-                    Height = pageSize.Height - documentInfo.Margin.Value * 2 //Important code, it makes StackPanel cover the page with different margin
-                };
+                //Recreate the StackPanel by the specific margin passed from the print dialog
+                StackPanel stackPanel = CreateContent(pageSize.Width, pageSize.Height, documentInfo.Margin.Value);
 
-                stackPanel.Children.Add(new TextBlock() { Text = "This is " + (i + 1).ToString() + " Page Title", FontWeight = FontWeights.Bold, FontSize = 28, TextAlignment = TextAlignment.Center, Margin = new Thickness(0, 5, 0, 35) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some regular text.", Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some bold text.", FontWeight = FontWeights.Bold, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some italic text.", FontStyle = FontStyles.Italic, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock() { Text = "These are some different color text.", Foreground = Brushes.Red, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBlock()
-                {
-                    Text = "This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph. This is a very long paragraph.",
-                    MaxWidth = stackPanel.Width,
-                    TextWrapping = TextWrapping.Wrap,
-                    Margin = new Thickness(0, 5, 0, 5)
-                });
-                stackPanel.Children.Add(new Button() { Content = "This is a button.", Margin = new Thickness(0, 5, 0, 5), Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
-                stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Black, Background = Brushes.DarkGray, Foreground = Brushes.White, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new Button() { Content = "This is a button with different color.", BorderBrush = Brushes.Orange, Background = Brushes.Yellow, Foreground = Brushes.OrangeRed, Width = 250, Height = 30, VerticalContentAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 5, 0, 5) });
-                stackPanel.Children.Add(new TextBox() { Text = "This is a textbox, but you can't type text in FixedDocument.", Margin = new Thickness(0, 5, 0, 5), Width = 550, Height = 30, VerticalContentAlignment = VerticalAlignment.Center });
-
-                FixedPage.SetTop(stackPanel, 60);
-                FixedPage.SetLeft(stackPanel, 60);
-
+                //Add the page into the document
                 fixedPage.Children.Add(stackPanel);
                 pages.Add(new PageContent() { Child = fixedPage });
             }
 
+            //Passed the recreated document back to the print dialog so the print dialog can rerender the preview with the new one
             return pages;
         }
+
+        #endregion
     }
 }
