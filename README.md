@@ -5,7 +5,7 @@
 [![Subsystem](https://img.shields.io/badge/Subsystem-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 
-Welcome to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialogX/)**, this is a open source project. Free to commercial use.
+Welcome to use **[PrintDialogX](https://github.com/Fei-Sheng-Wu/PrintDialogX/)**, this is an open source project. Free to commercial use.
 
 > A custom PrintDialog for C# with preview in real time. You can select printer and set copies count, orientation, color, quality, scale, pages-per-sheet, two-sided, paper size, paper type, paper source, etc. And it is elegant, too.
 
