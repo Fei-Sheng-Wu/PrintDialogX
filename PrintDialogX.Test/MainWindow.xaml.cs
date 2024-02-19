@@ -51,8 +51,6 @@ namespace PrintDialogX.Test
 
         private void GeneratingDocument()
         {
-            DateTime dateTime = DateTime.Now;
-
             //Calculate standard A4 paper size (8.25 inch x 11.75 inch).
             //pixel = inch x 96
             double pageWidth = 96 * 8.25;
@@ -89,9 +87,6 @@ namespace PrintDialogX.Test
                 //You can't just add FixedPage into FixedDocument, you need use PageContent to host the FixedPage
                 fixedDocument.Pages.Add(new PageContent() { Child = fixedPage });
             }
-
-            DateTime newtime = DateTime.Now;
-            //MessageBox.Show((newtime - dateTime).TotalSeconds.ToString());
 
             //Setup PrintDialog's properties
             printDialog.Document = fixedDocument; //Set document that needs to be printed
