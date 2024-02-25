@@ -91,7 +91,7 @@ namespace PrintDialogX.Test
             //Setup PrintDialog's properties
             printDialog.Document = fixedDocument; //Set document that needs to be printed
             printDialog.DocumentName = "Test Document"; //Set document name that will be displayed
-            printDialog.DocumentMargin = margin; //Set document margin info.
+            printDialog.DocumentMargin = margin; //Set document margin info
             printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings() //Set default settings. Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that uses the printer's default settings
             {
                 Layout = PrintDialogX.PrintSettings.PageOrientation.Portrait,
@@ -181,7 +181,7 @@ namespace PrintDialogX.Test
             //Setup PrintDialog's properties
             printDialog.Document = fixedDocument; //Set document that needs to be printed
             printDialog.DocumentName = "Test Document"; //Set document name that will be displayed
-            printDialog.DocumentMargin = margin; //Set document margin info.
+            printDialog.DocumentMargin = margin; //Set document margin info
             printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings() //Set default settings. Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that uses the printer's default settings
             {
                 Layout = PrintDialogX.PrintSettings.PageOrientation.Portrait,
