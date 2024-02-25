@@ -31,7 +31,7 @@ namespace PrintDialogX.Test
                 Title = "Test Print", //Set PrintDialog's title
                 Icon = null, //Set PrintDialog's icon (null means use the default icon)
                 Topmost = false, //Don't allow PrintDialog to be at topmost
-                ShowInTaskbar = true,//Allow PrintDialog to show in taskbar
+                ShowInTaskbar = true, //Allow PrintDialog to show in taskbar
                 ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog to resize
                 WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is the center of the owner
             };
@@ -131,7 +131,7 @@ namespace PrintDialogX.Test
                 Title = "Test Print", //Set PrintDialog's title
                 Icon = null, //Set PrintDialog's icon (null means the default icon)
                 Topmost = false, //Don't allow PrintDialog to be at topmost
-                ShowInTaskbar = true,//Allow PrintDialog to show in taskbar
+                ShowInTaskbar = true, //Allow PrintDialog to show in taskbar
                 ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog to resize
                 WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is the center of the owner
             };
