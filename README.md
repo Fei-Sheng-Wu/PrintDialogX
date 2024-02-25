@@ -42,11 +42,11 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## Preview
 
-![Screenshot](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/798b1676a7b8f201958a3ded91bd6625534e3ff7/Screenshot.png)
+![Screenshot](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/8c1c32120c5ba5ec3e6547d825c56a5b27fb5ee2/Screenshot.png)
 
 ## How to Use
 
-The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/31deed84b02f75ffc0551bd742822b6bbf2e337c/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
+The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.0.2/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
 
 Show-while-generate-document feature, where `GeneratingDocument` is the function callback used to generate the document:
 
@@ -98,4 +98,4 @@ printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
 
 ## License
 
-This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt).
+This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.0.2/README.md).
