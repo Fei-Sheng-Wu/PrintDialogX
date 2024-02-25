@@ -39,6 +39,7 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
   - [X] The number of papers used
 - [X] Beautiful user interface
   - [X] Uses [Wpf.Ui](https://wpfui.lepo.co/index.html)
+  - [X] Customizable disabling of certain settings
 
 ## Dependencies
 
@@ -65,6 +66,7 @@ PrintDialogX.PrintDialog.PrintDialog printDialog = new PrintDialogX.PrintDialog.
 };
 
 //Show PrintDialog and begin to generate document
+//If the docuument is already created, set the document information like Document and DocumentName, then use ShowDialog(false), this will not use the show-while-generate-document feature
 if (printDialog.ShowDialog(true, GeneratingDocument) == true)
 {
     //When the Print button is clicked, the document is printed, and the window is closed
@@ -89,7 +91,7 @@ private void GeneratingDocument()
     //Creating the document
     //...
 
-    //Set the document properties
+    //Set the document information
     printDialog.Document = fixedDocument; //Set document that needs to be printed
     printDialog.DocumentName = "Test Document"; //Set document name that will be displayed
     printDialog.DocumentMargin = 60; //Set document margin info
