@@ -25,7 +25,7 @@ namespace PrintDialogX.Test
             //Test PrintDialogX with built-in show-while-generate-document feature
 
             //Initialize a PrintDialog and set its properties
-            printDialog = new PrintDialogX.PrintDialog.PrintDialog
+            printDialog = new PrintDialogX.PrintDialog.PrintDialog()
             {
                 Owner = this, //Set PrintDialog's owner
                 Title = "Test Print", //Set PrintDialog's title
@@ -130,7 +130,7 @@ namespace PrintDialogX.Test
             //Test PrintDialogX by generate document before display the print dialog
 
             //Initialize a PrintDialog and set its properties
-            printDialog = new PrintDialogX.PrintDialog.PrintDialog
+            printDialog = new PrintDialogX.PrintDialog.PrintDialog()
             {
                 Owner = this, //Set PrintDialog's owner
                 Title = "Test Print", //Set PrintDialog's title
