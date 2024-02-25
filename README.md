@@ -77,6 +77,28 @@ else
 }
 ```
 
+Example of the `GeneratingDocument` function, where the document is created and `LoadingEnd()` is called at end to notify the print dialog:
+
+```c#
+private void GeneratingDocument()
+{
+    //Create a new document
+    FixedDocument fixedDocument = new FixedDocument();
+    fixedDocument.DocumentPaginator.PageSize = new Size(96 * 8.25, 96 * 11.75);
+
+    //Creating the document
+    //...
+
+    //Set the document properties
+    printDialog.Document = fixedDocument; //Set document that needs to be printed
+    printDialog.DocumentName = "Test Document"; //Set document name that will be displayed
+    printDialog.DocumentMargin = 60; //Set document margin info
+
+    //Notify PrintDialog that the document has already been generated
+    printDialog.LoadingEnd();
+}
+```
+
 Default settings of the print dialog can be set as well:
 
 ```c#
@@ -93,6 +115,39 @@ printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
 };
 //Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that uses the printer's default settings
 //printDialog.DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
+```
+
+The interface of the print dialog can be customized and certain settings can be disabled:
+
+```c#
+printDialog.AllowScaleOption = true; //Allow scale option
+printDialog.AllowPagesOption = true; //Allow pages option (contains "All Pages", "Current Page", and "Custom Pages")
+printDialog.AllowDoubleSidedOption = true; //Allow double-sided option
+printDialog.AllowPagesPerSheetOption = true; //Allow pages per sheet option
+printDialog.AllowPageOrderOption = true; //Allow page order option
+printDialog.AllowAddNewPrinterButton = true; //Allow add new printer button in the printer list
+printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
+printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
+```
+
+Another feature is for updatable documents, where the content of the document can be updated based on printer settings:
+
+```c#
+printDialog.CustomReloadDocumentMethod = ReloadDocumentMethod; //Set the method that will use to recreate the document when print settings changed
+```
+```c#
+//The method gets the printer settings as input and needs to return a list of new PageContent
+private List<PageContent> ReloadDocumentMethod(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
+{
+    List<PageContent> pages = new List<PageContent>();
+
+    //Creating updated pages with the info from DocumentInfo
+    //DocumentInfo include information on scale, size, margin, pages, color, pages-per-sheet, page order, and orientation
+    //...
+
+    //Passed the recreated document back to the print dialog
+    return pages;
+}
 ```
 
 ## License
