@@ -51,16 +51,11 @@ namespace PrintDialogX.Test
 
         private void GeneratingDocument()
         {
-            //Calculate standard A4 paper size (8.25 inch x 11.75 inch).
-            //pixel = inch x 96
-            double pageWidth = 96 * 8.25;
-            double pageHeight = 96 * 11.75;
-
-            //Create a new document (a document contains many pages)
+            //Create a new document
             //PrintDialog can only print and preview a FixedDocument
             //Here are some codes to make a document, if you already know how to do it, you can skip it
             FixedDocument fixedDocument = new FixedDocument();
-            fixedDocument.DocumentPaginator.PageSize = new Size(pageWidth, pageHeight);
+            fixedDocument.DocumentPaginator.PageSize = new Size(96 * 8.25, 96 * 11.75); //A4 paper size, 8.25 inch x 11.75 inch
 
             //Define document inner margin;
             double margin = 60;
@@ -141,16 +136,11 @@ namespace PrintDialogX.Test
                 WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is the center of the owner
             };
 
-            //Calculate standard A4 paper size (8.25 inch x 11.75 inch).
-            //pixel = inch x 96
-            double pageWidth = 96 * 8.25;
-            double pageHeight = 96 * 11.75;
-
-            //Create a new document (a document contains many pages)
+            //Create a new document
             //PrintDialog can only print and preview a FixedDocument
             //Here are some codes to make a document, if you already know how to do it, you can skip it
             FixedDocument fixedDocument = new FixedDocument();
-            fixedDocument.DocumentPaginator.PageSize = new Size(pageWidth, pageHeight);
+            fixedDocument.DocumentPaginator.PageSize = new Size(96 * 8.25, 96 * 11.75); //A4 paper size, 8.25 inch x 11.75 inch
 
             //Define document inner margin;
             double margin = 60;
@@ -275,7 +265,7 @@ namespace PrintDialogX.Test
         {
             //Callback method used to recreate the page contents follow the specific settings
             //Not necessary for some documents
-            //You need to receive a parameter as PrintDialog.DocumentInfo
+            //You need to receive an instance of PrintDialog.DocumentInfo as the parameter
             //You can use this parameter to get the current print settings setted by user
             //This method will only be called when the print settings changed
             //And this method must return a list of PageContent that include each page content in order
