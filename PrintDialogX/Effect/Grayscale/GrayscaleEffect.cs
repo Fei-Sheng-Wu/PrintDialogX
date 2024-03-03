@@ -6,7 +6,7 @@ using System.Windows.Media.Effects;
 //Effects Pre-build
 //"$(DXSDK_DIR)Utilities\Bin\x86\fxc.exe" /T ps_2_0 /E main /Fo"$(SolutionDir)PrintDialogX/Effect/Grayscale/GrayscaleEffect.ps" "$(SolutionDir)PrintDialogX/Effect/Grayscale/GrayscaleEffect.fx"
 
-namespace PrintDialogX.PrintControl.PreviewHelper
+namespace PrintDialogX.Internal.PreviewHelper
 {
     internal class GrayscaleEffect : ShaderEffect
     {
