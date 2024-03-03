@@ -89,12 +89,16 @@
     <Resource Include="Resources\GrayscaleEffect.ps" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PrintDocument.cs" />
+    <Compile Include="PrintSettings.cs" />
+    <Compile Include="PrinterHelper.cs" />
+    <Compile Include="PrintDialog.cs" />
     <Compile Include="PrintWindow.xaml.cs">
       <DependentUpon>PrintWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\NoKeypadDocumentViewer.cs" />
     <Compile Include="Effect\Grayscale\GrayscaleEffect.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Common.cs" />
     <Compile Include="PrintPage.xaml.cs">
       <DependentUpon>PrintPage.xaml</DependentUpon>
     </Compile>
