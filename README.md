@@ -2,8 +2,8 @@
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Subsystem](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
-[![Nuget](https://img.shields.io/badge/Nuget-v2.0.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.0.2)
-[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.0.2/README.md)
+[![Nuget](https://img.shields.io/badge/Nuget-v2.0.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.1)
+[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.1/LICENSE.txt)
 
 > A custom PrintDialog for WPF with preview in realtime. Full options with printer settings, include copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-sided, paper size, paper type, paper source, etc. Support realtime updates to the content according to the changes in settings. Fast and elegant user interface.
 
@@ -48,9 +48,9 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## How to Use
 
-The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.0.2/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
+The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.1.1/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
 
-Show-while-generate-document feature, where `GeneratingDocument` is the function callback used to generate the document:
+Initialize a `PrintDialog` instance.
 
 ```c#
 //Initialize a PrintDialog and set its properties
@@ -58,16 +58,15 @@ PrintDialogX.PrintDialog.PrintDialog printDialog = new PrintDialogX.PrintDialog.
 {
     Owner = this, //Set PrintDialog's owner
     Title = "Test Print", //Set PrintDialog's title
-    Icon = null, //Set PrintDialog's icon (null means use the default icon)
-    Topmost = false, //Don't allow PrintDialog to be at topmost
-    ShowInTaskbar = true, //Allow PrintDialog to show in taskbar
-    ResizeMode = ResizeMode.NoResize, //Don't allow PrintDialog to resize
-    WindowStartupLocation = WindowStartupLocation.CenterOwner //PrintDialog's startup location is the center of the owner
 };
+```
 
-//Show PrintDialog and begin to generate document
-//If the docuument is already created, set the document information like Document and DocumentName, then use ShowDialog(false), this will not use the show-while-generate-document feature
-if (printDialog.ShowDialog(true, GeneratingDocument) == true)
+The show-while-generate-document feature allows the document to be generated while the `PrintDialog` is loading. `GeneratingDocument` is a function that will be called to generate the document.
+
+```
+//Show PrintDialog with document generation function
+//The document will be generated while the dialog loads
+if (printDialog.ShowDialog(GeneratingDocument) == true)
 {
     //When the Print button is clicked, the document is printed, and the window is closed
     MessageBox.Show("Document printed.\nIt uses " + printDialog.TotalPapers + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
@@ -79,32 +78,57 @@ else
 }
 ```
 
-Example of the `GeneratingDocument` function, where the document is created and `LoadingEnd()` is called at end to notify the print dialog:
+Example of the `GeneratingDocument` function, where the document is created.
 
 ```c#
 private void GeneratingDocument()
 {
     //Create a new document
-    FixedDocument fixedDocument = new FixedDocument();
-    fixedDocument.DocumentPaginator.PageSize = new Size(96 * 8.25, 96 * 11.75);
+    //PrintDialogX requires a PrintDocument instance as the document
+    PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();
+    document.DocumentSize = new Size(96 * 8.25, 96 * 11.75); //A4 paper size, 8.25 inch x 11.75 inch
+    document.DocumentMargin = 60; //Default margin
 
-    //Creating the document
-    //...
+    //Loop 5 times to add 5 pages
+    for (int i = 0; i < 5; i++)
+    {
+        //Create a new page and add content to it
+        PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
+        page.Content = CreateContent(); //Create any content as you wish
 
-    //Set the document information
-    printDialog.Document = fixedDocument; //Set document that needs to be printed
-    printDialog.DocumentName = "Test Document"; //Set document name that will be displayed
-    printDialog.DocumentMargin = 60; //Set document margin info
+        //Add the page into the document
+        document.Pages.Add(page);
+    }
 
-    //Notify PrintDialog that the document has already been generated
-    printDialog.LoadingEnd();
+    //Set the PrintDialog's document
+    printDialog.Document = document;
 }
 ```
 
-Default settings of the print dialog can be set as well:
+If the document is already created, `PrintDialog.ShowDialog()` can be called to skip the loading part.
 
 ```c#
-printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings() //Set default settings
+//Generate the document before showing the dialog
+printDialog.Document = document;
+
+//Show PrintDialog with the document already generated
+if (printDialog.ShowDialog() == true)
+{
+    //When the Print button clicked, the document is printed, and the window is closed
+    MessageBox.Show("Document printed.\nIt uses " + printDialog.TotalPapers + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+}
+else
+{
+    //When the Cancel button is clicked and the window is closed
+    MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+}
+```
+
+Default print settings of the `PrintDialog` can be set as well.
+
+```c#
+//Set default print settings
+printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
 {
     Layout = PrintDialogX.PrintSettings.PageOrientation.Portrait,
     Color = PrintDialogX.PrintSettings.PageColor.Color,
@@ -112,14 +136,14 @@ printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
     PageSize = PrintDialogX.PrintSettings.PageSize.ISOA4,
     PageType = PrintDialogX.PrintSettings.PageType.Plain,
     DoubleSided = PrintDialogX.PrintSettings.DoubleSided.DoubleSidedLongEdge,
-    PagesPerSheet = 1,
+    PagesPerSheet = PrintDialogX.PrintSettings.PagesPerSheet.One,
     PageOrder = PrintDialogX.PrintSettings.PageOrder.Horizontal
 };
-//Or you can just use PrintDialog.PrintDialogSettings.PrinterDefaultSettings() to get a PrintDialogSettings that uses the printer's default settings
+//PrinterDefaultSettings() can also be used to use default settings of the printer
 //printDialog.DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
 ```
 
-The interface of the print dialog can be customized and certain settings can be disabled:
+The interface of the `PrintDialog` can be customized and certain settings can be disabled.
 
 ```c#
 printDialog.AllowScaleOption = true; //Allow scale option
@@ -132,26 +156,34 @@ printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
 printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
 ```
 
-Another feature is for updatable documents, where the content of the document can be updated based on printer settings:
+`PrintDialog.ReloadDocumentCallback` can be set for updatable documents, where the content of the document can be updated based on print settings. The callback function needs to receive a `PrintDialog.DocumentInfo` as the parameter and needs to return a list of `PrintPage`.
 
 ```c#
-printDialog.CustomReloadDocumentMethod = ReloadDocumentMethod; //Set the method that will use to recreate the document when print settings changed
+//Set the function that will use to recreate the document when the print settings changed
+printDialog.ReloadDocumentCallback = ReloadDocumentCallback;
 ```
 ```c#
-//The method gets the printer settings as input and needs to return a list of new PageContent
-private List<PageContent> ReloadDocumentMethod(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
+private List<PrintDialogX.PrintPage> ReloadDocumentCallback(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
 {
-    List<PageContent> pages = new List<PageContent>();
+    //Optinal callback function to recreate the page contents with the specific settings
+    List<PrintDialogX.PrintPage> pages = new List<PrintDialogX.PrintPage>();
 
-    //Creating updated pages with the info from DocumentInfo
-    //DocumentInfo include information on scale, size, margin, pages, color, pages-per-sheet, page order, and orientation
-    //...
+    //All pages should be recreated
+    //PrintDialog will take care of the pages setting regarding of which pages need to be printed
+    //The DocumentInfo.Pages info can still be used such as to adjust pages that will be printed
+    for (int i = 0; i < 5; i++)
+    {
+        //Create the new page and recreate the content with the specific margin
+        PrintPage page = new PrintPage();
+        page.Content = CreateContent(); //Things like documentInfo.Size and documentInfo.Margin can be used
+        pages.Add(page);
+    }
 
-    //Passed the recreated document back to the print dialog
+    //Passed the recreated document back to the PrintDialog
     return pages;
 }
 ```
 
 ## License
 
-This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.0.2/README.md).
+This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.1/LICENSE.txt).
