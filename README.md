@@ -61,6 +61,8 @@ PrintDialogX.PrintDialog.PrintDialog printDialog = new PrintDialogX.PrintDialog.
 };
 ```
 
+### Synchronized Document Generation
+
 The show-while-generate-document feature allows the document to be generated while the `PrintDialog` is loading. `GeneratingDocument` is a function that will be called to generate the document.
 
 ```
@@ -105,6 +107,8 @@ private void GeneratingDocument()
 }
 ```
 
+### Pre-Generated Document
+
 If the document is already created, `PrintDialog.ShowDialog()` can be called to skip the loading part.
 
 ```c#
@@ -123,6 +127,8 @@ else
     MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 }
 ```
+
+### PrintDialog Configurations
 
 Default print settings of the `PrintDialog` can be set as well.
 
@@ -155,6 +161,8 @@ printDialog.AllowAddNewPrinterButton = true; //Allow add new printer button in t
 printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
 printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
 ```
+
+### Dynamic Updatable Document
 
 `PrintDialog.ReloadDocumentCallback` can be set for updatable documents, where the content of the document can be updated based on print settings. The callback function needs to receive a `PrintDialog.DocumentInfo` as the parameter and needs to return a list of `PrintPage`.
 
