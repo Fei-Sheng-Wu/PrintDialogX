@@ -2,8 +2,8 @@
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Subsystem](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
-[![Nuget](https://img.shields.io/badge/Nuget-v2.1.1-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.1)
-[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.1/LICENSE.txt)
+[![Nuget](https://img.shields.io/badge/Nuget-v2.1.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.2)
+[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.2/LICENSE.txt)
 
 > A custom PrintDialog for WPF with preview in realtime. Full options with printer settings, include copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-sided, paper size, paper type, paper source, etc. Support realtime updates to the content according to the changes in settings. Fast and elegant user interface.
 
@@ -48,7 +48,7 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## How to Use
 
-The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.1.1/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
+The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.1.2/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
 
 Initialize a `PrintDialog` instance.
 
@@ -186,4 +186,4 @@ private List<PrintDialogX.PrintPage> ReloadDocumentCallback(PrintDialogX.PrintDi
 
 ## License
 
-This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.1/LICENSE.txt).
+This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.2/LICENSE.txt).
