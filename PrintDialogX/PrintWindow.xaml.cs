@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
+using System.Xml.Linq;
 
 namespace PrintDialogX.Internal
 {
@@ -51,6 +52,15 @@ namespace PrintDialogX.Internal
 
         internal void NavigatePrintPage()
         {
+            if (_printDialog.Document == null)
+            {
+                throw new ArgumentNullException("Document is null.");
+            }
+            else if (_printDialog.Document.DocumentMargin < 0)
+            {
+                throw new ArgumentException("DocumentMargin has to be greater than zero.");
+            }
+
             mainFrame.Navigate(new PrintPage(this, _printDialog));
 
             if (mainFrame.CanGoBack)

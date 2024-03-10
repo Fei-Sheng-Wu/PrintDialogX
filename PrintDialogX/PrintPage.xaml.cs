@@ -210,6 +210,7 @@ namespace PrintDialogX.Internal
                         dialog.Hide();
                         contentHolder.Children.Remove(dialog);
 
+                        _owner.ReturnValue = false;
                         Window.GetWindow(this).Close();
                     };
                     contentHolder.Children.Add(dialog);
@@ -622,6 +623,7 @@ namespace PrintDialogX.Internal
                             pageList.Add(i);
                         }
                     }
+                    pageList.Sort();
 
                     double scale;
                     double margin;
@@ -712,9 +714,13 @@ namespace PrintDialogX.Internal
                             UIElement originalContent = originalPage.Content;
 
                             DependencyObject parent = VisualTreeHelper.GetParent(originalContent);
-                            if (parent != null)
+                            if (parent != null && parent is FixedPage)
                             {
                                 ((FixedPage)parent).Children.Remove(originalContent);
+                            }
+                            else if (parent != null)
+                            {
+                                throw new Exception("PrintPage's Content is already the child of another element.");
                             }
 
                             FixedPage fixedPage = new FixedPage();
@@ -787,9 +793,9 @@ namespace PrintDialogX.Internal
                         xpsDoc?.Close();
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    throw ex;
                 }
                 finally
                 {
@@ -927,50 +933,53 @@ namespace PrintDialogX.Internal
             Common.DoEvents();
 
             LoadPrinters();
-            printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _localPrintServer, true);
-            printerPreviewText.Text = (printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString();
-            LoadPrinterSettings();
-
-            PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
-
-            orientationComboBox.SelectedIndex = _defaultSettings.Layout == PrintSettings.PageOrientation.Portrait ? 0 : 1;
-
-            if (_allowDoubleSidedOption == true)
+            if (printerComboBox.Items.Count > 0)
             {
-                if (_defaultSettings.UsePrinterDefaultSettings == false)
+                printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _localPrintServer, true);
+                printerPreviewText.Text = (printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString();
+                LoadPrinterSettings();
+
+                PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
+
+                orientationComboBox.SelectedIndex = _defaultSettings.Layout == PrintSettings.PageOrientation.Portrait ? 0 : 1;
+
+                if (_allowDoubleSidedOption == true)
                 {
-                    if (_defaultSettings.DoubleSided == PrintSettings.DoubleSided.OneSided)
+                    if (_defaultSettings.UsePrinterDefaultSettings == false)
                     {
-                        doubleSidedCheckBox.IsChecked = false;
+                        if (_defaultSettings.DoubleSided == PrintSettings.DoubleSided.OneSided)
+                        {
+                            doubleSidedCheckBox.IsChecked = false;
+                        }
+                        else
+                        {
+                            doubleSidedCheckBox.IsChecked = true;
+                            doubleSidedTypeComboBox.SelectedIndex = _defaultSettings.DoubleSided == PrintSettings.DoubleSided.DoubleSidedLongEdge ? 0 : 1;
+                        }
                     }
                     else
                     {
-                        doubleSidedCheckBox.IsChecked = true;
-                        doubleSidedTypeComboBox.SelectedIndex = _defaultSettings.DoubleSided == PrintSettings.DoubleSided.DoubleSidedLongEdge ? 0 : 1;
-                    }
-                }
-                else
-                {
-                    if (printer.DefaultPrintTicket.Duplexing.HasValue)
-                    {
-                        if (printer.DefaultPrintTicket.Duplexing.Value == Duplexing.TwoSidedLongEdge)
+                        if (printer.DefaultPrintTicket.Duplexing.HasValue)
                         {
-                            doubleSidedCheckBox.IsChecked = true;
-                            doubleSidedTypeComboBox.SelectedIndex = 0;
-                        }
-                        else if (printer.DefaultPrintTicket.Duplexing.Value == Duplexing.TwoSidedShortEdge)
-                        {
-                            doubleSidedCheckBox.IsChecked = true;
-                            doubleSidedTypeComboBox.SelectedIndex = 1;
+                            if (printer.DefaultPrintTicket.Duplexing.Value == Duplexing.TwoSidedLongEdge)
+                            {
+                                doubleSidedCheckBox.IsChecked = true;
+                                doubleSidedTypeComboBox.SelectedIndex = 0;
+                            }
+                            else if (printer.DefaultPrintTicket.Duplexing.Value == Duplexing.TwoSidedShortEdge)
+                            {
+                                doubleSidedCheckBox.IsChecked = true;
+                                doubleSidedTypeComboBox.SelectedIndex = 1;
+                            }
+                            else
+                            {
+                                doubleSidedCheckBox.IsChecked = false;
+                            }
                         }
                         else
                         {
                             doubleSidedCheckBox.IsChecked = false;
                         }
-                    }
-                    else
-                    {
-                        doubleSidedCheckBox.IsChecked = false;
                     }
                 }
             }
@@ -1041,14 +1050,21 @@ namespace PrintDialogX.Internal
             }
             catch
             {
-                Wpf.Ui.Controls.ContentDialog dialog = CreateErrorDialog("Unable to open the preferences dialog of the printer!");
-                dialog.ButtonClicked += (s, arg) =>
+                try
                 {
-                    dialog.Hide();
-                    contentHolder.Children.Remove(dialog);
-                };
-                contentHolder.Children.Add(dialog);
-                await dialog.ShowAsync();
+                    Wpf.Ui.Controls.ContentDialog dialog = CreateErrorDialog("Unable to open the preferences dialog of the printer!");
+                    dialog.ButtonClicked += (s, arg) =>
+                    {
+                        dialog.Hide();
+                        contentHolder.Children.Remove(dialog);
+                    };
+                    contentHolder.Children.Add(dialog);
+                    await dialog.ShowAsync();
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -1204,7 +1220,7 @@ namespace PrintDialogX.Internal
             {
                 if (customMarginNumberPicker.Value.HasValue == false)
                 {
-                    customMarginNumberPicker.Value = 60;
+                    customMarginNumberPicker.Value = _documentMargin;
                 }
                 ReloadDocument();
             }
