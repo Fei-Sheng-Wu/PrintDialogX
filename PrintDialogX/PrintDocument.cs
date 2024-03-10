@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Controls;
@@ -34,6 +35,18 @@ namespace PrintDialogX
         public ICollection<PrintPage> Pages { get; set; }
 
         /// <summary>
+        /// Set the <see cref="DocumentSize"/> by inch values.
+        /// <param name="widthInch">The width in inches.</param>
+        /// <param name="heightInch">The height in inches.</param>
+        /// <param name="dpi">The DPI, with the default value of 96.</param>
+        /// </summary>
+        public PrintDocument SetSizeByInch(double widthInch, double heightInch, double dpi = 96)
+        {
+            DocumentSize = new Size(widthInch * dpi, heightInch * dpi);
+            return this;
+        }
+
+        /// <summary>
         /// Create <see cref="PrintDocument"/> from <see cref="FixedDocument"/>.
         /// <param name="document">The <see cref="FixedDocument"/> instance.</param>
         /// <param name="documentName">The document name.</param>
@@ -62,10 +75,29 @@ namespace PrintDialogX
 
     public class PrintPage
     {
+        private UIElement _content;
+
         /// <summary>
         /// The content of the page.
         /// </summary>
-        public UIElement Content { get; set; }
+        public UIElement Content
+        {
+            get
+            {
+                return _content;
+            }
+            set
+            {
+                if (VisualTreeHelper.GetParent(value) != null)
+                {
+                    throw new Exception("Content is already the child of another element.");
+                }
+                else
+                {
+                    _content = value;
+                }
+            }
+        }
     }
 }
 

@@ -183,9 +183,6 @@ namespace PrintDialogX.PrintDialog
         /// </summary>
         public int TotalPapers { get; private set; } = 0;
 
-        /// <summary>
-        /// The print dialog window.
-        /// </summary>
         private Internal.PrintWindow PrintWindow = null;
 
         /// <summary>
@@ -208,7 +205,11 @@ namespace PrintDialogX.PrintDialog
             {
                 if (documentGeneration == null && Document == null)
                 {
-                    throw new ArgumentNullException("The document is null.");
+                    throw new ArgumentNullException("Document is null.");
+                }
+                else if (Document != null && Document.DocumentMargin < 0)
+                {
+                    throw new ArgumentException("DocumentMargin has to be greater than zero.");
                 }
 
                 try
