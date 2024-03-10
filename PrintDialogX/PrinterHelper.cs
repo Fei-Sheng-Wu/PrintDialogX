@@ -351,7 +351,6 @@ namespace PrintDialogX.PrinterHelper
                     break;
                 }
             }
-
             if (printerType == "Fax")
             {
                 if (printer.IsShared == true)
