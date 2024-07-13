@@ -1,7 +1,7 @@
 # PrintDialogX
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
-[![Subsystem](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
+[![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
 [![Nuget](https://img.shields.io/badge/Nuget-v2.1.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.2)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.2/LICENSE.txt)
 
