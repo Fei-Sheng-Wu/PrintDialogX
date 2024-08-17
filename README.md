@@ -1,4 +1,4 @@
-# PrintDialogX
+# PrintDialogX v2.1.2
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
@@ -43,7 +43,7 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## Dependencies
 
-- .Net Framework >= 4.8
+- .Net Framework ≥ 4.8
 - Wpf.Ui = 3.0.0
 
 ## How to Use
