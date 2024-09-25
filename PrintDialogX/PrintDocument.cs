@@ -54,19 +54,18 @@ namespace PrintDialogX
         /// </summary>
         public static PrintDocument CreateFromFixedDocument(FixedDocument document, string documentName, double documentMargin)
         {
-            PrintDocument printDocument = new PrintDocument();
-            printDocument.DocumentName = documentName;
-            printDocument.DocumentMargin = documentMargin;
-            printDocument.DocumentSize = document.DocumentPaginator.PageSize;
+            PrintDocument printDocument = new PrintDocument
+            {
+                DocumentName = documentName,
+                DocumentMargin = documentMargin,
+                DocumentSize = document.DocumentPaginator.PageSize
+            };
 
             foreach (PageContent pageContent in document.Pages)
             {
                 FixedPage page = pageContent.Child;
                 pageContent.Child = null;
-
-                PrintPage printPage = new PrintPage();
-                printPage.Content = page;
-                printDocument.Pages.Add(printPage);
+                printDocument.Pages.Add(new PrintPage { Content = page });
             }
 
             return printDocument;
@@ -156,12 +155,7 @@ namespace PrintDialogX.Internal.Effects
                     Height = newDocument.DocumentPaginator.PageSize.Height
                 };
 
-                Grid outerGrid = new Grid()
-                {
-                    Width = outerPage.Width,
-                    Height = outerPage.Height
-                };
-
+                Grid outerGrid = new Grid() { Width = outerPage.Width, Height = outerPage.Height };
                 for (int i = 0; i < arrangeRows; i++)
                 {
                     outerGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
@@ -221,7 +215,6 @@ namespace PrintDialogX.Internal.Effects
                 }
 
                 outerPage.Children.Add(outerGrid);
-
                 if (scale != double.NaN)
                 {
                     outerPage.RenderTransformOrigin = new Point(0, 0);
@@ -247,7 +240,6 @@ namespace PrintDialogX.Internal.Effects
             innerGrid.SetValue(Grid.ColumnProperty, row);
 
             FixedPage innerPage = _document[currentPage];
-
             if (_documentSize.Width == 0 || _documentSize.Height == 0 || _documentSize.Width == double.NaN || _documentSize.Height == double.NaN)
             {
                 innerPage.Width = outerPageWidth;
@@ -258,32 +250,26 @@ namespace PrintDialogX.Internal.Effects
                 innerPage.Width = _documentSize.Width;
                 innerPage.Height = _documentSize.Height;
             }
-
             innerPage.VerticalAlignment = VerticalAlignment.Center;
             innerPage.HorizontalAlignment = HorizontalAlignment.Center;
 
-            double widthRatio;
-            double heightRatio;
-
-            widthRatio = innerPageWidth / innerPage.Width;
-            heightRatio = innerPageHeight / innerPage.Height;
-
+            double widthRatio = innerPageWidth / innerPage.Width;
+            double heightRatio = innerPageHeight / innerPage.Height;
             if (innerPage.Height * widthRatio <= innerPageHeight)
             {
                 innerPage.Width *= widthRatio;
                 innerPage.Height *= widthRatio;
-
                 innerPage.RenderTransform = new ScaleTransform(widthRatio, widthRatio);
             }
             else
             {
                 innerPage.Width *= heightRatio;
                 innerPage.Height *= heightRatio;
-
                 innerPage.RenderTransform = new ScaleTransform(heightRatio, heightRatio);
             }
 
             innerGrid.Children.Add(innerPage);
+
             return innerGrid;
         }
     }

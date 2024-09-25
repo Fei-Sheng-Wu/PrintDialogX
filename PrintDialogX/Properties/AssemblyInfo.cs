@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PrintDialogX")]
-[assembly: AssemblyDescription("A custom PrintDialog for WPF with preview in realtime. Full options with printer settings, include copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-sided, paper size, paper type, paper source, etc. Support realtime updates to the content according to the changes in settings. Fast and elegant user interface.")]
+[assembly: AssemblyDescription("A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PrintDialogX")]
