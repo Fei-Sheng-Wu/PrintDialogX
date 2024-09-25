@@ -15,7 +15,7 @@ namespace PrintDialogX.Internal
     partial class PrintPage : Page
     {
         private bool _isLoaded;
-        private bool _needsRefresh;
+        private bool _isRefreshNeeded;
 
         private Package _package;
         private FixedDocument _fixedDocument;
@@ -23,12 +23,12 @@ namespace PrintDialogX.Internal
         private readonly PrintWindow _owner;
 
         private readonly Uri _xpsUrl;
-        private readonly PrintServer _localPrintServer;
+        private readonly PrintServer _printServer;
 
-        private readonly Size _documentSize;
-        private readonly double _documentMargin;
-        private readonly string _documentName;
-        private readonly List<PrintDialogX.PrintPage> _pageContents;
+        private readonly Size _originalDocumentSize;
+        private readonly double _originalDocumentMargin;
+        private readonly string _originalDocumentName;
+        private readonly List<PrintDialogX.PrintPage> _printPages;
 
         private readonly bool _allowPagesOption;
         private readonly bool _allowScaleOption;
@@ -45,7 +45,7 @@ namespace PrintDialogX.Internal
         internal PrintPage(PrintWindow owner, PrintDialog.PrintDialog printDialog)
         {
             _isLoaded = false;
-            _needsRefresh = false;
+            _isRefreshNeeded = false;
 
             InitializeComponent();
 
@@ -65,16 +65,15 @@ namespace PrintDialogX.Internal
             _allowPrinterPreferencesButton = printDialog.AllowPrinterPreferencesButton;
             _reloadDocumentCallback = printDialog.ReloadDocumentCallback;
 
-            _documentSize = printDialog.Document.DocumentSize;
-            _documentMargin = printDialog.Document.DocumentMargin;
-            _documentName = printDialog.Document.DocumentName;
+            _originalDocumentSize = printDialog.Document.DocumentSize;
+            _originalDocumentMargin = printDialog.Document.DocumentMargin;
+            _originalDocumentName = printDialog.Document.DocumentName;
 
-            _pageContents = new List<PrintDialogX.PrintPage>();
-            _pageContents.AddRange(printDialog.Document.Pages);
+            _printPages = new List<PrintDialogX.PrintPage>();
+            _printPages.AddRange(printDialog.Document.Pages);
 
             _xpsUrl = new Uri("memorystream://" + Guid.NewGuid().ToString() + ".xps");
-            _localPrintServer = new PrintServer();
-
+            _printServer = new PrintServer();
         }
 
         private static Wpf.Ui.Controls.ContentDialog CreateErrorDialog(string content)
@@ -90,22 +89,14 @@ namespace PrintDialogX.Internal
                 DefaultButton = Wpf.Ui.Controls.ContentDialogButton.Primary,
             };
             Grid.SetColumnSpan(dialog, 2);
+
             return dialog;
         }
 
         private int GetCurrentPageIndex()
         {
             ScrollViewer scrollViewer = (ScrollViewer)documentPreviewer.Template.FindName("PART_ContentHost", documentPreviewer);
-
-            int page;
-            if (documentPreviewer.MaxPagesAcross == 1)
-            {
-                page = (int)(scrollViewer.VerticalOffset / (scrollViewer.ExtentHeight / documentPreviewer.PageCount)) + 1;
-            }
-            else
-            {
-                page = ((int)(scrollViewer.VerticalOffset / (scrollViewer.ExtentHeight / Math.Ceiling((double)documentPreviewer.PageCount / 2))) + 1) * 2 - 1;
-            }
+            int page = documentPreviewer.MaxPagesAcross == 1 ? (int)(scrollViewer.VerticalOffset / (scrollViewer.ExtentHeight / documentPreviewer.PageCount)) + 1 : ((int)(scrollViewer.VerticalOffset / (scrollViewer.ExtentHeight / Math.Ceiling((double)documentPreviewer.PageCount / 2))) + 1) * 2 - 1;
 
             return Math.Max(1, Math.Min(page, documentPreviewer.PageCount));
         }
@@ -115,17 +106,15 @@ namespace PrintDialogX.Internal
             string status = "";
             string location = "";
             string comment = "";
-
             if (printer != null)
             {
                 printer.Refresh();
-
-                status = PrinterHelper.PrinterHelper.GetPrinterStatusInfo(_localPrintServer.GetPrintQueue(printer.FullName));
+                status = PrinterHelper.PrinterHelper.GetPrinterStatusInfo(_printServer.GetPrintQueue(printer.FullName));
                 location = printer.Location;
                 comment = printer.Comment;
 
-                location = string.IsNullOrWhiteSpace(location) == true ? "Unknown" : location;
-                comment = string.IsNullOrWhiteSpace(comment) == true ? "Unknown" : comment;
+                location = string.IsNullOrWhiteSpace(location) ? "Unknown" : location;
+                comment = string.IsNullOrWhiteSpace(comment) ? "Unknown" : comment;
             }
 
             Grid itemMainGrid = new Grid();
@@ -137,29 +126,16 @@ namespace PrintDialogX.Internal
             {
                 Width = 55,
                 Height = 55,
-                Source = printer == null ? new System.Windows.Media.Imaging.BitmapImage(new Uri("/PrintDialogX;component/Resources/AddPrinter.png", UriKind.Relative)) : PrinterHelper.PrinterIconHelper.GetPrinterIcon(printer, _localPrintServer),
+                Source = printer == null ? new System.Windows.Media.Imaging.BitmapImage(new Uri("/PrintDialogX;component/Resources/AddPrinter.png", UriKind.Relative)) : PrinterHelper.PrinterIconHelper.GetPrinterIcon(printer, _printServer),
                 Stretch = Stretch.Fill
             };
 
-            StackPanel textInfoPanel = new StackPanel()
-            {
-                Orientation = Orientation.Vertical,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            textInfoPanel.Children.Add(new TextBlock()
-            {
-                Text = printer == null ? "Add New Printer" : printer.FullName,
-                FontSize = 14
-            });
+            StackPanel textInfoPanel = new StackPanel() { Orientation = Orientation.Vertical, VerticalAlignment = VerticalAlignment.Center };
+            textInfoPanel.Children.Add(new TextBlock() { Text = printer == null ? "Add New Printer" : printer.FullName, FontSize = 14 });
             if (printer != null)
             {
-                textInfoPanel.Children.Add(new TextBlock()
-                {
-                    Text = status,
-                    Margin = new Thickness(0, 7, 0, 0)
-                });
-
-                if (printer.IsOffline == true)
+                textInfoPanel.Children.Add(new TextBlock() { Text = status, Margin = new Thickness(0, 7, 0, 0) });
+                if (printer.IsOffline)
                 {
                     printerIcon.Opacity = 0.5;
                 }
@@ -187,12 +163,12 @@ namespace PrintDialogX.Internal
                 int selectedIndex = 0;
                 printerComboBox.Items.Clear();
 
-                if (_allowAddNewPrinerButton == true)
+                if (_allowAddNewPrinerButton)
                 {
                     printerComboBox.Items.Insert(0, GeneratePrinterComboBoxItem(null));
                 }
 
-                foreach (PrintQueue printer in _localPrintServer.GetPrintQueues())
+                foreach (PrintQueue printer in _printServer.GetPrintQueues())
                 {
                     printerComboBox.Items.Insert(0, GeneratePrinterComboBoxItem(printer));
 
@@ -214,6 +190,7 @@ namespace PrintDialogX.Internal
                         Window.GetWindow(this).Close();
                     };
                     contentHolder.Children.Add(dialog);
+
                     await dialog.ShowAsync();
                 }
 
@@ -227,15 +204,14 @@ namespace PrintDialogX.Internal
 
         private void LoadPrinterSettings(bool useDefaults = true)
         {
-            _needsRefresh = false;
+            _isRefreshNeeded = false;
 
             string originalColor = "";
             string originalQuality = "";
             string originalSize = "";
             string originalType = "";
             string originalSource = "";
-
-            if (useDefaults == false)
+            if (!useDefaults)
             {
                 originalColor = colorComboBox.SelectedItem == null ? _defaultSettings.Color.ToString() : (colorComboBox.SelectedItem as ComboBoxItem).Content.ToString();
                 originalQuality = qualityComboBox.SelectedItem == null ? _defaultSettings.Quality.ToString() : (qualityComboBox.SelectedItem as ComboBoxItem).Content.ToString();
@@ -244,7 +220,7 @@ namespace PrintDialogX.Internal
                 originalSource = sourceComboBox.SelectedItem == null ? PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(InputBin.AutoSelect) : (sourceComboBox.SelectedItem as ComboBoxItem).Content.ToString();
             }
 
-            PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
+            PrintQueue printer = _printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
 
             copiesNumberPicker.Maximum = printer.GetPrintCapabilities().MaxCopyCount ?? 1;
             collateCheckBox.Visibility = copiesNumberPicker.Value > 1 ? Visibility.Visible : Visibility.Collapsed;
@@ -253,44 +229,30 @@ namespace PrintDialogX.Internal
             colorComboBox.Items.Clear();
             foreach (OutputColor color in printer.GetPrintCapabilities().OutputColorCapability)
             {
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = color.ToString()
-                };
-                colorComboBox.Items.Add(item);
+                colorComboBox.Items.Add(new ComboBoxItem() { Content = color.ToString() });
 
-                if (useDefaults == true)
+                if (useDefaults)
                 {
-                    if (_defaultSettings.UsePrinterDefaultSettings == false)
+                    if (!_defaultSettings.UsePrinterDefaultSettings)
                     {
                         if (color.ToString() == _defaultSettings.Color.ToString())
                         {
                             colorComboBoxSelectedIndex = colorComboBox.Items.Count - 1;
                         }
                     }
-                    else
-                    {
-                        if (color == printer.DefaultPrintTicket.OutputColor)
-                        {
-                            colorComboBoxSelectedIndex = colorComboBox.Items.Count - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (color.ToString() == originalColor)
+                    else if (color == printer.DefaultPrintTicket.OutputColor)
                     {
                         colorComboBoxSelectedIndex = colorComboBox.Items.Count - 1;
                     }
                 }
-            }
-            if (colorComboBox.HasItems == false)
-            {
-                ComboBoxItem item = new ComboBoxItem
+                else if (color.ToString() == originalColor)
                 {
-                    Content = _defaultSettings.Color.ToString()
-                };
-                colorComboBox.Items.Add(item);
+                    colorComboBoxSelectedIndex = colorComboBox.Items.Count - 1;
+                }
+            }
+            if (!colorComboBox.HasItems)
+            {
+                colorComboBox.Items.Add(new ComboBoxItem() { Content = _defaultSettings.Color.ToString() });
             }
             colorComboBox.SelectedIndex = colorComboBoxSelectedIndex;
 
@@ -298,48 +260,34 @@ namespace PrintDialogX.Internal
             qualityComboBox.Items.Clear();
             foreach (OutputQuality quality in printer.GetPrintCapabilities().OutputQualityCapability)
             {
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = quality.ToString()
-                };
-                qualityComboBox.Items.Add(item);
+                qualityComboBox.Items.Add(new ComboBoxItem() { Content = quality.ToString() });
 
-                if (useDefaults == true)
+                if (useDefaults)
                 {
-                    if (_defaultSettings.UsePrinterDefaultSettings == false)
+                    if (!_defaultSettings.UsePrinterDefaultSettings)
                     {
                         if (quality.ToString() == _defaultSettings.Quality.ToString())
                         {
                             qualityComboBoxSelectedIndex = qualityComboBox.Items.Count - 1;
                         }
                     }
-                    else
-                    {
-                        if (quality == printer.DefaultPrintTicket.OutputQuality)
-                        {
-                            qualityComboBoxSelectedIndex = qualityComboBox.Items.Count - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (quality.ToString() == originalQuality)
+                    else if (quality == printer.DefaultPrintTicket.OutputQuality)
                     {
                         qualityComboBoxSelectedIndex = qualityComboBox.Items.Count - 1;
                     }
                 }
-            }
-            if (qualityComboBox.HasItems == false)
-            {
-                ComboBoxItem item = new ComboBoxItem
+                else if (quality.ToString() == originalQuality)
                 {
-                    Content = _defaultSettings.Quality.ToString()
-                };
-                qualityComboBox.Items.Add(item);
+                    qualityComboBoxSelectedIndex = qualityComboBox.Items.Count - 1;
+                }
+            }
+            if (!qualityComboBox.HasItems)
+            {
+                qualityComboBox.Items.Add(new ComboBoxItem() { Content = _defaultSettings.Quality.ToString() });
             }
             qualityComboBox.SelectedIndex = qualityComboBoxSelectedIndex;
 
-            if (_defaultSettings.UsePrinterDefaultSettings == true)
+            if (_defaultSettings.UsePrinterDefaultSettings)
             {
                 if (printer.DefaultPrintTicket.Duplexing.HasValue)
                 {
@@ -373,44 +321,30 @@ namespace PrintDialogX.Internal
                     continue;
                 }
 
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(size.PageMediaSizeName.Value)
-                };
-                sizeComboBox.Items.Add(item);
+                sizeComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(size.PageMediaSizeName.Value) });
 
-                if (useDefaults == true)
+                if (useDefaults)
                 {
-                    if (_defaultSettings.UsePrinterDefaultSettings == false)
+                    if (!_defaultSettings.UsePrinterDefaultSettings)
                     {
                         if (size.PageMediaSizeName.ToString() == _defaultSettings.PageSize.ToString())
                         {
                             sizeComboBoxSelectedIndex = sizeComboBox.Items.Count - 1;
                         }
                     }
-                    else
-                    {
-                        if (size == printer.DefaultPrintTicket.PageMediaSize)
-                        {
-                            sizeComboBoxSelectedIndex = sizeComboBox.Items.Count - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(size.PageMediaSizeName.Value) == originalSize)
+                    else if (size == printer.DefaultPrintTicket.PageMediaSize)
                     {
                         sizeComboBoxSelectedIndex = sizeComboBox.Items.Count - 1;
                     }
                 }
-            }
-            if (sizeComboBox.HasItems == false)
-            {
-                ComboBoxItem item = new ComboBoxItem
+                else if (PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(size.PageMediaSizeName.Value) == originalSize)
                 {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(_defaultSettings.PageSize)
-                };
-                sizeComboBox.Items.Add(item);
+                    sizeComboBoxSelectedIndex = sizeComboBox.Items.Count - 1;
+                }
+            }
+            if (!sizeComboBox.HasItems)
+            {
+                sizeComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaSizeNameInfo(_defaultSettings.PageSize) });
             }
             sizeComboBox.SelectedIndex = sizeComboBoxSelectedIndex;
 
@@ -418,44 +352,30 @@ namespace PrintDialogX.Internal
             typeComboBox.Items.Clear();
             foreach (PageMediaType type in printer.GetPrintCapabilities().PageMediaTypeCapability)
             {
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(type)
-                };
-                typeComboBox.Items.Add(item);
+                typeComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(type) });
 
-                if (useDefaults == true)
+                if (useDefaults)
                 {
-                    if (_defaultSettings.UsePrinterDefaultSettings == false)
+                    if (!_defaultSettings.UsePrinterDefaultSettings)
                     {
                         if (type.ToString() == _defaultSettings.PageType.ToString())
                         {
                             typeComboBoxSelectedIndex = typeComboBox.Items.Count - 1;
                         }
                     }
-                    else
-                    {
-                        if (type == printer.DefaultPrintTicket.PageMediaType)
-                        {
-                            typeComboBoxSelectedIndex = typeComboBox.Items.Count - 1;
-                        }
-                    }
-                }
-                else
-                {
-                    if (PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(type) == originalType)
+                    else if (type == printer.DefaultPrintTicket.PageMediaType)
                     {
                         typeComboBoxSelectedIndex = typeComboBox.Items.Count - 1;
                     }
                 }
-            }
-            if (typeComboBox.HasItems == false)
-            {
-                ComboBoxItem item = new ComboBoxItem
+                else if (PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(type) == originalType)
                 {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(_defaultSettings.PageType)
-                };
-                typeComboBox.Items.Add(item);
+                    typeComboBoxSelectedIndex = typeComboBox.Items.Count - 1;
+                }
+            }
+            if (!typeComboBox.HasItems)
+            {
+                typeComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetPageMediaTypeNameInfo(_defaultSettings.PageType) });
             }
             typeComboBox.SelectedIndex = typeComboBoxSelectedIndex;
 
@@ -463,52 +383,40 @@ namespace PrintDialogX.Internal
             sourceComboBox.Items.Clear();
             foreach (InputBin source in printer.GetPrintCapabilities().InputBinCapability)
             {
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(source)
-                };
-                sourceComboBox.Items.Add(item);
+                sourceComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(source) });
 
-                if (useDefaults == true)
+                if (useDefaults)
                 {
                     if (source == printer.DefaultPrintTicket.InputBin)
                     {
                         sourceComboBoxSelectedIndex = sourceComboBox.Items.Count - 1;
                     }
                 }
-                else
+                else if (PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(source) == originalSource)
                 {
-                    if (PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(source) == originalSource)
-                    {
-                        sourceComboBoxSelectedIndex = sourceComboBox.Items.Count - 1;
-                    }
+                    sourceComboBoxSelectedIndex = sourceComboBox.Items.Count - 1;
                 }
             }
-            if (sourceComboBox.HasItems == false)
+            if (!sourceComboBox.HasItems)
             {
-                ComboBoxItem item = new ComboBoxItem
-                {
-                    Content = PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(InputBin.AutoSelect)
-                };
-                sourceComboBox.Items.Add(item);
+                sourceComboBox.Items.Add(new ComboBoxItem() { Content = PrintSettings.SettingsHepler.NameInfoHepler.GetInputBinNameInfo(InputBin.AutoSelect) });
             }
             sourceComboBox.SelectedIndex = sourceComboBoxSelectedIndex;
 
-            _needsRefresh = true;
-
+            _isRefreshNeeded = true;
             ReloadDocument();
         }
 
         private async void ReloadDocument()
         {
-            if (_isLoaded == true && _needsRefresh == true)
+            if (_isLoaded && _isRefreshNeeded)
             {
                 ((Grid)documentPreviewer.Template.FindName("loadingGrid", documentPreviewer)).Visibility = Visibility.Visible;
                 Common.DoEvents();
 
                 try
                 {
-                    PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
+                    PrintQueue printer = _printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
 
                     PageMediaSize size;
                     if (printer.GetPrintCapabilities().PageMediaSizeCapability.Count > 0)
@@ -540,7 +448,7 @@ namespace PrintDialogX.Internal
                     {
                         pageList.Add(GetCurrentPageIndex());
                     }
-                    else if (pagesComboBox.SelectedIndex == 2 && string.IsNullOrWhiteSpace(customPagesTextBox.Text) == false)
+                    else if (pagesComboBox.SelectedIndex == 2 && !string.IsNullOrWhiteSpace(customPagesTextBox.Text))
                     {
                         string[] customPageInputList = customPagesTextBox.Text.Split(',');
                         foreach (string str in customPageInputList)
@@ -553,12 +461,8 @@ namespace PrintDialogX.Internal
 
                                     int number1 = 0;
                                     int number2 = 0;
-                                    bool valid = pageRange.Length == 2;
-                                    if (valid == true)
-                                    {
-                                        valid = int.TryParse(pageRange[0], out number1) && int.TryParse(pageRange[1], out number2);
-                                    }
-                                    if (valid == false || number1 > number2 || number1 <= 0 || number2 > _pageContents.Count)
+                                    bool valid = pageRange.Length == 2 && int.TryParse(pageRange[0], out number1) && int.TryParse(pageRange[1], out number2);
+                                    if (!valid || number1 > number2 || number1 <= 0 || number2 > _printPages.Count)
                                     {
                                         Wpf.Ui.Controls.ContentDialog dialog = CreateErrorDialog("The value for custom pages is invalid!");
                                         dialog.ButtonClicked += (s, arg) =>
@@ -567,6 +471,7 @@ namespace PrintDialogX.Internal
                                             contentHolder.Children.Remove(dialog);
                                         };
                                         contentHolder.Children.Add(dialog);
+
                                         await dialog.ShowAsync();
 
                                         pageList.Clear();
@@ -580,17 +485,13 @@ namespace PrintDialogX.Internal
                                         }
                                     }
                                 }
-                                catch
-                                {
-
-                                }
+                                catch { }
                             }
                             else
                             {
                                 try
                                 {
-                                    bool valid = int.TryParse(str, out int number);
-                                    if (valid == false || number <= 0 || number > _pageContents.Count)
+                                    if (!int.TryParse(str, out int number) || number <= 0 || number > _printPages.Count)
                                     {
                                         Wpf.Ui.Controls.ContentDialog dialog = CreateErrorDialog("The value for custom pages is invalid!");
                                         dialog.ButtonClicked += (s, arg) =>
@@ -599,6 +500,7 @@ namespace PrintDialogX.Internal
                                             contentHolder.Children.Remove(dialog);
                                         };
                                         contentHolder.Children.Add(dialog);
+
                                         await dialog.ShowAsync();
 
                                         pageList.Clear();
@@ -609,51 +511,43 @@ namespace PrintDialogX.Internal
                                         pageList.Add(int.Parse(str));
                                     }
                                 }
-                                catch
-                                {
-
-                                }
+                                catch { }
                             }
                         }
                     }
                     if (pageList.Count == 0)
                     {
-                        for (int i = 1; i <= _pageContents.Count; i++)
+                        for (int i = 1; i <= _printPages.Count; i++)
                         {
                             pageList.Add(i);
                         }
                     }
                     pageList.Sort();
 
-                    double scale;
-                    double margin;
                     PrintSettings.PageColor color;
-
                     if (colorComboBox.SelectedItem != null && (colorComboBox.SelectedItem as ComboBoxItem).Content.ToString() == PrintSettings.PageColor.Grayscale.ToString())
                     {
                         ScrollViewer scrollViewer = (ScrollViewer)documentPreviewer.Template.FindName("PART_ContentHost", documentPreviewer);
                         scrollViewer.Effect = new Effects.GrayscaleEffect();
-
                         color = PrintSettings.PageColor.Grayscale;
                     }
                     else if (colorComboBox.SelectedItem != null && (colorComboBox.SelectedItem as ComboBoxItem).Content.ToString() == PrintSettings.PageColor.Monochrome.ToString())
                     {
                         ScrollViewer scrollViewer = (ScrollViewer)documentPreviewer.Template.FindName("PART_ContentHost", documentPreviewer);
                         scrollViewer.Effect = new Effects.GrayscaleEffect();
-
                         color = PrintSettings.PageColor.Monochrome;
                     }
                     else
                     {
                         ScrollViewer scrollViewer = (ScrollViewer)documentPreviewer.Template.FindName("PART_ContentHost", documentPreviewer);
                         scrollViewer.Effect = null;
-
                         color = PrintSettings.PageColor.Color;
                     }
 
+                    double margin;
                     if (marginComboBox.SelectedIndex == 0)
                     {
-                        margin = _documentMargin;
+                        margin = _originalDocumentMargin;
                     }
                     else if (marginComboBox.SelectedIndex == 1)
                     {
@@ -676,6 +570,7 @@ namespace PrintDialogX.Internal
                         margin = (int)customMarginNumberPicker.Value;
                     }
 
+                    double scale;
                     if (scaleComboBox.SelectedIndex == 0)
                     {
                         scale = double.NaN;
@@ -691,8 +586,8 @@ namespace PrintDialogX.Internal
 
                     if (_reloadDocumentCallback != null)
                     {
-                        _pageContents.Clear();
-                        _pageContents.AddRange(_reloadDocumentCallback(new PrintDialog.DocumentInfo()
+                        _printPages.Clear();
+                        _printPages.AddRange(_reloadDocumentCallback(new PrintDialog.DocumentInfo()
                         {
                             Color = color,
                             Margin = margin,
@@ -707,9 +602,9 @@ namespace PrintDialogX.Internal
 
                     int pageIndex = 1;
                     List<FixedPage> newPages = new List<FixedPage>();
-                    foreach (PrintDialogX.PrintPage originalPage in _pageContents)
+                    foreach (PrintDialogX.PrintPage originalPage in _printPages)
                     {
-                        if (pageList.Contains(pageIndex) == true)
+                        if (pageList.Contains(pageIndex))
                         {
                             UIElement originalContent = originalPage.Content;
 
@@ -720,27 +615,28 @@ namespace PrintDialogX.Internal
                             }
                             else if (parent != null)
                             {
-                                throw new Exception("PrintPage's Content is already the child of another element.");
+                                throw new Exception("The content of PrintPage is already the child of another element.");
                             }
 
-                            FixedPage fixedPage = new FixedPage();
+                            FixedPage fixedPage = new FixedPage
+                            {
+                                Width = newDocument.DocumentPaginator.PageSize.Width,
+                                Height = newDocument.DocumentPaginator.PageSize.Height,
+                                RenderTransformOrigin = new Point(0, 0)
+                            };
                             fixedPage.Children.Add(originalContent);
-
-                            fixedPage.Width = newDocument.DocumentPaginator.PageSize.Width;
-                            fixedPage.Height = newDocument.DocumentPaginator.PageSize.Height;
-                            fixedPage.RenderTransformOrigin = new Point(0, 0);
 
                             if (pagesPerSheetComboBox.SelectedIndex == 0)
                             {
                                 if (scaleComboBox.SelectedIndex == 0)
                                 {
-                                    if (_documentSize.Height * (fixedPage.Width / _documentSize.Width) <= fixedPage.Height)
+                                    if (_originalDocumentSize.Height * (fixedPage.Width / _originalDocumentSize.Width) <= fixedPage.Height)
                                     {
-                                        fixedPage.RenderTransform = new ScaleTransform(fixedPage.Width / _documentSize.Width, fixedPage.Width / _documentSize.Width);
+                                        fixedPage.RenderTransform = new ScaleTransform(fixedPage.Width / _originalDocumentSize.Width, fixedPage.Width / _originalDocumentSize.Width);
                                     }
                                     else
                                     {
-                                        fixedPage.RenderTransform = new ScaleTransform(fixedPage.Height / _documentSize.Height, fixedPage.Height / _documentSize.Height);
+                                        fixedPage.RenderTransform = new ScaleTransform(fixedPage.Height / _originalDocumentSize.Height, fixedPage.Height / _originalDocumentSize.Height);
                                     }
                                 }
                                 else
@@ -785,7 +681,6 @@ namespace PrintDialogX.Internal
                         xpsDoc.Uri = _xpsUrl;
                         XpsDocumentWriter writer = XpsDocument.CreateXpsDocumentWriter(xpsDoc);
                         writer.Write(((IDocumentPaginatorSource)_fixedDocument).DocumentPaginator);
-
                         documentPreviewer.Document = xpsDoc.GetFixedDocumentSequence();
                     }
                     finally
@@ -814,28 +709,13 @@ namespace PrintDialogX.Internal
 
             ReloadDocument();
 
-            PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
-
+            PrintQueue printer = _printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
             System.Windows.Controls.PrintDialog systemPrintDialog = new System.Windows.Controls.PrintDialog();
 
             PrintTicket printTicket = systemPrintDialog.PrintTicket;
             printTicket.CopyCount = (int)copiesNumberPicker.Value;
-            if (collateCheckBox.IsChecked == true)
-            {
-                printTicket.Collation = Collation.Collated;
-            }
-            else
-            {
-                printTicket.Collation = Collation.Uncollated;
-            }
-            if (orientationComboBox.SelectedIndex == 0)
-            {
-                printTicket.PageOrientation = PageOrientation.Portrait;
-            }
-            else
-            {
-                printTicket.PageOrientation = PageOrientation.Landscape;
-            }
+            printTicket.Collation = collateCheckBox.IsChecked == true ? Collation.Collated : Collation.Uncollated;
+            printTicket.PageOrientation = orientationComboBox.SelectedIndex == 0 ? PageOrientation.Portrait : PageOrientation.Landscape;
             if (printer.GetPrintCapabilities().PageMediaSizeCapability.Count > 0)
             {
                 printTicket.PageMediaSize = printer.GetPrintCapabilities().PageMediaSizeCapability[sizeComboBox.SelectedIndex];
@@ -856,75 +736,58 @@ namespace PrintDialogX.Internal
             {
                 printTicket.InputBin = printer.GetPrintCapabilities().InputBinCapability[sourceComboBox.SelectedIndex];
             }
-            if (doubleSidedCheckBox.IsChecked == true)
-            {
-                printTicket.Duplexing = doubleSidedTypeComboBox.SelectedIndex == 0 ? Duplexing.TwoSidedLongEdge : Duplexing.TwoSidedShortEdge;
-            }
-            else
-            {
-                printTicket.Duplexing = Duplexing.OneSided;
-            }
+            printTicket.Duplexing = doubleSidedCheckBox.IsChecked == true ? (doubleSidedTypeComboBox.SelectedIndex == 0 ? Duplexing.TwoSidedLongEdge : Duplexing.TwoSidedShortEdge) : Duplexing.OneSided;
             printTicket.PageScalingFactor = 100;
             printTicket.PagesPerSheet = 1;
             printTicket.PagesPerSheetDirection = PagesPerSheetDirection.RightBottom;
 
-            if (doubleSidedCheckBox.IsChecked == false)
-            {
-                _owner.TotalPapers = documentPreviewer.PageCount * (int)copiesNumberPicker.Value;
-            }
-            else
-            {
-                _owner.TotalPapers = (int)Math.Ceiling(documentPreviewer.PageCount * (int)copiesNumberPicker.Value / 2.0);
-            }
+            _owner.TotalPapers = doubleSidedCheckBox.IsChecked == false ? documentPreviewer.PageCount * (int)copiesNumberPicker.Value : (int)Math.Ceiling(documentPreviewer.PageCount * (int)copiesNumberPicker.Value / 2.0);
 
             systemPrintDialog.PrintQueue = printer;
-            systemPrintDialog.PrintDocument(_fixedDocument.DocumentPaginator, _documentName);
+            systemPrintDialog.PrintDocument(_fixedDocument.DocumentPaginator, _originalDocumentName);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Common.DoEvents();
 
-            if (_allowPagesOption == false)
+            if (!_allowPagesOption)
             {
                 pagesTextBlock.Visibility = Visibility.Collapsed;
                 pagesComboBox.Visibility = Visibility.Collapsed;
             }
 
-            if (_allowScaleOption == false)
+            if (!_allowScaleOption)
             {
                 scaleTextBlock.Visibility = Visibility.Collapsed;
                 scaleComboBox.Visibility = Visibility.Collapsed;
                 scaleComboBox.SelectedIndex = 4;
             }
 
-            if (_allowDoubleSidedOption == false)
+            if (!_allowDoubleSidedOption)
             {
                 doubleSidedTextBlock.Visibility = Visibility.Collapsed;
                 doubleSidedCheckBox.Visibility = Visibility.Collapsed;
             }
 
-            if (_allowPagesPerSheetOption == false)
+            if (!_allowPagesPerSheetOption)
             {
                 pagesPerSheetTextBlock.Visibility = Visibility.Collapsed;
                 pagesPerSheetComboBox.Visibility = Visibility.Collapsed;
             }
-            else
+            else if (!_allowPageOrderOption)
             {
-                if (_allowPageOrderOption == false)
-                {
-                    pageOrderTextBlock.Visibility = Visibility.Collapsed;
-                    pageOrderComboBox.Visibility = Visibility.Collapsed;
-                }
+                pageOrderTextBlock.Visibility = Visibility.Collapsed;
+                pageOrderComboBox.Visibility = Visibility.Collapsed;
             }
 
-            if (_allowMoreSettingsExpander == false)
+            if (!_allowMoreSettingsExpander)
             {
                 moreSettingsExpander.MinHeight = 0;
                 moreSettingsExpander.IsExpanded = true;
             }
 
-            if (_allowPrinterPreferencesButton == false)
+            if (!_allowPrinterPreferencesButton)
             {
                 printerPreferencesBtn.Visibility = Visibility.Collapsed;
             }
@@ -935,17 +798,17 @@ namespace PrintDialogX.Internal
             LoadPrinters();
             if (printerComboBox.Items.Count > 0)
             {
-                printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _localPrintServer, true);
+                printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _printServer, true);
                 printerPreviewText.Text = (printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString();
                 LoadPrinterSettings();
 
-                PrintQueue printer = _localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
+                PrintQueue printer = _printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
 
                 orientationComboBox.SelectedIndex = _defaultSettings.Layout == PrintSettings.PageOrientation.Portrait ? 0 : 1;
 
-                if (_allowDoubleSidedOption == true)
+                if (_allowDoubleSidedOption)
                 {
-                    if (_defaultSettings.UsePrinterDefaultSettings == false)
+                    if (!_defaultSettings.UsePrinterDefaultSettings)
                     {
                         if (_defaultSettings.DoubleSided == PrintSettings.DoubleSided.OneSided)
                         {
@@ -987,8 +850,8 @@ namespace PrintDialogX.Internal
             pagesPerSheetComboBox.SelectedIndex = (int)_defaultSettings.PagesPerSheet;
             pageOrderComboBox.SelectedIndex = (int)_defaultSettings.PageOrder;
 
-            customMarginNumberPicker.Maximum = (int)Math.Min(_documentSize.Width / 2, _documentSize.Height / 2) - 15;
-            customMarginNumberPicker.Value = _documentMargin;
+            customMarginNumberPicker.Maximum = (int)Math.Min(_originalDocumentSize.Width / 2, _originalDocumentSize.Height / 2) - 15;
+            customMarginNumberPicker.Value = _originalDocumentMargin;
 
             _isLoaded = true;
             Common.DoEvents();
@@ -1010,7 +873,7 @@ namespace PrintDialogX.Internal
         {
             PackageStore.RemovePackage(_xpsUrl);
             _package?.Close();
-            _localPrintServer.Dispose();
+            _printServer.Dispose();
         }
 
         private void PrintButton_Click(object sender, RoutedEventArgs e)
@@ -1061,21 +924,18 @@ namespace PrintDialogX.Internal
                     contentHolder.Children.Add(dialog);
                     await dialog.ShowAsync();
                 }
-                catch
-                {
-
-                }
+                catch { }
             }
         }
 
         private void PrinterComboBox_DropDownOpened(object sender, EventArgs e)
         {
-            _needsRefresh = false;
+            _isRefreshNeeded = false;
 
-            _localPrintServer.Refresh();
+            _printServer.Refresh();
             LoadPrinters((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString());
 
-            _needsRefresh = true;
+            _isRefreshNeeded = true;
         }
 
         private async void PrinterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1085,12 +945,11 @@ namespace PrintDialogX.Internal
                 return;
             }
 
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
-                if (_allowAddNewPrinerButton == true && (printerComboBox.SelectedItem as ComboBoxItem).Tag == null)
+                if (_allowAddNewPrinerButton && (printerComboBox.SelectedItem as ComboBoxItem).Tag == null)
                 {
                     printerComboBox.IsDropDownOpen = false;
-
                     if (e.RemovedItems.Count > 0)
                     {
                         printerComboBox.SelectedItem = e.RemovedItems[0];
@@ -1100,14 +959,14 @@ namespace PrintDialogX.Internal
                     {
                         TreatAsUntrusted = false
                     };
-                    if (await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:printers"), option) == false)
+                    if (!await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:printers"), option))
                     {
                         System.Diagnostics.Process.Start("explorer.exe", "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}");
                     }
                 }
                 else
                 {
-                    printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_localPrintServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _localPrintServer, true);
+                    printerPreviewIcon.Source = PrinterHelper.PrinterIconHelper.GetPrinterIcon(_printServer.GetPrintQueue((printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString()), _printServer, true);
                     printerPreviewText.Text = (printerComboBox.SelectedItem as ComboBoxItem).Tag.ToString();
 
                     LoadPrinterSettings(false);
@@ -1117,7 +976,7 @@ namespace PrintDialogX.Internal
 
         private void SettingComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
                 if (sender is ComboBox comboBox)
                 {
@@ -1192,9 +1051,9 @@ namespace PrintDialogX.Internal
 
         private void CopiesNumberPicker_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
-                if (copiesNumberPicker.Value.HasValue == false)
+                if (!copiesNumberPicker.Value.HasValue)
                 {
                     copiesNumberPicker.Value = 1;
                 }
@@ -1204,9 +1063,9 @@ namespace PrintDialogX.Internal
 
         private void CustomZoomNumberPicker_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
-                if (customScaleNumberPicker.Value.HasValue == false)
+                if (!customScaleNumberPicker.Value.HasValue)
                 {
                     customScaleNumberPicker.Value = 100;
                 }
@@ -1216,11 +1075,11 @@ namespace PrintDialogX.Internal
 
         private void CustomMarginNumberPicker_ValueChanged(object sender, RoutedEventArgs e)
         {
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
-                if (customMarginNumberPicker.Value.HasValue == false)
+                if (!customMarginNumberPicker.Value.HasValue)
                 {
-                    customMarginNumberPicker.Value = _documentMargin;
+                    customMarginNumberPicker.Value = _originalDocumentMargin;
                 }
                 ReloadDocument();
             }
@@ -1228,7 +1087,7 @@ namespace PrintDialogX.Internal
 
         private void CustomPagesTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (_needsRefresh == true)
+            if (_isRefreshNeeded)
             {
                 ReloadDocument();
             }
