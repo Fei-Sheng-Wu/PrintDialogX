@@ -351,19 +351,16 @@ namespace PrintDialogX.PrinterHelper
                     break;
                 }
             }
-            if (printerType == "Fax")
+            if (printerType == "Fax" && printer.IsShared)
             {
-                if (printer.IsShared == true)
-                {
-                    printerType = "NetworkFax";
-                }
+                printerType = "NetworkFax";
             }
 
             if (LocalPrintServer.GetDefaultPrintQueue().FullName == printer.FullName)
             {
                 printerType += "_Default";
             }
-            if (smallIcon == true)
+            if (smallIcon)
             {
                 printerType += "_Small";
             }
