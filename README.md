@@ -1,11 +1,11 @@
-# PrintDialogX v2.1.2
+# PrintDialogX v2.1.4-dev
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
 [![Nuget](https://img.shields.io/badge/Nuget-v2.1.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.2)
-[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.2/LICENSE.txt)
+[![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 
-> A custom PrintDialog for WPF with preview in realtime. Full options with printer settings, include copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-sided, paper size, paper type, paper source, etc. Support realtime updates to the content according to the changes in settings. Fast and elegant user interface.
+> A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.
 
 ## Preview
 
@@ -18,24 +18,24 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 - [X] Printer list
   - [X] Printer icons & status
   - [X] "Add New Printer" button
-  - [X] Tooltip on printer options for detailed information
-- [X] Printer settings
+  - [X] Tooltips for detailed printer information
+- [X] Print settings
   - [X] Copies and collate
   - [X] Pages (all, current, or custom)
   - [X] Orientation
   - [X] Color and quality
-  - [X] Pages per sheet and page order
+  - [X] Pages per sheet and order
   - [X] Scale and margin
   - [X] Doubled-sided and flipping
   - [X] Paper size, type, and source
-- [X] Interactable realtime preview
+- [X] Interactable real-time preview
   - [X] Zooming and text selection
   - [X] Page position and navigation
-- [X] Updatable document
-  - [X] Document reloading callback for specfic printer settings
-  - [X] Realtime update on the content
-- [X] Result callback
-  - [X] Whether the "Print" button is clicked or the "Cancel" button
+- [X] Updatable documents
+  - [X] Document reloading callback for specfic print settings
+  - [X] Real-time updates on the content
+- [X] Result callbacks
+  - [X] Whether the "Print" or the "Cancel" button is clicked
   - [X] The number of papers used
 - [X] Beautiful user interface
   - [X] Uses [Wpf.Ui](https://wpfui.lepo.co/index.html)
@@ -43,12 +43,12 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## Dependencies
 
-- .Net Framework ≥ 4.8
+- .Net Framework ≥ 4.7.2
 - Wpf.Ui = 3.0.0
 
 ## How to Use
 
-The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/2.1.2/PrintDialogX.Test) subfolder, with both examples of the show-while-generate-document feature, where the document is generated while the print dialog is showing, and the old method of generating the document beforehand and showing the print dialog after.
+The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) subfolder, with both examples of the generating the document before or during the starting stage of the print dialog.
 
 Initialize a `PrintDialog` instance.
 
@@ -63,27 +63,24 @@ PrintDialogX.PrintDialog.PrintDialog printDialog = new PrintDialogX.PrintDialog.
 
 ### Synchronized Document Generation
 
-The show-while-generate-document feature allows the document to be generated while the `PrintDialog` is loading. `GeneratingDocument` is a function that will be called to generate the document.
+The document may be generated while the `PrintDialog` is loading, which is beneficial for larger documents.
 
 ```
-//Show PrintDialog with document generation function
-//The document will be generated while the dialog loads
-if (printDialog.ShowDialog(GeneratingDocument) == true)
+//Show PrintDialog with a custom document generation function
+//The function will be used to generate the document while the dialog is loading
+if (printDialog.ShowDialog(() => printDialog.Document = GenerateDocument()) == true)
 {
     //When the Print button is clicked, the document is printed, and the window is closed
     MessageBox.Show("Document printed.\nIt uses " + printDialog.TotalPapers + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 }
 else
 {
-    //When the Cancel button is clicked and the window is closed
+    //When the Cancel button is clicked, and the window is closed
     MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
 }
 ```
-
-Example of the `GeneratingDocument` function, where the document is created.
-
 ```c#
-private void GeneratingDocument()
+private PrintDialogX.PrintDocument GenerateDocument()
 {
     //Create a new document
     //PrintDialogX requires a PrintDocument instance as the document
@@ -94,22 +91,21 @@ private void GeneratingDocument()
     //Loop 5 times to add 5 pages
     for (int i = 0; i < 5; i++)
     {
-        //Create a new page and add content to it
+        //Create a new page and add its content
         PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
-        page.Content = CreateContent(); //Create any content as you wish
+        page.Content = GeneratePageContent();
 
         //Add the page into the document
         document.Pages.Add(page);
     }
 
-    //Set the PrintDialog's document
-    printDialog.Document = document;
+    return document;
 }
 ```
 
-### Pre-Generated Document
+### Pre-Generated Documents
 
-If the document is already created, `PrintDialog.ShowDialog()` can be called to skip the loading part.
+If the document is already created, `PrintDialog.Document` can be directly set before calling `PrintDialog.ShowDialog()`.
 
 ```c#
 //Generate the document before showing the dialog
@@ -118,22 +114,20 @@ printDialog.Document = document;
 //Show PrintDialog with the document already generated
 if (printDialog.ShowDialog() == true)
 {
-    //When the Print button clicked, the document is printed, and the window is closed
-    MessageBox.Show("Document printed.\nIt uses " + printDialog.TotalPapers + " sheet(s) of paper.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+    //...
 }
 else
 {
-    //When the Cancel button is clicked and the window is closed
-    MessageBox.Show("Print job canceled.", "PrintDialog", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+    //...
 }
 ```
 
 ### PrintDialog Configurations
 
-Default print settings of the `PrintDialog` can be set as well.
+The defulat print settings that `PrintDialog` uses can be configured.
 
 ```c#
-//Set default print settings
+//Set the default print settings
 printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
 {
     Layout = PrintDialogX.PrintSettings.PageOrientation.Portrait,
@@ -145,11 +139,11 @@ printDialog.DefaultSettings = new PrintDialogX.PrintDialog.PrintDialogSettings()
     PagesPerSheet = PrintDialogX.PrintSettings.PagesPerSheet.One,
     PageOrder = PrintDialogX.PrintSettings.PageOrder.Horizontal
 };
-//PrinterDefaultSettings() can also be used to use default settings of the printer
-//printDialog.DefaultSettings = PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
+//PrinterDefaultSettings() can also be used to use the default settings of the printer
+//printDialog.DefaultSettings = PrintDialogX.PrintDialog.PrintDialogSettings.PrinterDefaultSettings()
 ```
 
-The interface of the `PrintDialog` can be customized and certain settings can be disabled.
+The interface of `PrintDialog` can be customized to disable certain settings.
 
 ```c#
 printDialog.AllowScaleOption = true; //Allow scale option
@@ -162,36 +156,37 @@ printDialog.AllowMoreSettingsExpander = true; //Allow more settings expander
 printDialog.AllowPrinterPreferencesButton = true; //Allow printer preferences button
 ```
 
-### Dynamic Updatable Document
+### Dynamic Updatable Documents
 
-`PrintDialog.ReloadDocumentCallback` can be set for updatable documents, where the content of the document can be updated based on print settings. The callback function needs to receive a `PrintDialog.DocumentInfo` as the parameter and needs to return a list of `PrintPage`.
+`PrintDialog.ReloadDocumentCallback` can be set for updatable documents, where the content of the document can be updated based on the print settings. The callback function receives an instance of `PrintDialog.DocumentInfo` as a parameter and must return a list of updated `PrintPage`.
 
 ```c#
-//Set the function that will use to recreate the document when the print settings changed
+//Set the function that will be uses to regenerate the document when the print settings are changed
 printDialog.ReloadDocumentCallback = ReloadDocumentCallback;
 ```
 ```c#
-private List<PrintDialogX.PrintPage> ReloadDocumentCallback(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
+private ICollection<PrintDialogX.PrintPage> ReloadDocumentCallback(PrintDialogX.PrintDialog.DocumentInfo documentInfo)
 {
-    //Optinal callback function to recreate the page contents with the specific settings
+    //Optional callback function to recreate the content of the document with specific settings
+    //An instance of PrintDialog.DocumentInfo is received as a parameter, which can be used to retrieve the current print settings set by the user
+    //This function will only be called when the print settings are changed, and it must return a list of PrintPage that include each page in the original order
     List<PrintDialogX.PrintPage> pages = new List<PrintDialogX.PrintPage>();
 
-    //All pages should be recreated
-    //PrintDialog will take care of the pages setting regarding of which pages need to be printed
-    //The DocumentInfo.Pages info can still be used such as to adjust pages that will be printed
+    //All pages must be recreated and add to the list
+    //PrintDialog takes care of the pages setting regarding which pages are to be printed
     for (int i = 0; i < 5; i++)
     {
         //Create the new page and recreate the content with the specific margin
         PrintPage page = new PrintPage();
-        page.Content = CreateContent(); //Things like documentInfo.Size and documentInfo.Margin can be used
+        page.Content = GeneratePageContent();
         pages.Add(page);
     }
 
-    //Passed the recreated document back to the PrintDialog
+    //Pass the recreated document back to PrintDialog
     return pages;
 }
 ```
 
 ## License
 
-This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/2.1.2/LICENSE.txt).
+This project is under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt).
