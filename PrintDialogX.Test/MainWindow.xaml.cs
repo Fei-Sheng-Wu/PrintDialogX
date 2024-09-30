@@ -19,7 +19,7 @@ namespace PrintDialogX.Test
             PrintDialogX.PrintDialog.PrintDialog printDialog = InitializePrintDialog();
 
             //Show PrintDialog with a custom document generation function
-            //The function will be used to generate the document synchronously while the dialog is openning
+            //The function will be used to generate the document synchronously while the dialog is opening
             if (printDialog.ShowDialog(() => printDialog.Document = GenerateDocument()) == true)
             {
                 //When the "Print" button was clicked, the print job was submitted, and the window was closed

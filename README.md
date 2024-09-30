@@ -1,8 +1,8 @@
-# PrintDialogX v2.1.4-dev
+# PrintDialogX v2.1.4
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
-[![Nuget](https://img.shields.io/badge/Nuget-v2.1.2-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.2)
+[![Nuget](https://img.shields.io/badge/Nuget-v2.1.4-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.4)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 
 > A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.
@@ -48,7 +48,7 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 
 ## How to Use
 
-The example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) subfolder, with both examples of the generating the document before or during the starting stage of the print dialog.
+An example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) subfolder, with step-by-step configurations of `PrintDialog` and both examples of generating the document before or during the opening of `PrintDialog`.
 
 Initialize a `PrintDialog` instance.
 
@@ -67,7 +67,7 @@ The document may be generated while the `PrintDialog` is loading, which is benef
 
 ```
 //Show PrintDialog with a custom document generation function
-//The function will be used to generate the document synchronously while the dialog is openning
+//The function will be used to generate the document synchronously while the dialog is opening
 if (printDialog.ShowDialog(() => printDialog.Document = GenerateDocument()) == true)
 {
     //When the "Print" button was clicked, the print job was submitted, and the window was closed
