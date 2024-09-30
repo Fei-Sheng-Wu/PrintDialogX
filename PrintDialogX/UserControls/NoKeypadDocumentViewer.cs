@@ -1,13 +1,12 @@
 ﻿using System.Windows.Controls;
-using System.Windows.Automation.Peers;
 
 namespace PrintDialogX.Internal.UserControls
 {
     internal class NoKeypadDocumentViewer : DocumentViewer
     {
-        protected override AutomationPeer OnCreateAutomationPeer()
+        protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
         {
-            return new FrameworkElementAutomationPeer(this);
+            return new System.Windows.Automation.Peers.FrameworkElementAutomationPeer(this);
         }
     }
 }
