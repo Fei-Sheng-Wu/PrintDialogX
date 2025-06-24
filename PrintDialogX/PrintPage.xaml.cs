@@ -116,12 +116,21 @@ namespace PrintDialogX.Internal
                 string printerLocation = printer != null && !string.IsNullOrEmpty(printer.Location) ? printer.Location : "Unknown";
                 string printerComment = printer != null && !string.IsNullOrEmpty(printer.Comment) ? printer.Comment : "Unknown";
 
+                bool printerOffline = true;
+                int printerJobs = 0;
+                try
+                {
+                    printerOffline = printer != null && printer.IsOffline;
+                    printerJobs = printer != null ? printer.NumberOfJobs : 0;
+                }
+                catch { }
+
                 Grid itemContainer = new Grid();
                 itemContainer.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(55) });
                 itemContainer.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(10) });
                 itemContainer.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
                 System.Windows.Media.ImageSource itemIconSource = printer != null ? PrinterHelper.GetPrinterIcon(printer, _printServerCollectionFax) : new System.Windows.Media.Imaging.BitmapImage(PrinterHelper.AddPrinterIcon);
-                Image itemIcon = new Image() { Width = 55, Height = 55, Source = itemIconSource, Stretch = System.Windows.Media.Stretch.Fill, Opacity = printer != null && printer.IsOffline ? 0.5 : 1 };
+                Image itemIcon = new Image() { Width = 55, Height = 55, Source = itemIconSource, Stretch = System.Windows.Media.Stretch.Fill, Opacity = printerOffline ? 0.5 : 1 };
                 itemIcon.SetValue(Grid.ColumnProperty, 0);
                 StackPanel itemInfo = new StackPanel() { Orientation = Orientation.Vertical, VerticalAlignment = VerticalAlignment.Center };
                 itemInfo.Children.Add(new TextBlock() { Text = printer != null ? printerName : "Add New Printer", FontSize = 14 });
@@ -133,16 +142,17 @@ namespace PrintDialogX.Internal
                 itemContainer.Children.Add(itemIcon);
                 itemContainer.Children.Add(itemInfo);
 
-                string itemTooltip = printer != null ? $"Name: {printerName}\nStatus: {printerStatus}\nDocuments: {printer.NumberOfJobs}\nLoction: {printerLocation}\nComment: {printerComment}" : "Add New Printer";
+                string itemTooltip = printer != null ? $"Name: {printerName}\nStatus: {printerStatus}\nDocuments: {printerJobs}\nLoction: {printerLocation}\nComment: {printerComment}" : "Add New Printer";
                 return new ComboBoxItem() { Content = itemContainer, Padding = new Thickness(10), ToolTip = itemTooltip, Tag = printer };
             }
 
             int optionPrinterSelectedIndex = 0;
             optionPrinter.Items.Clear();
+            PrintQueue printerDefault = PrinterHelper.GetDefaultPrinter();
             foreach (PrintQueue printer in _printServer.GetPrintQueues())
             {
                 optionPrinter.Items.Add(actionCreateItem(printer));
-                if (printer.FullName == (printerSelected ?? LocalPrintServer.GetDefaultPrintQueue()).FullName)
+                if ((printerSelected != null && printer.FullName == printerSelected.FullName) || (printerDefault != null && printer.FullName == printerDefault.FullName))
                 {
                     optionPrinterSelectedIndex = optionPrinter.Items.Count - 1;
                 }
