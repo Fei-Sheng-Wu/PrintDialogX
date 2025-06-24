@@ -20,6 +20,18 @@ namespace PrintDialogX.Internal
         public static readonly Uri NetworkFaxPrinterSmallIcon = new Uri("/PrintDialogX;component/Resources/PrinterIcons/Network Fax - Small.png", UriKind.Relative);
         public static readonly Uri NetworkFaxDefaultPrinterSmallIcon = new Uri("/PrintDialogX;component/Resources/PrinterIcons/Network Fax (Default) - Small.png", UriKind.Relative);
 
+        public static PrintQueue GetDefaultPrinter()
+        {
+            try
+            {
+                return LocalPrintServer.GetDefaultPrintQueue();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public static bool RefreshPrinter(PrintQueue printer)
         {
             try
@@ -36,42 +48,50 @@ namespace PrintDialogX.Internal
         public static string GetPrinterStatus(PrintQueue printer)
         {
             RefreshPrinter(printer);
-            return printer.QueueStatus switch
+            try
             {
-                PrintQueueStatus.Busy => "Busy",
-                PrintQueueStatus.DoorOpen => "Door Open",
-                PrintQueueStatus.Error => "Error",
-                PrintQueueStatus.Initializing => "Initializing",
-                PrintQueueStatus.IOActive => "Exchanging Data",
-                PrintQueueStatus.ManualFeed => "Need Manual Feed",
-                PrintQueueStatus.NoToner => "No Toner",
-                PrintQueueStatus.Offline => "Offline",
-                PrintQueueStatus.OutOfMemory => "Out Of Memory",
-                PrintQueueStatus.OutputBinFull => "Output Bin Full",
-                PrintQueueStatus.PagePunt => "Page Punt",
-                PrintQueueStatus.PaperJam => "Paper Jam",
-                PrintQueueStatus.PaperOut => "Paper Out",
-                PrintQueueStatus.PaperProblem => "Paper Error",
-                PrintQueueStatus.Paused => "Paused",
-                PrintQueueStatus.PendingDeletion => "Deleting Job",
-                PrintQueueStatus.PowerSave => "Power Save",
-                PrintQueueStatus.Printing => "Printing",
-                PrintQueueStatus.Processing => "Processing",
-                PrintQueueStatus.ServerUnknown => "Server Unknown",
-                PrintQueueStatus.TonerLow => "Toner Low",
-                PrintQueueStatus.UserIntervention => "Need User Intervention",
-                PrintQueueStatus.Waiting => "Waiting",
-                PrintQueueStatus.WarmingUp => "Warming Up",
-                _ => "Ready",
-            };
+                return printer.QueueStatus switch
+                {
+                    PrintQueueStatus.Busy => "Busy",
+                    PrintQueueStatus.DoorOpen => "Door Open",
+                    PrintQueueStatus.Error => "Error",
+                    PrintQueueStatus.Initializing => "Initializing",
+                    PrintQueueStatus.IOActive => "Exchanging Data",
+                    PrintQueueStatus.ManualFeed => "Need Manual Feed",
+                    PrintQueueStatus.NoToner => "No Toner",
+                    PrintQueueStatus.Offline => "Offline",
+                    PrintQueueStatus.OutOfMemory => "Out Of Memory",
+                    PrintQueueStatus.OutputBinFull => "Output Bin Full",
+                    PrintQueueStatus.PagePunt => "Page Punt",
+                    PrintQueueStatus.PaperJam => "Paper Jam",
+                    PrintQueueStatus.PaperOut => "Paper Out",
+                    PrintQueueStatus.PaperProblem => "Paper Error",
+                    PrintQueueStatus.Paused => "Paused",
+                    PrintQueueStatus.PendingDeletion => "Deleting Job",
+                    PrintQueueStatus.PowerSave => "Power Save",
+                    PrintQueueStatus.Printing => "Printing",
+                    PrintQueueStatus.Processing => "Processing",
+                    PrintQueueStatus.ServerUnknown => "Server Unknown",
+                    PrintQueueStatus.TonerLow => "Toner Low",
+                    PrintQueueStatus.UserIntervention => "Need User Intervention",
+                    PrintQueueStatus.Waiting => "Waiting",
+                    PrintQueueStatus.WarmingUp => "Warming Up",
+                    _ => "Ready",
+                };
+            }
+            catch
+            {
+                return "Error";
+            }
         }
 
         public static System.Windows.Media.ImageSource GetPrinterIcon(PrintQueue printer, PrintQueueCollection fax, bool isSmallSized = false)
         {
             string printerType = fax.Any(x => x.FullName == printer.FullName) ? (printer.IsShared ? "NetworkFax" : "Fax") : "Normal";
-            printerType += LocalPrintServer.GetDefaultPrintQueue().FullName == printer.FullName ? "_Default" : string.Empty;
-            printerType += isSmallSized ? "_Small" : string.Empty;
-            return printerType switch
+
+            PrintQueue printerDefault = GetDefaultPrinter();
+            printerType += printerDefault != null && printerDefault.FullName == printer.FullName ? "_Default" : string.Empty;
+            return (printerType + (isSmallSized ? "_Small" : string.Empty)) switch
             {
                 "Normal" => new System.Windows.Media.Imaging.BitmapImage(NormalPrinterIcon),
                 "Normal_Small" => new System.Windows.Media.Imaging.BitmapImage(NormalPrinterSmallIcon),
