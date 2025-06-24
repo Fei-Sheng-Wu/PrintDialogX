@@ -1,15 +1,15 @@
-# PrintDialogX v2.1.4
+# PrintDialogX v2.1.5
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](https://docs.microsoft.com/en-us/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf)
-[![Nuget](https://img.shields.io/badge/Nuget-v2.1.4-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.4)
+[![Nuget](https://img.shields.io/badge/Nuget-v2.1.5-blue.svg?style=flat-square)](https://www.nuget.org/packages/PrintDialogX/2.1.5)
 [![Lincense](https://img.shields.io/badge/Lincense-MIT-orange.svg?style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 
 > A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.
 
 ## Preview
 
-![Screenshot](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/8c1c32120c5ba5ec3e6547d825c56a5b27fb5ee2/Screenshot.png)
+![Screenshot](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/Screenshot.png)
 
 ## Features
 
@@ -44,7 +44,7 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 ## Dependencies
 
 - .Net Framework ≥ 4.7.2
-- Wpf.Ui = 3.0.0
+- Wpf.Ui ≥ 4.0.0
 
 ## How to Use
 
