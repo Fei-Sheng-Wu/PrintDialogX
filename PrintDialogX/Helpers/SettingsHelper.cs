@@ -31,179 +31,179 @@ namespace PrintDialogX.Internal
 
         public static string GetPageSizeName(PageMediaSizeName? size)
         {
-            return size switch
+            switch (size)
             {
-                PageMediaSizeName.BusinessCard => "Business Card",
-                PageMediaSizeName.CreditCard => "Credit Card",
-                PageMediaSizeName.ISOA0 => "A0",
-                PageMediaSizeName.ISOA1 => "A1",
-                PageMediaSizeName.ISOA10 => "A10",
-                PageMediaSizeName.ISOA2 => "A2",
-                PageMediaSizeName.ISOA3 => "A3",
-                PageMediaSizeName.ISOA3Extra => "A3 Extra",
-                PageMediaSizeName.ISOA3Rotated => "A3 Rotated",
-                PageMediaSizeName.ISOA4 => "A4",
-                PageMediaSizeName.ISOA4Extra => "A4 Extra",
-                PageMediaSizeName.ISOA4Rotated => "A4 Rotated",
-                PageMediaSizeName.ISOA5 => "A5",
-                PageMediaSizeName.ISOA5Extra => "A5 Extra",
-                PageMediaSizeName.ISOA5Rotated => "A5 Rotated",
-                PageMediaSizeName.ISOA6 => "A6",
-                PageMediaSizeName.ISOA6Rotated => "A6 Rotated",
-                PageMediaSizeName.ISOA7 => "A7",
-                PageMediaSizeName.ISOA8 => "A8",
-                PageMediaSizeName.ISOA9 => "A9",
-                PageMediaSizeName.ISOB0 => "ISO B0",
-                PageMediaSizeName.ISOB1 => "ISO B1",
-                PageMediaSizeName.ISOB10 => "ISO B10",
-                PageMediaSizeName.ISOB2 => "ISO B2",
-                PageMediaSizeName.ISOB3 => "ISO B3",
-                PageMediaSizeName.ISOB4 => "ISO B4",
-                PageMediaSizeName.ISOB4Envelope => "ISO B4 Envelope",
-                PageMediaSizeName.ISOB5Envelope => "ISO B5 Envelope",
-                PageMediaSizeName.ISOB5Extra => "ISO B5 Extra",
-                PageMediaSizeName.ISOB7 => "ISO B7",
-                PageMediaSizeName.ISOB8 => "ISO B8",
-                PageMediaSizeName.ISOB9 => "ISO B9",
-                PageMediaSizeName.ISOC0 => "C0",
-                PageMediaSizeName.ISOC1 => "C1",
-                PageMediaSizeName.ISOC2 => "C2",
-                PageMediaSizeName.ISOC3 => "C3",
-                PageMediaSizeName.ISOC3Envelope => "C3 Envelope",
-                PageMediaSizeName.ISOC4 => "C4",
-                PageMediaSizeName.ISOC4Envelope => "C4 Envelope",
-                PageMediaSizeName.ISOC5 => "C5",
-                PageMediaSizeName.ISOC5Envelope => "C5 Envelope",
-                PageMediaSizeName.ISOC6 => "C6",
-                PageMediaSizeName.ISOC6C5Envelope => "C6C5 Envelope",
-                PageMediaSizeName.ISOC6Envelope => "C6 Envelope",
-                PageMediaSizeName.ISOC7 => "C7",
-                PageMediaSizeName.ISOC8 => "C8",
-                PageMediaSizeName.ISOC9 => "C9",
-                PageMediaSizeName.ISOC10 => "C10",
-                PageMediaSizeName.ISODLEnvelope => "DL Envelope",
-                PageMediaSizeName.ISODLEnvelopeRotated => "DL Envelope Rotated",
-                PageMediaSizeName.ISOSRA3 => "SRA3",
-                PageMediaSizeName.Japan2LPhoto => "2L Photo",
-                PageMediaSizeName.JapanChou3Envelope => "Chou 3 Envelope",
-                PageMediaSizeName.JapanChou3EnvelopeRotated => "Chou 3 Envelope Rotated",
-                PageMediaSizeName.JapanChou4Envelope => "Chou 4 Envelope",
-                PageMediaSizeName.JapanChou4EnvelopeRotated => "Chou 4 Envelope Rotated",
-                PageMediaSizeName.JapanDoubleHagakiPostcard => "Double Hagaki Postcard",
-                PageMediaSizeName.JapanDoubleHagakiPostcardRotated => "Double Hagaki Postcard Rotated",
-                PageMediaSizeName.JapanHagakiPostcard => "Hagaki Postcard",
-                PageMediaSizeName.JapanHagakiPostcardRotated => "Hagaki Postcard Rotated",
-                PageMediaSizeName.JapanKaku2Envelope => "Kaku 2 Envelope",
-                PageMediaSizeName.JapanKaku2EnvelopeRotated => "Kaku 2 Envelope Rotated",
-                PageMediaSizeName.JapanKaku3Envelope => "Kaku 3 Envelope",
-                PageMediaSizeName.JapanKaku3EnvelopeRotated => "Kaku 3 Envelope Rotated",
-                PageMediaSizeName.JapanLPhoto => "L Photo",
-                PageMediaSizeName.JapanQuadrupleHagakiPostcard => "Quadruple Hagaki Postcard",
-                PageMediaSizeName.JapanYou1Envelope => "You 1 Envelope",
-                PageMediaSizeName.JapanYou2Envelope => "You 2 Envelope",
-                PageMediaSizeName.JapanYou3Envelope => "You 3 Envelope",
-                PageMediaSizeName.JapanYou4Envelope => "You 4 Envelope",
-                PageMediaSizeName.JapanYou4EnvelopeRotated => "You 4 Envelope Rotated",
-                PageMediaSizeName.JapanYou6Envelope => "You 6 Envelope",
-                PageMediaSizeName.JapanYou6EnvelopeRotated => "You 6 Envelope Rotated",
-                PageMediaSizeName.JISB0 => "JIS B0",
-                PageMediaSizeName.JISB1 => "JIS B1",
-                PageMediaSizeName.JISB10 => "JIS B10",
-                PageMediaSizeName.JISB2 => "JIS B2",
-                PageMediaSizeName.JISB3 => "JIS B3",
-                PageMediaSizeName.JISB4 => "JIS B4",
-                PageMediaSizeName.JISB4Rotated => "JIS B4 Rotated",
-                PageMediaSizeName.JISB5 => "JIS B5",
-                PageMediaSizeName.JISB5Rotated => "JIS B5 Rotated",
-                PageMediaSizeName.JISB6 => "JIS B6",
-                PageMediaSizeName.JISB6Rotated => "JIS B6 Rotated",
-                PageMediaSizeName.JISB7 => "JIS B7",
-                PageMediaSizeName.JISB8 => "JIS B8",
-                PageMediaSizeName.JISB9 => "JIS B9",
-                PageMediaSizeName.NorthAmerica10x11 => "10 × 11 in",
-                PageMediaSizeName.NorthAmerica10x12 => "10 × 12 in",
-                PageMediaSizeName.NorthAmerica10x14 => "10 × 14 in",
-                PageMediaSizeName.NorthAmerica11x17 => "11 × 17 in",
-                PageMediaSizeName.NorthAmerica14x17 => "14 × 17 in",
-                PageMediaSizeName.NorthAmerica4x6 => "4 × 6 in",
-                PageMediaSizeName.NorthAmerica4x8 => "4 × 8 in",
-                PageMediaSizeName.NorthAmerica5x7 => "5 × 7 in",
-                PageMediaSizeName.NorthAmerica8x10 => "8 × 10 in",
-                PageMediaSizeName.NorthAmerica9x11 => "9 × 11 in",
-                PageMediaSizeName.NorthAmericaArchitectureASheet => "Architecture A Sheet",
-                PageMediaSizeName.NorthAmericaArchitectureBSheet => "Architecture B Sheet",
-                PageMediaSizeName.NorthAmericaArchitectureCSheet => "Architecture C Sheet",
-                PageMediaSizeName.NorthAmericaArchitectureDSheet => "Architecture D Sheet",
-                PageMediaSizeName.NorthAmericaArchitectureESheet => "Architecture E Sheet",
-                PageMediaSizeName.NorthAmericaCSheet => "C Sheet",
-                PageMediaSizeName.NorthAmericaDSheet => "D Sheet",
-                PageMediaSizeName.NorthAmericaESheet => "E Sheet",
-                PageMediaSizeName.NorthAmericaExecutive => "Executive",
-                PageMediaSizeName.NorthAmericaGermanLegalFanfold => "German Legal Fanfold",
-                PageMediaSizeName.NorthAmericaGermanStandardFanfold => "German Standard Fanfold",
-                PageMediaSizeName.NorthAmericaLegal => "Legal",
-                PageMediaSizeName.NorthAmericaLegalExtra => "Legal Extra",
-                PageMediaSizeName.NorthAmericaLetter => "Letter",
-                PageMediaSizeName.NorthAmericaLetterExtra => "Letter Extra",
-                PageMediaSizeName.NorthAmericaLetterPlus => "Letter Plus",
-                PageMediaSizeName.NorthAmericaLetterRotated => "Letter Rotated",
-                PageMediaSizeName.NorthAmericaMonarchEnvelope => "Monarch Envelope",
-                PageMediaSizeName.NorthAmericaNote => "Note",
-                PageMediaSizeName.NorthAmericaNumber10Envelope => "Number 10 Envelope",
-                PageMediaSizeName.NorthAmericaNumber10EnvelopeRotated => "Number 10 Envelope Rotated",
-                PageMediaSizeName.NorthAmericaNumber11Envelope => "Number 11 Envelope",
-                PageMediaSizeName.NorthAmericaNumber12Envelope => "Number 12 Envelope",
-                PageMediaSizeName.NorthAmericaNumber14Envelope => "Number 14 Envelope",
-                PageMediaSizeName.NorthAmericaNumber9Envelope => "Number 9 Envelope",
-                PageMediaSizeName.NorthAmericaPersonalEnvelope => "Personal Envelope",
-                PageMediaSizeName.NorthAmericaQuarto => "Quarto",
-                PageMediaSizeName.NorthAmericaStatement => "Statement",
-                PageMediaSizeName.NorthAmericaSuperA => "Super A",
-                PageMediaSizeName.NorthAmericaSuperB => "Super B",
-                PageMediaSizeName.NorthAmericaTabloid => "Tabloid",
-                PageMediaSizeName.NorthAmericaTabloidExtra => "Tabloid Extra",
-                PageMediaSizeName.OtherMetricA3Plus => "A3 Plus",
-                PageMediaSizeName.OtherMetricA4Plus => "A4 Plus",
-                PageMediaSizeName.OtherMetricFolio => "Folio",
-                PageMediaSizeName.OtherMetricInviteEnvelope => "Invite Envelope",
-                PageMediaSizeName.OtherMetricItalianEnvelope => "Italian Envelope",
-                PageMediaSizeName.PRC10Envelope => "#10 Envelope",
-                PageMediaSizeName.PRC10EnvelopeRotated => "#10 Envelope Rotated",
-                PageMediaSizeName.PRC16K => "16K",
-                PageMediaSizeName.PRC16KRotated => "16K Rotated",
-                PageMediaSizeName.PRC1Envelope => "#1 Envelope",
-                PageMediaSizeName.PRC1EnvelopeRotated => "#1 Envelope Rotated",
-                PageMediaSizeName.PRC2Envelope => "#2 Envelope",
-                PageMediaSizeName.PRC2EnvelopeRotated => "#2 Envelope Rotated",
-                PageMediaSizeName.PRC32K => "32K",
-                PageMediaSizeName.PRC32KBig => "32K Big",
-                PageMediaSizeName.PRC32KRotated => "32K Rotated",
-                PageMediaSizeName.PRC3Envelope => "#3 Envelope",
-                PageMediaSizeName.PRC3EnvelopeRotated => "#3 Envelope Rotated",
-                PageMediaSizeName.PRC4Envelope => "#4 Envelope",
-                PageMediaSizeName.PRC4EnvelopeRotated => "#4 Envelope Rotated",
-                PageMediaSizeName.PRC5Envelope => "#5 Envelope",
-                PageMediaSizeName.PRC5EnvelopeRotated => "#5 Envelope Rotated",
-                PageMediaSizeName.PRC6Envelope => "#6 Envelope",
-                PageMediaSizeName.PRC6EnvelopeRotated => "#6 Envelope Rotated",
-                PageMediaSizeName.PRC7Envelope => "#7 Envelope",
-                PageMediaSizeName.PRC7EnvelopeRotated => "#7 Envelope Rotated",
-                PageMediaSizeName.PRC8Envelope => "#8 Envelope",
-                PageMediaSizeName.PRC8EnvelopeRotated => "#8 Envelope Rotated",
-                PageMediaSizeName.PRC9Envelope => "#9 Envelope",
-                PageMediaSizeName.PRC9EnvelopeRotated => "#9 Envelope Rotated",
-                PageMediaSizeName.Roll04Inch => "4-inch Wide Roll",
-                PageMediaSizeName.Roll06Inch => "6-inch Wide Roll",
-                PageMediaSizeName.Roll08Inch => "8-inch Wide Roll",
-                PageMediaSizeName.Roll12Inch => "12-inch Wide Roll",
-                PageMediaSizeName.Roll15Inch => "15-inch Wide Roll",
-                PageMediaSizeName.Roll18Inch => "18-inch Wide Roll",
-                PageMediaSizeName.Roll22Inch => "22-inch Wide Roll",
-                PageMediaSizeName.Roll24Inch => "24-inch Wide Roll",
-                PageMediaSizeName.Roll30Inch => "30-inch Wide Roll",
-                PageMediaSizeName.Roll36Inch => "36-inch Wide Roll",
-                PageMediaSizeName.Roll54Inch => "54-inch Wide Roll",
-                _ => "Custom Size"
+                case PageMediaSizeName.BusinessCard: return "Business Card";
+                case PageMediaSizeName.CreditCard: return "Credit Card";
+                case PageMediaSizeName.ISOA0: return "A0";
+                case PageMediaSizeName.ISOA1: return "A1";
+                case PageMediaSizeName.ISOA10: return "A10";
+                case PageMediaSizeName.ISOA2: return "A2";
+                case PageMediaSizeName.ISOA3: return "A3";
+                case PageMediaSizeName.ISOA3Extra: return "A3 Extra";
+                case PageMediaSizeName.ISOA3Rotated: return "A3 Rotated";
+                case PageMediaSizeName.ISOA4: return "A4";
+                case PageMediaSizeName.ISOA4Extra: return "A4 Extra";
+                case PageMediaSizeName.ISOA4Rotated: return "A4 Rotated";
+                case PageMediaSizeName.ISOA5: return "A5";
+                case PageMediaSizeName.ISOA5Extra: return "A5 Extra";
+                case PageMediaSizeName.ISOA5Rotated: return "A5 Rotated";
+                case PageMediaSizeName.ISOA6: return "A6";
+                case PageMediaSizeName.ISOA6Rotated: return "A6 Rotated";
+                case PageMediaSizeName.ISOA7: return "A7";
+                case PageMediaSizeName.ISOA8: return "A8";
+                case PageMediaSizeName.ISOA9: return "A9";
+                case PageMediaSizeName.ISOB0: return "ISO B0";
+                case PageMediaSizeName.ISOB1: return "ISO B1";
+                case PageMediaSizeName.ISOB10: return "ISO B10";
+                case PageMediaSizeName.ISOB2: return "ISO B2";
+                case PageMediaSizeName.ISOB3: return "ISO B3";
+                case PageMediaSizeName.ISOB4: return "ISO B4";
+                case PageMediaSizeName.ISOB4Envelope: return "ISO B4 Envelope";
+                case PageMediaSizeName.ISOB5Envelope: return "ISO B5 Envelope";
+                case PageMediaSizeName.ISOB5Extra: return "ISO B5 Extra";
+                case PageMediaSizeName.ISOB7: return "ISO B7";
+                case PageMediaSizeName.ISOB8: return "ISO B8";
+                case PageMediaSizeName.ISOB9: return "ISO B9";
+                case PageMediaSizeName.ISOC0: return "C0";
+                case PageMediaSizeName.ISOC1: return "C1";
+                case PageMediaSizeName.ISOC2: return "C2";
+                case PageMediaSizeName.ISOC3: return "C3";
+                case PageMediaSizeName.ISOC3Envelope: return "C3 Envelope";
+                case PageMediaSizeName.ISOC4: return "C4";
+                case PageMediaSizeName.ISOC4Envelope: return "C4 Envelope";
+                case PageMediaSizeName.ISOC5: return "C5";
+                case PageMediaSizeName.ISOC5Envelope: return "C5 Envelope";
+                case PageMediaSizeName.ISOC6: return "C6";
+                case PageMediaSizeName.ISOC6C5Envelope: return "C6C5 Envelope";
+                case PageMediaSizeName.ISOC6Envelope: return "C6 Envelope";
+                case PageMediaSizeName.ISOC7: return "C7";
+                case PageMediaSizeName.ISOC8: return "C8";
+                case PageMediaSizeName.ISOC9: return "C9";
+                case PageMediaSizeName.ISOC10: return "C10";
+                case PageMediaSizeName.ISODLEnvelope: return "DL Envelope";
+                case PageMediaSizeName.ISODLEnvelopeRotated: return "DL Envelope Rotated";
+                case PageMediaSizeName.ISOSRA3: return "SRA3";
+                case PageMediaSizeName.Japan2LPhoto: return "2L Photo";
+                case PageMediaSizeName.JapanChou3Envelope: return "Chou 3 Envelope";
+                case PageMediaSizeName.JapanChou3EnvelopeRotated: return "Chou 3 Envelope Rotated";
+                case PageMediaSizeName.JapanChou4Envelope: return "Chou 4 Envelope";
+                case PageMediaSizeName.JapanChou4EnvelopeRotated: return "Chou 4 Envelope Rotated";
+                case PageMediaSizeName.JapanDoubleHagakiPostcard: return "Double Hagaki Postcard";
+                case PageMediaSizeName.JapanDoubleHagakiPostcardRotated: return "Double Hagaki Postcard Rotated";
+                case PageMediaSizeName.JapanHagakiPostcard: return "Hagaki Postcard";
+                case PageMediaSizeName.JapanHagakiPostcardRotated: return "Hagaki Postcard Rotated";
+                case PageMediaSizeName.JapanKaku2Envelope: return "Kaku 2 Envelope";
+                case PageMediaSizeName.JapanKaku2EnvelopeRotated: return "Kaku 2 Envelope Rotated";
+                case PageMediaSizeName.JapanKaku3Envelope: return "Kaku 3 Envelope";
+                case PageMediaSizeName.JapanKaku3EnvelopeRotated: return "Kaku 3 Envelope Rotated";
+                case PageMediaSizeName.JapanLPhoto: return "L Photo";
+                case PageMediaSizeName.JapanQuadrupleHagakiPostcard: return "Quadruple Hagaki Postcard";
+                case PageMediaSizeName.JapanYou1Envelope: return "You 1 Envelope";
+                case PageMediaSizeName.JapanYou2Envelope: return "You 2 Envelope";
+                case PageMediaSizeName.JapanYou3Envelope: return "You 3 Envelope";
+                case PageMediaSizeName.JapanYou4Envelope: return "You 4 Envelope";
+                case PageMediaSizeName.JapanYou4EnvelopeRotated: return "You 4 Envelope Rotated";
+                case PageMediaSizeName.JapanYou6Envelope: return "You 6 Envelope";
+                case PageMediaSizeName.JapanYou6EnvelopeRotated: return "You 6 Envelope Rotated";
+                case PageMediaSizeName.JISB0: return "JIS B0";
+                case PageMediaSizeName.JISB1: return "JIS B1";
+                case PageMediaSizeName.JISB10: return "JIS B10";
+                case PageMediaSizeName.JISB2: return "JIS B2";
+                case PageMediaSizeName.JISB3: return "JIS B3";
+                case PageMediaSizeName.JISB4: return "JIS B4";
+                case PageMediaSizeName.JISB4Rotated: return "JIS B4 Rotated";
+                case PageMediaSizeName.JISB5: return "JIS B5";
+                case PageMediaSizeName.JISB5Rotated: return "JIS B5 Rotated";
+                case PageMediaSizeName.JISB6: return "JIS B6";
+                case PageMediaSizeName.JISB6Rotated: return "JIS B6 Rotated";
+                case PageMediaSizeName.JISB7: return "JIS B7";
+                case PageMediaSizeName.JISB8: return "JIS B8";
+                case PageMediaSizeName.JISB9: return "JIS B9";
+                case PageMediaSizeName.NorthAmerica10x11: return "10 × 11 in";
+                case PageMediaSizeName.NorthAmerica10x12: return "10 × 12 in";
+                case PageMediaSizeName.NorthAmerica10x14: return "10 × 14 in";
+                case PageMediaSizeName.NorthAmerica11x17: return "11 × 17 in";
+                case PageMediaSizeName.NorthAmerica14x17: return "14 × 17 in";
+                case PageMediaSizeName.NorthAmerica4x6: return "4 × 6 in";
+                case PageMediaSizeName.NorthAmerica4x8: return "4 × 8 in";
+                case PageMediaSizeName.NorthAmerica5x7: return "5 × 7 in";
+                case PageMediaSizeName.NorthAmerica8x10: return "8 × 10 in";
+                case PageMediaSizeName.NorthAmerica9x11: return "9 × 11 in";
+                case PageMediaSizeName.NorthAmericaArchitectureASheet: return "Architecture A Sheet";
+                case PageMediaSizeName.NorthAmericaArchitectureBSheet: return "Architecture B Sheet";
+                case PageMediaSizeName.NorthAmericaArchitectureCSheet: return "Architecture C Sheet";
+                case PageMediaSizeName.NorthAmericaArchitectureDSheet: return "Architecture D Sheet";
+                case PageMediaSizeName.NorthAmericaArchitectureESheet: return "Architecture E Sheet";
+                case PageMediaSizeName.NorthAmericaCSheet: return "C Sheet";
+                case PageMediaSizeName.NorthAmericaDSheet: return "D Sheet";
+                case PageMediaSizeName.NorthAmericaESheet: return "E Sheet";
+                case PageMediaSizeName.NorthAmericaExecutive: return "Executive";
+                case PageMediaSizeName.NorthAmericaGermanLegalFanfold: return "German Legal Fanfold";
+                case PageMediaSizeName.NorthAmericaGermanStandardFanfold: return "German Standard Fanfold";
+                case PageMediaSizeName.NorthAmericaLegal: return "Legal";
+                case PageMediaSizeName.NorthAmericaLegalExtra: return "Legal Extra";
+                case PageMediaSizeName.NorthAmericaLetter: return "Letter";
+                case PageMediaSizeName.NorthAmericaLetterExtra: return "Letter Extra";
+                case PageMediaSizeName.NorthAmericaLetterPlus: return "Letter Plus";
+                case PageMediaSizeName.NorthAmericaLetterRotated: return "Letter Rotated";
+                case PageMediaSizeName.NorthAmericaMonarchEnvelope: return "Monarch Envelope";
+                case PageMediaSizeName.NorthAmericaNote: return "Note";
+                case PageMediaSizeName.NorthAmericaNumber10Envelope: return "Number 10 Envelope";
+                case PageMediaSizeName.NorthAmericaNumber10EnvelopeRotated: return "Number 10 Envelope Rotated";
+                case PageMediaSizeName.NorthAmericaNumber11Envelope: return "Number 11 Envelope";
+                case PageMediaSizeName.NorthAmericaNumber12Envelope: return "Number 12 Envelope";
+                case PageMediaSizeName.NorthAmericaNumber14Envelope: return "Number 14 Envelope";
+                case PageMediaSizeName.NorthAmericaNumber9Envelope: return "Number 9 Envelope";
+                case PageMediaSizeName.NorthAmericaPersonalEnvelope: return "Personal Envelope";
+                case PageMediaSizeName.NorthAmericaQuarto: return "Quarto";
+                case PageMediaSizeName.NorthAmericaStatement: return "Statement";
+                case PageMediaSizeName.NorthAmericaSuperA: return "Super A";
+                case PageMediaSizeName.NorthAmericaSuperB: return "Super B";
+                case PageMediaSizeName.NorthAmericaTabloid: return "Tabloid";
+                case PageMediaSizeName.NorthAmericaTabloidExtra: return "Tabloid Extra";
+                case PageMediaSizeName.OtherMetricA3Plus: return "A3 Plus";
+                case PageMediaSizeName.OtherMetricA4Plus: return "A4 Plus";
+                case PageMediaSizeName.OtherMetricFolio: return "Folio";
+                case PageMediaSizeName.OtherMetricInviteEnvelope: return "Invite Envelope";
+                case PageMediaSizeName.OtherMetricItalianEnvelope: return "Italian Envelope";
+                case PageMediaSizeName.PRC10Envelope: return "#10 Envelope";
+                case PageMediaSizeName.PRC10EnvelopeRotated: return "#10 Envelope Rotated";
+                case PageMediaSizeName.PRC16K: return "16K";
+                case PageMediaSizeName.PRC16KRotated: return "16K Rotated";
+                case PageMediaSizeName.PRC1Envelope: return "#1 Envelope";
+                case PageMediaSizeName.PRC1EnvelopeRotated: return "#1 Envelope Rotated";
+                case PageMediaSizeName.PRC2Envelope: return "#2 Envelope";
+                case PageMediaSizeName.PRC2EnvelopeRotated: return "#2 Envelope Rotated";
+                case PageMediaSizeName.PRC32K: return "32K";
+                case PageMediaSizeName.PRC32KBig: return "32K Big";
+                case PageMediaSizeName.PRC32KRotated: return "32K Rotated";
+                case PageMediaSizeName.PRC3Envelope: return "#3 Envelope";
+                case PageMediaSizeName.PRC3EnvelopeRotated: return "#3 Envelope Rotated";
+                case PageMediaSizeName.PRC4Envelope: return "#4 Envelope";
+                case PageMediaSizeName.PRC4EnvelopeRotated: return "#4 Envelope Rotated";
+                case PageMediaSizeName.PRC5Envelope: return "#5 Envelope";
+                case PageMediaSizeName.PRC5EnvelopeRotated: return "#5 Envelope Rotated";
+                case PageMediaSizeName.PRC6Envelope: return "#6 Envelope";
+                case PageMediaSizeName.PRC6EnvelopeRotated: return "#6 Envelope Rotated";
+                case PageMediaSizeName.PRC7Envelope: return "#7 Envelope";
+                case PageMediaSizeName.PRC7EnvelopeRotated: return "#7 Envelope Rotated";
+                case PageMediaSizeName.PRC8Envelope: return "#8 Envelope";
+                case PageMediaSizeName.PRC8EnvelopeRotated: return "#8 Envelope Rotated";
+                case PageMediaSizeName.PRC9Envelope: return "#9 Envelope";
+                case PageMediaSizeName.PRC9EnvelopeRotated: return "#9 Envelope Rotated";
+                case PageMediaSizeName.Roll04Inch: return "4-inch Wide Roll";
+                case PageMediaSizeName.Roll06Inch: return "6-inch Wide Roll";
+                case PageMediaSizeName.Roll08Inch: return "8-inch Wide Roll";
+                case PageMediaSizeName.Roll12Inch: return "12-inch Wide Roll";
+                case PageMediaSizeName.Roll15Inch: return "15-inch Wide Roll";
+                case PageMediaSizeName.Roll18Inch: return "18-inch Wide Roll";
+                case PageMediaSizeName.Roll22Inch: return "22-inch Wide Roll";
+                case PageMediaSizeName.Roll24Inch: return "24-inch Wide Roll";
+                case PageMediaSizeName.Roll30Inch: return "30-inch Wide Roll";
+                case PageMediaSizeName.Roll36Inch: return "36-inch Wide Roll";
+                case PageMediaSizeName.Roll54Inch: return "54-inch Wide Roll";
+                default: return "Custom Size";
             };
         }
 
@@ -214,37 +214,37 @@ namespace PrintDialogX.Internal
 
         public static string GetPageTypeName(PageMediaType type)
         {
-            return type switch
+            switch (type)
             {
-                PageMediaType.Archival => "Archival",
-                PageMediaType.AutoSelect => "Auto Select",
-                PageMediaType.BackPrintFilm => "Back Print Film",
-                PageMediaType.Bond => "Bond",
-                PageMediaType.CardStock => "Card Stock",
-                PageMediaType.Continuous => "Continuous",
-                PageMediaType.EnvelopePlain => "Envelope Plain",
-                PageMediaType.EnvelopeWindow => "Envelope Window",
-                PageMediaType.Fabric => "Fabric",
-                PageMediaType.HighResolution => "High Resolution",
-                PageMediaType.Label => "Label",
-                PageMediaType.MultiLayerForm => "Multi Layer Form",
-                PageMediaType.MultiPartForm => "Multi Part Form",
-                PageMediaType.Photographic => "Photographic",
-                PageMediaType.PhotographicFilm => "Photographic Film",
-                PageMediaType.PhotographicGlossy => "Photographic Glossy",
-                PageMediaType.PhotographicHighGloss => "Photographic High Gloss",
-                PageMediaType.PhotographicMatte => "Photographic Matte",
-                PageMediaType.PhotographicSatin => "Photographic Satin",
-                PageMediaType.PhotographicSemiGloss => "Photographic Semi Gloss",
-                PageMediaType.Plain => "Plain",
-                PageMediaType.Screen => "Screen",
-                PageMediaType.ScreenPaged => "Screen Paged",
-                PageMediaType.Stationery => "Stationery",
-                PageMediaType.TabStockFull => "Tab Stock Full",
-                PageMediaType.TabStockPreCut => "Tab Stock Pre Cut",
-                PageMediaType.Transparency => "Transparency",
-                PageMediaType.TShirtTransfer => "T-shirt Transfer",
-                _ => "Unknown Type"
+                case PageMediaType.Archival: return "Archival";
+                case PageMediaType.AutoSelect: return "Auto Select";
+                case PageMediaType.BackPrintFilm: return "Back Print Film";
+                case PageMediaType.Bond: return "Bond";
+                case PageMediaType.CardStock: return "Card Stock";
+                case PageMediaType.Continuous: return "Continuous";
+                case PageMediaType.EnvelopePlain: return "Envelope Plain";
+                case PageMediaType.EnvelopeWindow: return "Envelope Window";
+                case PageMediaType.Fabric: return "Fabric";
+                case PageMediaType.HighResolution: return "High Resolution";
+                case PageMediaType.Label: return "Label";
+                case PageMediaType.MultiLayerForm: return "Multi Layer Form";
+                case PageMediaType.MultiPartForm: return "Multi Part Form";
+                case PageMediaType.Photographic: return "Photographic";
+                case PageMediaType.PhotographicFilm: return "Photographic Film";
+                case PageMediaType.PhotographicGlossy: return "Photographic Glossy";
+                case PageMediaType.PhotographicHighGloss: return "Photographic High Gloss";
+                case PageMediaType.PhotographicMatte: return "Photographic Matte";
+                case PageMediaType.PhotographicSatin: return "Photographic Satin";
+                case PageMediaType.PhotographicSemiGloss: return "Photographic Semi Gloss";
+                case PageMediaType.Plain: return "Plain";
+                case PageMediaType.Screen: return "Screen";
+                case PageMediaType.ScreenPaged: return "Screen Paged";
+                case PageMediaType.Stationery: return "Stationery";
+                case PageMediaType.TabStockFull: return "Tab Stock Full";
+                case PageMediaType.TabStockPreCut: return "Tab Stock Pre Cut";
+                case PageMediaType.Transparency: return "Transparency";
+                case PageMediaType.TShirtTransfer: return "T-shirt Transfer";
+                default: return "Unknown Type";
             };
         }
 
@@ -255,193 +255,193 @@ namespace PrintDialogX.Internal
 
         public static string GetInputBinName(InputBin inputBin)
         {
-            return inputBin switch
+            switch (inputBin)
             {
-                InputBin.AutoSelect => "Auto Select",
-                InputBin.AutoSheetFeeder => "Auto Sheet Feeder",
-                InputBin.Cassette => "Cassette",
-                InputBin.Manual => "Manual",
-                InputBin.Tractor => "Tractor",
-                _ => "Unknown Input Bin"
+                case InputBin.AutoSelect: return "Auto Select";
+                case InputBin.AutoSheetFeeder: return "Auto Sheet Feeder";
+                case InputBin.Cassette: return "Cassette";
+                case InputBin.Manual: return "Manual";
+                case InputBin.Tractor: return "Tractor";
+                default: return "Unknown Input Bin";
             };
         }
 
         public static PageMediaSizeName GetPageSizeName(string size)
         {
             string sizeAdjusted = (size.StartsWith("psk:") ? size.Remove(0, 4) : size).ToLower();
-            return sizeAdjusted switch
+            switch (sizeAdjusted)
             {
-                "businesscard" => PageMediaSizeName.BusinessCard,
-                "creditcard" => PageMediaSizeName.CreditCard,
-                "isoa0" => PageMediaSizeName.ISOA0,
-                "isoa1" => PageMediaSizeName.ISOA1,
-                "isoa10" => PageMediaSizeName.ISOA10,
-                "isoa2" => PageMediaSizeName.ISOA2,
-                "isoa3" => PageMediaSizeName.ISOA3,
-                "isoa3extra" => PageMediaSizeName.ISOA3Extra,
-                "isoa3rotated" => PageMediaSizeName.ISOA3Rotated,
-                "isoa4" => PageMediaSizeName.ISOA4,
-                "isoa4extra" => PageMediaSizeName.ISOA4Extra,
-                "isoa4rotated" => PageMediaSizeName.ISOA4Rotated,
-                "isoa5" => PageMediaSizeName.ISOA5,
-                "isoa5extra" => PageMediaSizeName.ISOA5Extra,
-                "isoa5rotated" => PageMediaSizeName.ISOA5Rotated,
-                "isoa6" => PageMediaSizeName.ISOA6,
-                "isoa6rotated" => PageMediaSizeName.ISOA6Rotated,
-                "isoa7" => PageMediaSizeName.ISOA7,
-                "isoa8" => PageMediaSizeName.ISOA8,
-                "isoa9" => PageMediaSizeName.ISOA9,
-                "isob0" => PageMediaSizeName.ISOB0,
-                "isob1" => PageMediaSizeName.ISOB1,
-                "isob10" => PageMediaSizeName.ISOB10,
-                "isob2" => PageMediaSizeName.ISOB2,
-                "isob3" => PageMediaSizeName.ISOB3,
-                "isob4" => PageMediaSizeName.ISOB4,
-                "isob4envelope" => PageMediaSizeName.ISOB4Envelope,
-                "isob5envelope" => PageMediaSizeName.ISOB5Envelope,
-                "isob5extra" => PageMediaSizeName.ISOB5Extra,
-                "isob7" => PageMediaSizeName.ISOB7,
-                "isob8" => PageMediaSizeName.ISOB8,
-                "isob9" => PageMediaSizeName.ISOB9,
-                "isoc0" => PageMediaSizeName.ISOC0,
-                "isoc1" => PageMediaSizeName.ISOC1,
-                "isoc2" => PageMediaSizeName.ISOC2,
-                "isoc3" => PageMediaSizeName.ISOC3,
-                "isoc3envelope" => PageMediaSizeName.ISOC3Envelope,
-                "isoc4" => PageMediaSizeName.ISOC4,
-                "isoc4envelope" => PageMediaSizeName.ISOC4Envelope,
-                "isoc5" => PageMediaSizeName.ISOC5,
-                "isoc5envelope" => PageMediaSizeName.ISOC5Envelope,
-                "isoc6" => PageMediaSizeName.ISOC6,
-                "isoc6c5envelope" => PageMediaSizeName.ISOC6C5Envelope,
-                "isoc6envelope" => PageMediaSizeName.ISOC6Envelope,
-                "isoc7" => PageMediaSizeName.ISOC7,
-                "isoc8" => PageMediaSizeName.ISOC8,
-                "isoc9" => PageMediaSizeName.ISOC9,
-                "isoc10" => PageMediaSizeName.ISOC10,
-                "isodlenvelope" => PageMediaSizeName.ISODLEnvelope,
-                "isodlenveloperotated" => PageMediaSizeName.ISODLEnvelopeRotated,
-                "isosra3" => PageMediaSizeName.ISOSRA3,
-                "japan2lphoto" => PageMediaSizeName.Japan2LPhoto,
-                "japanchou3envelope" => PageMediaSizeName.JapanChou3Envelope,
-                "japanchou3enveloperotated" => PageMediaSizeName.JapanChou3EnvelopeRotated,
-                "japanchou4envelope" => PageMediaSizeName.JapanChou4Envelope,
-                "japanchou4enveloperotated" => PageMediaSizeName.JapanChou4EnvelopeRotated,
-                "japandoublehagakipostcard" => PageMediaSizeName.JapanDoubleHagakiPostcard,
-                "japandoublehagakipostcardrotated" => PageMediaSizeName.JapanDoubleHagakiPostcardRotated,
-                "japanhagakipostcard" => PageMediaSizeName.JapanHagakiPostcard,
-                "japanhagakipostcardrotated" => PageMediaSizeName.JapanHagakiPostcardRotated,
-                "japankaku2envelope" => PageMediaSizeName.JapanKaku2Envelope,
-                "japankaku2enveloperotated" => PageMediaSizeName.JapanKaku2EnvelopeRotated,
-                "japankaku3envelope" => PageMediaSizeName.JapanKaku3Envelope,
-                "japankaku3enveloperotated" => PageMediaSizeName.JapanKaku3EnvelopeRotated,
-                "japanlphoto" => PageMediaSizeName.JapanLPhoto,
-                "japanquadruplehagakipostcard" => PageMediaSizeName.JapanQuadrupleHagakiPostcard,
-                "japanyou1envelope" => PageMediaSizeName.JapanYou1Envelope,
-                "japanyou2envelope" => PageMediaSizeName.JapanYou2Envelope,
-                "japanyou3envelope" => PageMediaSizeName.JapanYou3Envelope,
-                "japanyou4envelope" => PageMediaSizeName.JapanYou4Envelope,
-                "japanyou4enveloperotated" => PageMediaSizeName.JapanYou4EnvelopeRotated,
-                "japanyou6envelope" => PageMediaSizeName.JapanYou6Envelope,
-                "japanyou6enveloperotated" => PageMediaSizeName.JapanYou6EnvelopeRotated,
-                "jisb0" => PageMediaSizeName.JISB0,
-                "jisb1" => PageMediaSizeName.JISB1,
-                "jisb10" => PageMediaSizeName.JISB10,
-                "jisb2" => PageMediaSizeName.JISB2,
-                "jisb3" => PageMediaSizeName.JISB3,
-                "jisb4" => PageMediaSizeName.JISB4,
-                "jisb4rotated" => PageMediaSizeName.JISB4Rotated,
-                "jisb5" => PageMediaSizeName.JISB5,
-                "jisb5rotated" => PageMediaSizeName.JISB5Rotated,
-                "jisb6" => PageMediaSizeName.JISB6,
-                "jisb6rotated" => PageMediaSizeName.JISB6Rotated,
-                "jisb7" => PageMediaSizeName.JISB7,
-                "jisb8" => PageMediaSizeName.JISB8,
-                "jisb9" => PageMediaSizeName.JISB9,
-                "northamerica10x11" => PageMediaSizeName.NorthAmerica10x11,
-                "northamerica10x12" => PageMediaSizeName.NorthAmerica10x12,
-                "northamerica10x14" => PageMediaSizeName.NorthAmerica10x14,
-                "northamerica11x17" => PageMediaSizeName.NorthAmerica11x17,
-                "northamerica14x17" => PageMediaSizeName.NorthAmerica14x17,
-                "northamerica4x6" => PageMediaSizeName.NorthAmerica4x6,
-                "northamerica4x8" => PageMediaSizeName.NorthAmerica4x8,
-                "northamerica5x7" => PageMediaSizeName.NorthAmerica5x7,
-                "northamerica8x10" => PageMediaSizeName.NorthAmerica8x10,
-                "northamerica9x11" => PageMediaSizeName.NorthAmerica9x11,
-                "northamericaarchitectureasheet" => PageMediaSizeName.NorthAmericaArchitectureASheet,
-                "northamericaarchitecturebsheet" => PageMediaSizeName.NorthAmericaArchitectureBSheet,
-                "northamericaarchitecturecsheet" => PageMediaSizeName.NorthAmericaArchitectureCSheet,
-                "northamericaarchitecturedsheet" => PageMediaSizeName.NorthAmericaArchitectureDSheet,
-                "northamericaarchitectureesheet" => PageMediaSizeName.NorthAmericaArchitectureESheet,
-                "northamericacsheet" => PageMediaSizeName.NorthAmericaCSheet,
-                "northamericadsheet" => PageMediaSizeName.NorthAmericaDSheet,
-                "northamericaesheet" => PageMediaSizeName.NorthAmericaESheet,
-                "northamericaexecutive" => PageMediaSizeName.NorthAmericaExecutive,
-                "northamericagermanlegalfanfold" => PageMediaSizeName.NorthAmericaGermanLegalFanfold,
-                "northamericagermanstandardfanfold" => PageMediaSizeName.NorthAmericaGermanStandardFanfold,
-                "northamericalegal" => PageMediaSizeName.NorthAmericaLegal,
-                "northamericalegalextra" => PageMediaSizeName.NorthAmericaLegalExtra,
-                "northamericaletter" => PageMediaSizeName.NorthAmericaLetter,
-                "northamericaletterextra" => PageMediaSizeName.NorthAmericaLetterExtra,
-                "northamericaletterplus" => PageMediaSizeName.NorthAmericaLetterPlus,
-                "northamericaletterrotated" => PageMediaSizeName.NorthAmericaLetterRotated,
-                "northamericamonarchenvelope" => PageMediaSizeName.NorthAmericaMonarchEnvelope,
-                "northamericanote" => PageMediaSizeName.NorthAmericaNote,
-                "northamericanumber10envelope" => PageMediaSizeName.NorthAmericaNumber10Envelope,
-                "northamericanumber10enveloperotated" => PageMediaSizeName.NorthAmericaNumber10EnvelopeRotated,
-                "northamericanumber11envelope" => PageMediaSizeName.NorthAmericaNumber11Envelope,
-                "northamericanumber12envelope" => PageMediaSizeName.NorthAmericaNumber12Envelope,
-                "northamericanumber14envelope" => PageMediaSizeName.NorthAmericaNumber14Envelope,
-                "northamericanumber9envelope" => PageMediaSizeName.NorthAmericaNumber9Envelope,
-                "northamericapersonalenvelope" => PageMediaSizeName.NorthAmericaPersonalEnvelope,
-                "northamericaquarto" => PageMediaSizeName.NorthAmericaQuarto,
-                "northamericastatement" => PageMediaSizeName.NorthAmericaStatement,
-                "northamericasupera" => PageMediaSizeName.NorthAmericaSuperA,
-                "northamericasuperb" => PageMediaSizeName.NorthAmericaSuperB,
-                "northamericatabloid" => PageMediaSizeName.NorthAmericaTabloid,
-                "northamericatabloidextra" => PageMediaSizeName.NorthAmericaTabloidExtra,
-                "othermetrica3plus" => PageMediaSizeName.OtherMetricA3Plus,
-                "othermetrica4plus" => PageMediaSizeName.OtherMetricA4Plus,
-                "othermetricfolio" => PageMediaSizeName.OtherMetricFolio,
-                "othermetricinviteenvelope" => PageMediaSizeName.OtherMetricInviteEnvelope,
-                "othermetricitalianenvelope" => PageMediaSizeName.OtherMetricItalianEnvelope,
-                "prc10envelope" => PageMediaSizeName.PRC10Envelope,
-                "prc10enveloperotated" => PageMediaSizeName.PRC10EnvelopeRotated,
-                "prc16k" => PageMediaSizeName.PRC16K,
-                "prc16krotated" => PageMediaSizeName.PRC16KRotated,
-                "prc1envelope" => PageMediaSizeName.PRC1Envelope,
-                "prc1enveloperotated" => PageMediaSizeName.PRC1EnvelopeRotated,
-                "prc2envelope" => PageMediaSizeName.PRC2Envelope,
-                "prc2enveloperotated" => PageMediaSizeName.PRC2EnvelopeRotated,
-                "prc32k" => PageMediaSizeName.PRC32K,
-                "prc32kbig" => PageMediaSizeName.PRC32KBig,
-                "prc32krotated" => PageMediaSizeName.PRC32KRotated,
-                "prc3envelope" => PageMediaSizeName.PRC3Envelope,
-                "prc3enveloperotated" => PageMediaSizeName.PRC3EnvelopeRotated,
-                "prc4envelope" => PageMediaSizeName.PRC4Envelope,
-                "prc4enveloperotated" => PageMediaSizeName.PRC4EnvelopeRotated,
-                "prc5envelope" => PageMediaSizeName.PRC5Envelope,
-                "prc5enveloperotated" => PageMediaSizeName.PRC5EnvelopeRotated,
-                "prc6envelope" => PageMediaSizeName.PRC6Envelope,
-                "prc6enveloperotated" => PageMediaSizeName.PRC6EnvelopeRotated,
-                "prc7envelope" => PageMediaSizeName.PRC7Envelope,
-                "prc7enveloperotated" => PageMediaSizeName.PRC7EnvelopeRotated,
-                "prc8envelope" => PageMediaSizeName.PRC8Envelope,
-                "prc8enveloperotated" => PageMediaSizeName.PRC8EnvelopeRotated,
-                "prc9envelope" => PageMediaSizeName.PRC9Envelope,
-                "prc9enveloperotated" => PageMediaSizeName.PRC9EnvelopeRotated,
-                "roll04inch" => PageMediaSizeName.Roll04Inch,
-                "roll06inch" => PageMediaSizeName.Roll06Inch,
-                "roll08inch" => PageMediaSizeName.Roll08Inch,
-                "roll12inch" => PageMediaSizeName.Roll12Inch,
-                "roll15inch" => PageMediaSizeName.Roll15Inch,
-                "roll18inch" => PageMediaSizeName.Roll18Inch,
-                "roll22inch" => PageMediaSizeName.Roll22Inch,
-                "roll24inch" => PageMediaSizeName.Roll24Inch,
-                "roll30inch" => PageMediaSizeName.Roll30Inch,
-                "roll36inch" => PageMediaSizeName.Roll36Inch,
-                "roll54inch" => PageMediaSizeName.Roll54Inch,
-                _ => PageMediaSizeName.Unknown
+                case "businesscard": return PageMediaSizeName.BusinessCard;
+                case "creditcard": return PageMediaSizeName.CreditCard;
+                case "isoa0": return PageMediaSizeName.ISOA0;
+                case "isoa1": return PageMediaSizeName.ISOA1;
+                case "isoa10": return PageMediaSizeName.ISOA10;
+                case "isoa2": return PageMediaSizeName.ISOA2;
+                case "isoa3": return PageMediaSizeName.ISOA3;
+                case "isoa3extra": return PageMediaSizeName.ISOA3Extra;
+                case "isoa3rotated": return PageMediaSizeName.ISOA3Rotated;
+                case "isoa4": return PageMediaSizeName.ISOA4;
+                case "isoa4extra": return PageMediaSizeName.ISOA4Extra;
+                case "isoa4rotated": return PageMediaSizeName.ISOA4Rotated;
+                case "isoa5": return PageMediaSizeName.ISOA5;
+                case "isoa5extra": return PageMediaSizeName.ISOA5Extra;
+                case "isoa5rotated": return PageMediaSizeName.ISOA5Rotated;
+                case "isoa6": return PageMediaSizeName.ISOA6;
+                case "isoa6rotated": return PageMediaSizeName.ISOA6Rotated;
+                case "isoa7": return PageMediaSizeName.ISOA7;
+                case "isoa8": return PageMediaSizeName.ISOA8;
+                case "isoa9": return PageMediaSizeName.ISOA9;
+                case "isob0": return PageMediaSizeName.ISOB0;
+                case "isob1": return PageMediaSizeName.ISOB1;
+                case "isob10": return PageMediaSizeName.ISOB10;
+                case "isob2": return PageMediaSizeName.ISOB2;
+                case "isob3": return PageMediaSizeName.ISOB3;
+                case "isob4": return PageMediaSizeName.ISOB4;
+                case "isob4envelope": return PageMediaSizeName.ISOB4Envelope;
+                case "isob5envelope": return PageMediaSizeName.ISOB5Envelope;
+                case "isob5extra": return PageMediaSizeName.ISOB5Extra;
+                case "isob7": return PageMediaSizeName.ISOB7;
+                case "isob8": return PageMediaSizeName.ISOB8;
+                case "isob9": return PageMediaSizeName.ISOB9;
+                case "isoc0": return PageMediaSizeName.ISOC0;
+                case "isoc1": return PageMediaSizeName.ISOC1;
+                case "isoc2": return PageMediaSizeName.ISOC2;
+                case "isoc3": return PageMediaSizeName.ISOC3;
+                case "isoc3envelope": return PageMediaSizeName.ISOC3Envelope;
+                case "isoc4": return PageMediaSizeName.ISOC4;
+                case "isoc4envelope": return PageMediaSizeName.ISOC4Envelope;
+                case "isoc5": return PageMediaSizeName.ISOC5;
+                case "isoc5envelope": return PageMediaSizeName.ISOC5Envelope;
+                case "isoc6": return PageMediaSizeName.ISOC6;
+                case "isoc6c5envelope": return PageMediaSizeName.ISOC6C5Envelope;
+                case "isoc6envelope": return PageMediaSizeName.ISOC6Envelope;
+                case "isoc7": return PageMediaSizeName.ISOC7;
+                case "isoc8": return PageMediaSizeName.ISOC8;
+                case "isoc9": return PageMediaSizeName.ISOC9;
+                case "isoc10": return PageMediaSizeName.ISOC10;
+                case "isodlenvelope": return PageMediaSizeName.ISODLEnvelope;
+                case "isodlenveloperotated": return PageMediaSizeName.ISODLEnvelopeRotated;
+                case "isosra3": return PageMediaSizeName.ISOSRA3;
+                case "japan2lphoto": return PageMediaSizeName.Japan2LPhoto;
+                case "japanchou3envelope": return PageMediaSizeName.JapanChou3Envelope;
+                case "japanchou3enveloperotated": return PageMediaSizeName.JapanChou3EnvelopeRotated;
+                case "japanchou4envelope": return PageMediaSizeName.JapanChou4Envelope;
+                case "japanchou4enveloperotated": return PageMediaSizeName.JapanChou4EnvelopeRotated;
+                case "japandoublehagakipostcard": return PageMediaSizeName.JapanDoubleHagakiPostcard;
+                case "japandoublehagakipostcardrotated": return PageMediaSizeName.JapanDoubleHagakiPostcardRotated;
+                case "japanhagakipostcard": return PageMediaSizeName.JapanHagakiPostcard;
+                case "japanhagakipostcardrotated": return PageMediaSizeName.JapanHagakiPostcardRotated;
+                case "japankaku2envelope": return PageMediaSizeName.JapanKaku2Envelope;
+                case "japankaku2enveloperotated": return PageMediaSizeName.JapanKaku2EnvelopeRotated;
+                case "japankaku3envelope": return PageMediaSizeName.JapanKaku3Envelope;
+                case "japankaku3enveloperotated": return PageMediaSizeName.JapanKaku3EnvelopeRotated;
+                case "japanlphoto": return PageMediaSizeName.JapanLPhoto;
+                case "japanquadruplehagakipostcard": return PageMediaSizeName.JapanQuadrupleHagakiPostcard;
+                case "japanyou1envelope": return PageMediaSizeName.JapanYou1Envelope;
+                case "japanyou2envelope": return PageMediaSizeName.JapanYou2Envelope;
+                case "japanyou3envelope": return PageMediaSizeName.JapanYou3Envelope;
+                case "japanyou4envelope": return PageMediaSizeName.JapanYou4Envelope;
+                case "japanyou4enveloperotated": return PageMediaSizeName.JapanYou4EnvelopeRotated;
+                case "japanyou6envelope": return PageMediaSizeName.JapanYou6Envelope;
+                case "japanyou6enveloperotated": return PageMediaSizeName.JapanYou6EnvelopeRotated;
+                case "jisb0": return PageMediaSizeName.JISB0;
+                case "jisb1": return PageMediaSizeName.JISB1;
+                case "jisb10": return PageMediaSizeName.JISB10;
+                case "jisb2": return PageMediaSizeName.JISB2;
+                case "jisb3": return PageMediaSizeName.JISB3;
+                case "jisb4": return PageMediaSizeName.JISB4;
+                case "jisb4rotated": return PageMediaSizeName.JISB4Rotated;
+                case "jisb5": return PageMediaSizeName.JISB5;
+                case "jisb5rotated": return PageMediaSizeName.JISB5Rotated;
+                case "jisb6": return PageMediaSizeName.JISB6;
+                case "jisb6rotated": return PageMediaSizeName.JISB6Rotated;
+                case "jisb7": return PageMediaSizeName.JISB7;
+                case "jisb8": return PageMediaSizeName.JISB8;
+                case "jisb9": return PageMediaSizeName.JISB9;
+                case "northamerica10x11": return PageMediaSizeName.NorthAmerica10x11;
+                case "northamerica10x12": return PageMediaSizeName.NorthAmerica10x12;
+                case "northamerica10x14": return PageMediaSizeName.NorthAmerica10x14;
+                case "northamerica11x17": return PageMediaSizeName.NorthAmerica11x17;
+                case "northamerica14x17": return PageMediaSizeName.NorthAmerica14x17;
+                case "northamerica4x6": return PageMediaSizeName.NorthAmerica4x6;
+                case "northamerica4x8": return PageMediaSizeName.NorthAmerica4x8;
+                case "northamerica5x7": return PageMediaSizeName.NorthAmerica5x7;
+                case "northamerica8x10": return PageMediaSizeName.NorthAmerica8x10;
+                case "northamerica9x11": return PageMediaSizeName.NorthAmerica9x11;
+                case "northamericaarchitectureasheet": return PageMediaSizeName.NorthAmericaArchitectureASheet;
+                case "northamericaarchitecturebsheet": return PageMediaSizeName.NorthAmericaArchitectureBSheet;
+                case "northamericaarchitecturecsheet": return PageMediaSizeName.NorthAmericaArchitectureCSheet;
+                case "northamericaarchitecturedsheet": return PageMediaSizeName.NorthAmericaArchitectureDSheet;
+                case "northamericaarchitectureesheet": return PageMediaSizeName.NorthAmericaArchitectureESheet;
+                case "northamericacsheet": return PageMediaSizeName.NorthAmericaCSheet;
+                case "northamericadsheet": return PageMediaSizeName.NorthAmericaDSheet;
+                case "northamericaesheet": return PageMediaSizeName.NorthAmericaESheet;
+                case "northamericaexecutive": return PageMediaSizeName.NorthAmericaExecutive;
+                case "northamericagermanlegalfanfold": return PageMediaSizeName.NorthAmericaGermanLegalFanfold;
+                case "northamericagermanstandardfanfold": return PageMediaSizeName.NorthAmericaGermanStandardFanfold;
+                case "northamericalegal": return PageMediaSizeName.NorthAmericaLegal;
+                case "northamericalegalextra": return PageMediaSizeName.NorthAmericaLegalExtra;
+                case "northamericaletter": return PageMediaSizeName.NorthAmericaLetter;
+                case "northamericaletterextra": return PageMediaSizeName.NorthAmericaLetterExtra;
+                case "northamericaletterplus": return PageMediaSizeName.NorthAmericaLetterPlus;
+                case "northamericaletterrotated": return PageMediaSizeName.NorthAmericaLetterRotated;
+                case "northamericamonarchenvelope": return PageMediaSizeName.NorthAmericaMonarchEnvelope;
+                case "northamericanote": return PageMediaSizeName.NorthAmericaNote;
+                case "northamericanumber10envelope": return PageMediaSizeName.NorthAmericaNumber10Envelope;
+                case "northamericanumber10enveloperotated": return PageMediaSizeName.NorthAmericaNumber10EnvelopeRotated;
+                case "northamericanumber11envelope": return PageMediaSizeName.NorthAmericaNumber11Envelope;
+                case "northamericanumber12envelope": return PageMediaSizeName.NorthAmericaNumber12Envelope;
+                case "northamericanumber14envelope": return PageMediaSizeName.NorthAmericaNumber14Envelope;
+                case "northamericanumber9envelope": return PageMediaSizeName.NorthAmericaNumber9Envelope;
+                case "northamericapersonalenvelope": return PageMediaSizeName.NorthAmericaPersonalEnvelope;
+                case "northamericaquarto": return PageMediaSizeName.NorthAmericaQuarto;
+                case "northamericastatement": return PageMediaSizeName.NorthAmericaStatement;
+                case "northamericasupera": return PageMediaSizeName.NorthAmericaSuperA;
+                case "northamericasuperb": return PageMediaSizeName.NorthAmericaSuperB;
+                case "northamericatabloid": return PageMediaSizeName.NorthAmericaTabloid;
+                case "northamericatabloidextra": return PageMediaSizeName.NorthAmericaTabloidExtra;
+                case "othermetrica3plus": return PageMediaSizeName.OtherMetricA3Plus;
+                case "othermetrica4plus": return PageMediaSizeName.OtherMetricA4Plus;
+                case "othermetricfolio": return PageMediaSizeName.OtherMetricFolio;
+                case "othermetricinviteenvelope": return PageMediaSizeName.OtherMetricInviteEnvelope;
+                case "othermetricitalianenvelope": return PageMediaSizeName.OtherMetricItalianEnvelope;
+                case "prc10envelope": return PageMediaSizeName.PRC10Envelope;
+                case "prc10enveloperotated": return PageMediaSizeName.PRC10EnvelopeRotated;
+                case "prc16k": return PageMediaSizeName.PRC16K;
+                case "prc16krotated": return PageMediaSizeName.PRC16KRotated;
+                case "prc1envelope": return PageMediaSizeName.PRC1Envelope;
+                case "prc1enveloperotated": return PageMediaSizeName.PRC1EnvelopeRotated;
+                case "prc2envelope": return PageMediaSizeName.PRC2Envelope;
+                case "prc2enveloperotated": return PageMediaSizeName.PRC2EnvelopeRotated;
+                case "prc32k": return PageMediaSizeName.PRC32K;
+                case "prc32kbig": return PageMediaSizeName.PRC32KBig;
+                case "prc32krotated": return PageMediaSizeName.PRC32KRotated;
+                case "prc3envelope": return PageMediaSizeName.PRC3Envelope;
+                case "prc3enveloperotated": return PageMediaSizeName.PRC3EnvelopeRotated;
+                case "prc4envelope": return PageMediaSizeName.PRC4Envelope;
+                case "prc4enveloperotated": return PageMediaSizeName.PRC4EnvelopeRotated;
+                case "prc5envelope": return PageMediaSizeName.PRC5Envelope;
+                case "prc5enveloperotated": return PageMediaSizeName.PRC5EnvelopeRotated;
+                case "prc6envelope": return PageMediaSizeName.PRC6Envelope;
+                case "prc6enveloperotated": return PageMediaSizeName.PRC6EnvelopeRotated;
+                case "prc7envelope": return PageMediaSizeName.PRC7Envelope;
+                case "prc7enveloperotated": return PageMediaSizeName.PRC7EnvelopeRotated;
+                case "prc8envelope": return PageMediaSizeName.PRC8Envelope;
+                case "prc8enveloperotated": return PageMediaSizeName.PRC8EnvelopeRotated;
+                case "prc9envelope": return PageMediaSizeName.PRC9Envelope;
+                case "prc9enveloperotated": return PageMediaSizeName.PRC9EnvelopeRotated;
+                case "roll04inch": return PageMediaSizeName.Roll04Inch;
+                case "roll06inch": return PageMediaSizeName.Roll06Inch;
+                case "roll08inch": return PageMediaSizeName.Roll08Inch;
+                case "roll12inch": return PageMediaSizeName.Roll12Inch;
+                case "roll15inch": return PageMediaSizeName.Roll15Inch;
+                case "roll18inch": return PageMediaSizeName.Roll18Inch;
+                case "roll22inch": return PageMediaSizeName.Roll22Inch;
+                case "roll24inch": return PageMediaSizeName.Roll24Inch;
+                case "roll30inch": return PageMediaSizeName.Roll30Inch;
+                case "roll36inch": return PageMediaSizeName.Roll36Inch;
+                case "roll54inch": return PageMediaSizeName.Roll54Inch;
+                default: return PageMediaSizeName.Unknown;
             };
         }
     }

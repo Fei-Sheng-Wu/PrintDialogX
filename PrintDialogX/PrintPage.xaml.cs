@@ -152,7 +152,7 @@ namespace PrintDialogX.Internal
             foreach (PrintQueue printer in _printServer.GetPrintQueues())
             {
                 optionPrinter.Items.Add(actionCreateItem(printer));
-                if ((printerSelected != null && printer.FullName == printerSelected.FullName) || (printerDefault != null && printer.FullName == printerDefault.FullName))
+                if (printerSelected != null ? printer.FullName == printerSelected.FullName : (printerDefault != null && printer.FullName == printerDefault.FullName))
                 {
                     optionPrinterSelectedIndex = optionPrinter.Items.Count - 1;
                 }
@@ -177,12 +177,18 @@ namespace PrintDialogX.Internal
             _isRefreshRequested = false;
 
             PrintQueue printer = (optionPrinter.SelectedItem as ComboBoxItem).Tag as PrintQueue;
-            PrintTicket printerDefaults = printer.DefaultPrintTicket;
             OutputColor? colorSelected = !isInitializing ? (optionColor.SelectedItem != null ? (optionColor.SelectedItem as ComboBoxItem).Tag as OutputColor? : SettingsHelper.ConvertPageColor(_settingsDefault.Color)) : null;
             OutputQuality? qualitySelected = !isInitializing ? (optionQuality.SelectedItem != null ? (optionQuality.SelectedItem as ComboBoxItem).Tag as OutputQuality? : SettingsHelper.ConvertPageQuality(_settingsDefault.Quality)) : null;
             PageMediaSize sizeSelected = !isInitializing ? (optionSize.SelectedItem != null ? (optionSize.SelectedItem as ComboBoxItem).Tag as PageMediaSize : SettingsHelper.ConvertPageSize(_settingsDefault.PageSize)) : null;
             PageMediaType? typeSelected = !isInitializing ? (optionType.SelectedItem != null ? (optionType.SelectedItem as ComboBoxItem).Tag as PageMediaType? : SettingsHelper.ConvertPageType(_settingsDefault.PageType)) : null;
             InputBin? sourceSelected = !isInitializing ? (optionSource.SelectedItem != null ? (optionSource.SelectedItem as ComboBoxItem).Tag as InputBin? : InputBin.AutoSelect) : null;
+
+            PrintTicket printerDefaults = new PrintTicket();
+            try
+            {
+                printerDefaults = printer.DefaultPrintTicket;
+            }
+            catch { }
 
             try
             {
@@ -388,23 +394,43 @@ namespace PrintDialogX.Internal
                 OutputColor documentColor = (optionColor.SelectedItem as ComboBoxItem).Tag as OutputColor? ?? OutputColor.Color;
                 (previewer.Template.FindName("PART_ContentHost", previewer) as ScrollViewer).Effect = documentColor == OutputColor.Grayscale || documentColor == OutputColor.Monochrome ? new Effects.GrayscaleEffect() : null;
 
-                double documentScale = optionScale.SelectedIndex switch
+                double documentScale = double.NaN;
+                switch (optionScale.SelectedIndex)
                 {
-                    1 => 25,
-                    2 => 50,
-                    3 => 75,
-                    4 => 100,
-                    5 => 150,
-                    6 => 200,
-                    7 => (int)optionScaleCustom.Value,
-                    _ => double.NaN
+                    case 1:
+                        documentScale = 25;
+                        break;
+                    case 2:
+                        documentScale = 50;
+                        break;
+                    case 3:
+                        documentScale = 75;
+                        break;
+                    case 4:
+                        documentScale = 100;
+                        break;
+                    case 5:
+                        documentScale = 150;
+                        break;
+                    case 6:
+                        documentScale = 200;
+                        break;
+                    case 7:
+                        documentScale = (int)optionScaleCustom.Value;
+                        break;
                 };
-                double documentMargin = optionMargin.SelectedIndex switch
+                double documentMargin = _originalDocumentMargin;
+                switch (optionMargin.SelectedIndex)
                 {
-                    1 => 0,
-                    2 => PrinterHelper.GetPrinterMinimumMargin(printer, documentSize),
-                    3 => (int)optionMarginCustom.Value,
-                    _ => _originalDocumentMargin
+                    case 1:
+                        documentMargin = 0;
+                        break;
+                    case 2:
+                        documentMargin = PrinterHelper.GetPrinterMinimumMargin(printer, documentSize);
+                        break;
+                    case 3:
+                        documentMargin = (int)optionMarginCustom.Value;
+                        break;
                 };
 
                 PrintDialog.DocumentInfo documentInfo = new PrintDialog.DocumentInfo(documentPages.ToArray(), (PrintSettings.PageOrientation)optionOrientation.SelectedIndex, (PrintSettings.PageColor)((int)documentColor - 1), (PrintSettings.PagesPerSheet)optionPagesPerSheet.SelectedIndex, (PrintSettings.PageOrder)optionPageOrder.SelectedIndex, documentScale, documentMargin, new Size(documentSize.Width.Value, documentSize.Height.Value));
@@ -463,8 +489,6 @@ namespace PrintDialogX.Internal
                     foreach (System.Windows.Documents.FixedPage page in documentContent)
                     {
                         document.Pages.Add(new System.Windows.Documents.PageContent() { Child = page });
-                        page.UpdateLayout();
-                        Common.DoEvents();
                     }
                     _previewDocument = document;
                 }
@@ -621,7 +645,7 @@ namespace PrintDialogX.Internal
             _isRefreshRequested = true;
         }
 
-        private async void PrinterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void PrinterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isRefreshRequested || optionPrinter.SelectedItem == null)
             {
@@ -636,14 +660,11 @@ namespace PrintDialogX.Internal
                     optionPrinter.SelectedItem = e.RemovedItems[0];
                 }
 
-                Windows.System.LauncherOptions option = new Windows.System.LauncherOptions()
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
                 {
-                    TreatAsUntrusted = false
-                };
-                if (!await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:printers"), option))
-                {
-                    System.Diagnostics.Process.Start("explorer.exe", "shell:::{A8A91A66-3A7D-4424-8D24-04E180695C7A}");
-                }
+                    FileName = "ms-settings:printers",
+                    UseShellExecute = true
+                });
             }
             else
             {
