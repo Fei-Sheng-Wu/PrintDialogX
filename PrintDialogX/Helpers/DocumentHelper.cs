@@ -97,8 +97,6 @@ namespace PrintDialogX.Internal
                     page.RenderTransform = new System.Windows.Media.ScaleTransform(info.Scale / 100.0, info.Scale / 100.0);
                 }
                 result.Pages.Add(new System.Windows.Documents.PageContent() { Child = page });
-                page.UpdateLayout();
-                Common.DoEvents();
             }
             return result;
         }
