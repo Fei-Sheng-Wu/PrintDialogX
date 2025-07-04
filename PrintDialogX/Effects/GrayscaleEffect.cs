@@ -10,11 +10,15 @@ namespace PrintDialogX.Internal.Effects
 {
     internal class GrayscaleEffect : ShaderEffect
     {
-        private static PixelShader _pixelShader = new PixelShader() { UriSource = new Uri("/PrintDialogX;component/Resources/GrayscaleEffect.ps", UriKind.Relative) };
+        private static PixelShader _pixelShader = new PixelShader()
+        {
+            UriSource = new Uri("/PrintDialogX;component/Resources/GrayscaleEffect.ps", UriKind.Relative),
+            ShaderRenderMode = ShaderRenderMode.SoftwareOnly
+        };
 
         public GrayscaleEffect()
         {
-            PixelShader = _pixelShader;
+            this.PixelShader = _pixelShader;
 
             UpdateShaderValue(InputProperty);
             UpdateShaderValue(DesaturationFactorProperty);
