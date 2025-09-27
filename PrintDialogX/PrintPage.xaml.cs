@@ -19,6 +19,7 @@ namespace PrintDialogX.Internal
 
         private readonly PrintServer _printServer;
         private readonly PrintQueueCollection _printServerCollectionFax;
+        private readonly PrintQueue _initialPrintQueue;
 
         private readonly List<PrintDialogX.PrintPage> _originalDocument;
         private readonly Size _originalDocumentSize;
@@ -66,6 +67,8 @@ namespace PrintDialogX.Internal
 
             _printServer = new PrintServer();
             _printServerCollectionFax = _printServer.GetPrintQueues(new EnumeratedPrintQueueTypes[] { EnumeratedPrintQueueTypes.Fax });
+
+            _initialPrintQueue = dialog.InitialPrintQueue;
 
             _previewDocumentUrl = new Uri($"memorystream://{Guid.NewGuid()}.xps");
         }
@@ -146,16 +149,25 @@ namespace PrintDialogX.Internal
                 return new ComboBoxItem() { Content = itemContainer, Padding = new Thickness(10), ToolTip = itemTooltip, Tag = printer };
             }
 
-            int optionPrinterSelectedIndex = 0;
+            int optionPrinterSelectedIndex = -1;
+            int optionPrinterDefaultIndex = 0;
             optionPrinter.Items.Clear();
             PrintQueue printerDefault = PrinterHelper.GetDefaultPrinter();
             foreach (PrintQueue printer in _printServer.GetPrintQueues())
             {
                 optionPrinter.Items.Add(actionCreateItem(printer));
-                if (printerSelected != null ? printer.FullName == printerSelected.FullName : (printerDefault != null && printer.FullName == printerDefault.FullName))
+                if (printerSelected != null && printer.FullName == printerSelected.FullName)
                 {
                     optionPrinterSelectedIndex = optionPrinter.Items.Count - 1;
                 }
+                if (printerDefault != null && printer.FullName == printerDefault.FullName)
+                {
+                    optionPrinterDefaultIndex = optionPrinter.Items.Count - 1;
+                }
+            }
+            if (optionPrinterSelectedIndex < 0)
+            {
+                optionPrinterSelectedIndex = optionPrinterDefaultIndex;
             }
             if (optionPrinter.Items.Count == 0)
             {
@@ -561,7 +573,7 @@ namespace PrintDialogX.Internal
             this.UpdateLayout();
             Common.DoEvents();
 
-            LoadPrinters(null);
+            LoadPrinters(_initialPrintQueue);
             PrintQueue printer = (optionPrinter.SelectedItem as ComboBoxItem).Tag as PrintQueue;
             optionPrinterPreviewIcon.Source = PrinterHelper.GetPrinterIcon(printer, _printServerCollectionFax, true);
             optionPrinterPreviewText.Text = printer.FullName;

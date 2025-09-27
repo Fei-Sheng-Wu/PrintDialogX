@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Printing;
 using System.Windows;
 
 namespace PrintDialogX.PrintDialog
@@ -83,6 +84,11 @@ namespace PrintDialogX.PrintDialog
         /// Gets or sets the resize mode of the dialog.
         /// </summary>
         public ResizeMode ResizeMode { get; set; } = ResizeMode.NoResize;
+
+        /// <summary>
+        /// Gets or sets the printer that should be initially selected. If it isn't found in the local print queue, then the local print queue's default is used instead.
+        /// </summary>
+        public PrintQueue InitialPrintQueue { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the default print settings to be used.
