@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Printing;
 using System.Windows;
 
 namespace PrintDialogX.PrintDialog
@@ -26,7 +25,7 @@ namespace PrintDialogX.PrintDialog
         public string Title { get; set; } = "Print";
 
         /// <summary>
-        /// Gets or sets the icon of the dialog, or to use the default icon if the value is <see langword="null"/>.
+        /// Gets or sets the icon of the dialog.
         /// </summary>
         public System.Windows.Media.ImageSource Icon { get; set; } = null;
 
@@ -39,6 +38,16 @@ namespace PrintDialogX.PrintDialog
         /// Gets or sets whether the dialog has a task bar button.
         /// </summary>
         public bool ShowInTaskbar { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the resize mode of the dialog.
+        /// </summary>
+        public ResizeMode ResizeMode { get; set; } = ResizeMode.NoResize;
+
+        /// <summary>
+        /// Gets or sets the position of the dialog when first shown.
+        /// </summary>
+        public WindowStartupLocation WindowStartupLocation { get; set; } = WindowStartupLocation.CenterScreen;
 
         /// <summary>
         /// Gets or sets whether the dialog offers the "Pages" option in print settings, which contains "All Pages", "Current Page", and "Custom Pages".
@@ -81,24 +90,14 @@ namespace PrintDialogX.PrintDialog
         public PrintDocument Document { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the resize mode of the dialog.
+        /// Gets or sets the default printer to be used, or to use the system default if the value is <see langword="null"/>.
         /// </summary>
-        public ResizeMode ResizeMode { get; set; } = ResizeMode.NoResize;
-
-        /// <summary>
-        /// Gets or sets the printer that should be initially selected. If it isn't found in the local print queue, then the local print queue's default is used instead.
-        /// </summary>
-        public PrintQueue InitialPrintQueue { get; set; } = null;
+        public System.Printing.PrintQueue DefaultPrinter { get; set; } = null;
 
         /// <summary>
         /// Gets or sets the default print settings to be used.
         /// </summary>
         public PrintDialogSettings DefaultSettings { get; set; } = new PrintDialogSettings();
-
-        /// <summary>
-        /// Gets or sets the position of the dialog when first shown.
-        /// </summary>
-        public WindowStartupLocation WindowStartupLocation { get; set; } = WindowStartupLocation.CenterScreen;
 
         /// <summary>
         /// Gets or sets the optional function that will be invoked to update the content of the document with the specific print settings set in the dialog. The function is required to return a collection of updated <see cref="PrintPage"/> in the original length and order.
@@ -142,14 +141,14 @@ namespace PrintDialogX.PrintDialog
 
             Internal.PrintWindow dialog = new Internal.PrintWindow(this, documentGeneration)
             {
-                Title = Title,
                 Owner = Owner,
+                Title = Title,
+                Icon = Icon,
                 Topmost = Topmost,
-                ResizeMode = ResizeMode,
                 ShowInTaskbar = ShowInTaskbar,
+                ResizeMode = ResizeMode,
                 WindowStartupLocation = WindowStartupLocation
             };
-            dialog.Icon = Icon ?? dialog.Icon;
             dialog.ShowDialog();
             _totalPapers = dialog.TotalPapers;
             return dialog.ReturnValue;
