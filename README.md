@@ -1,4 +1,4 @@
-# PrintDialogX v2.1.6
+# PrintDialogX v2.2.0-dev
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](#)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](#)
