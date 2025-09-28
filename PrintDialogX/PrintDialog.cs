@@ -40,6 +40,11 @@ namespace PrintDialogX.PrintDialog
         public bool ShowInTaskbar { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets whether the user is allowed to select ranges in the preview document. (Default: true)
+        /// </summary>
+        public bool EnableSelection { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets whether the dialog offers the "Pages" option in print settings, which contains "All Pages", "Current Page", and "Custom Pages".
         /// </summary>
         public bool AllowPagesOption { get; set; } = true;

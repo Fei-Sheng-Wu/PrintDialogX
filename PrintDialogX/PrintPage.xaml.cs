@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Printing;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -47,6 +48,8 @@ namespace PrintDialogX.Internal
             Common.DoEvents();
 
             _owner = owner;
+
+            previewer.IsSelectionEnabled = dialog.EnableSelection;
 
             _allowPages = dialog.AllowPagesOption;
             _allowPageOrder = dialog.AllowPageOrderOption;
