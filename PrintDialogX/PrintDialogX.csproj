@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <Title>PrintDialogX</Title>
-    <Version>2.1.6</Version>
+    <Version>2.2.0</Version>
     <Authors>FeiShengWu</Authors>
     <Description>A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.</Description>
     <Copyright>Copyright © 2025 FeiShengWu</Copyright>
