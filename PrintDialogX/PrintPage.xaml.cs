@@ -14,12 +14,9 @@ namespace PrintDialogX.Internal
         private readonly PrintWindow _owner;
 
         private System.Windows.Documents.FixedDocument _previewDocument;
-        private System.IO.Packaging.Package _previewDocumentPackage;
-        private readonly Uri _previewDocumentUrl;
 
         private readonly PrintServer _printServer;
         private readonly PrintQueueCollection _printServerCollectionFax;
-        private readonly PrintQueue _initialPrintQueue;
 
         private readonly List<PrintDialogX.PrintPage> _originalDocument;
         private readonly Size _originalDocumentSize;
@@ -34,6 +31,7 @@ namespace PrintDialogX.Internal
         private readonly bool _allowAddNewPrinter;
         private readonly bool _allowPrinterPreferences;
 
+        private readonly PrintQueue _printerDefault;
         private readonly PrintDialog.PrintDialogSettings _settingsDefault;
         private readonly Func<PrintDialog.DocumentInfo, ICollection<PrintDialogX.PrintPage>> _documentUpdateCallback;
 
@@ -49,6 +47,12 @@ namespace PrintDialogX.Internal
 
             _owner = owner;
 
+            _originalDocument = new List<PrintDialogX.PrintPage>();
+            _originalDocument.AddRange(dialog.Document.Pages);
+            _originalDocumentSize = dialog.Document.DocumentSize;
+            _originalDocumentMargin = dialog.Document.DocumentMargin;
+            _originalDocumentName = dialog.Document.DocumentName;
+
             _allowPages = dialog.AllowPagesOption;
             _allowPageOrder = dialog.AllowPageOrderOption;
             _allowPagesPerSheet = dialog.AllowPagesPerSheetOption;
@@ -56,21 +60,13 @@ namespace PrintDialogX.Internal
             _allowDoubleSided = dialog.AllowDoubleSidedOption;
             _allowAddNewPrinter = dialog.AllowAddNewPrinterButton;
             _allowPrinterPreferences = dialog.AllowPrinterPreferencesButton;
+
+            _printerDefault = dialog.DefaultPrinter;
             _settingsDefault = dialog.DefaultSettings;
             _documentUpdateCallback = dialog.ReloadDocumentCallback;
 
-            _originalDocument = new List<PrintDialogX.PrintPage>();
-            _originalDocument.AddRange(dialog.Document.Pages);
-            _originalDocumentSize = dialog.Document.DocumentSize;
-            _originalDocumentMargin = dialog.Document.DocumentMargin;
-            _originalDocumentName = dialog.Document.DocumentName;
-
             _printServer = new PrintServer();
             _printServerCollectionFax = _printServer.GetPrintQueues(new EnumeratedPrintQueueTypes[] { EnumeratedPrintQueueTypes.Fax });
-
-            _initialPrintQueue = dialog.InitialPrintQueue;
-
-            _previewDocumentUrl = new Uri($"memorystream://{Guid.NewGuid()}.xps");
         }
 
         private async void CreateErrorPopup(string content, Action action)
@@ -149,25 +145,16 @@ namespace PrintDialogX.Internal
                 return new ComboBoxItem() { Content = itemContainer, Padding = new Thickness(10), ToolTip = itemTooltip, Tag = printer };
             }
 
-            int optionPrinterSelectedIndex = -1;
-            int optionPrinterDefaultIndex = 0;
+            int optionPrinterSelectedIndex = 0;
             optionPrinter.Items.Clear();
-            PrintQueue printerDefault = PrinterHelper.GetDefaultPrinter();
+            PrintQueue printerDefault = _printerDefault ?? PrinterHelper.GetDefaultPrinter();
             foreach (PrintQueue printer in _printServer.GetPrintQueues())
             {
                 optionPrinter.Items.Add(actionCreateItem(printer));
-                if (printerSelected != null && printer.FullName == printerSelected.FullName)
+                if (printerSelected != null ? printer.FullName == printerSelected.FullName : (printerDefault != null && printer.FullName == printerDefault.FullName))
                 {
                     optionPrinterSelectedIndex = optionPrinter.Items.Count - 1;
                 }
-                if (printerDefault != null && printer.FullName == printerDefault.FullName)
-                {
-                    optionPrinterDefaultIndex = optionPrinter.Items.Count - 1;
-                }
-            }
-            if (optionPrinterSelectedIndex < 0)
-            {
-                optionPrinterSelectedIndex = optionPrinterDefaultIndex;
             }
             if (optionPrinter.Items.Count == 0)
             {
@@ -471,7 +458,8 @@ namespace PrintDialogX.Internal
                         throw new PrintDocumentException("The content of PrintPage is already the child of another element.");
                     }
 
-                    System.Windows.Documents.FixedPage page = new System.Windows.Documents.FixedPage() { Width = document.DocumentPaginator.PageSize.Width, Height = document.DocumentPaginator.PageSize.Height };
+                    System.Windows.Documents.FixedPage page = new System.Windows.Documents.FixedPage() { Width = document.DocumentPaginator.PageSize.Width, Height = document.DocumentPaginator.PageSize.Height, IsHitTestVisible = false };
+                    System.Windows.Media.RenderOptions.SetBitmapScalingMode(page, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
                     Decorator elementContainer = new Decorator() { Child = element, Width = _originalDocumentSize.Width - _originalDocumentMargin * 2, Height = _originalDocumentSize.Height - _originalDocumentMargin * 2, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
                     Decorator elementBoundary = new Decorator() { Child = elementContainer, Width = page.Width - documentMargin * 2, Height = page.Height - documentMargin * 2 };
                     if (optionPagesPerSheet.SelectedIndex <= 0)
@@ -505,19 +493,15 @@ namespace PrintDialogX.Internal
                     _previewDocument = document;
                 }
 
-                System.IO.Packaging.PackageStore.RemovePackage(_previewDocumentUrl);
-                System.IO.MemoryStream stream = new System.IO.MemoryStream();
-                _previewDocumentPackage = System.IO.Packaging.Package.Open(stream, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite);
-                System.IO.Packaging.PackageStore.AddPackage(_previewDocumentUrl, _previewDocumentPackage);
-                System.Windows.Xps.Packaging.XpsDocument xpsDocument = new System.Windows.Xps.Packaging.XpsDocument(_previewDocumentPackage) { Uri = _previewDocumentUrl };
-                System.Windows.Xps.XpsDocumentWriter writer = System.Windows.Xps.Packaging.XpsDocument.CreateXpsDocumentWriter(xpsDocument);
-                writer.Write(_previewDocument.DocumentPaginator);
-                previewer.Document = xpsDocument.GetFixedDocumentSequence();
-                xpsDocument.Close();
+                System.Windows.Documents.FixedDocumentSequence sequence = new System.Windows.Documents.FixedDocumentSequence();
+                System.Windows.Documents.DocumentReference reference = new System.Windows.Documents.DocumentReference();
+                reference.SetDocument(_previewDocument);
+                sequence.References.Add(reference);
+                previewer.Document = sequence;
             }
-            catch (PrintDocumentException exception)
+            catch (PrintDocumentException)
             {
-                throw exception;
+                throw;
             }
             catch { }
 
@@ -573,7 +557,7 @@ namespace PrintDialogX.Internal
             this.UpdateLayout();
             Common.DoEvents();
 
-            LoadPrinters(_initialPrintQueue);
+            LoadPrinters(_printerDefault);
             PrintQueue printer = (optionPrinter.SelectedItem as ComboBoxItem).Tag as PrintQueue;
             optionPrinterPreviewIcon.Source = PrinterHelper.GetPrinterIcon(printer, _printServerCollectionFax, true);
             optionPrinterPreviewText.Text = printer.FullName;
@@ -602,8 +586,6 @@ namespace PrintDialogX.Internal
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            System.IO.Packaging.PackageStore.RemovePackage(_previewDocumentUrl);
-            _previewDocumentPackage?.Close();
             _printServer.Dispose();
         }
 
