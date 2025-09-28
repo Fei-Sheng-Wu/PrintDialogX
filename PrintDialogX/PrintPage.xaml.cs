@@ -13,6 +13,8 @@ namespace PrintDialogX.Internal
 
         private readonly PrintWindow _owner;
 
+        private readonly System.Windows.Media.BitmapScalingMode _interpolationMode;
+
         private System.Windows.Documents.FixedDocument _previewDocument;
 
         private readonly PrintServer _printServer;
@@ -46,6 +48,8 @@ namespace PrintDialogX.Internal
             Common.DoEvents();
 
             _owner = owner;
+
+            _interpolationMode = dialog.InterpolationMode;
 
             _originalDocument = new List<PrintDialogX.PrintPage>();
             _originalDocument.AddRange(dialog.Document.Pages);
@@ -459,7 +463,7 @@ namespace PrintDialogX.Internal
                     }
 
                     System.Windows.Documents.FixedPage page = new System.Windows.Documents.FixedPage() { Width = document.DocumentPaginator.PageSize.Width, Height = document.DocumentPaginator.PageSize.Height, IsHitTestVisible = false };
-                    System.Windows.Media.RenderOptions.SetBitmapScalingMode(page, System.Windows.Media.BitmapScalingMode.NearestNeighbor);
+                    System.Windows.Media.RenderOptions.SetBitmapScalingMode(page, _interpolationMode);
                     Decorator elementContainer = new Decorator() { Child = element, Width = _originalDocumentSize.Width - _originalDocumentMargin * 2, Height = _originalDocumentSize.Height - _originalDocumentMargin * 2, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
                     Decorator elementBoundary = new Decorator() { Child = elementContainer, Width = page.Width - documentMargin * 2, Height = page.Height - documentMargin * 2 };
                     if (optionPagesPerSheet.SelectedIndex <= 0)

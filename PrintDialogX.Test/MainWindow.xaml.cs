@@ -67,6 +67,7 @@ namespace PrintDialogX.Test
             PrintDialogX.PrintDialog.PrintDialog printDialog = new PrintDialogX.PrintDialog.PrintDialog()
             {
                 Owner = this, //Set the owner of the dialog to the current window
+                InterpolationMode = System.Windows.Media.BitmapScalingMode.Linear, //Set the interpolation mode for scaling the preview
                 Title = "Test Print", //Set the title of the dialog
                 Icon = null, //Set the icon of the dialog, where null means to use the default icon
                 Topmost = false, //Don't allow the dialog to appear in the topmost z-order
