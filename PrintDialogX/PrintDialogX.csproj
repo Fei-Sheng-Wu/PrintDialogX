@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\BlueNoise.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="ReachFramework" Condition="'$(TargetFramework)' == 'net472'" />
     <Reference Include="System.Printing" Condition="'$(TargetFramework)' == 'net472'" />
   </ItemGroup>
@@ -24,6 +28,7 @@
 
   <ItemGroup>
     <Resource Include="Resources\GrayscaleEffect.ps" />
+    <Resource Include="Resources\MonochromeEffect.ps" />
     <Resource Include="Resources\LoadingImage.png" />
     <Resource Include="Resources\AddPrinter.png" />
     <Resource Include="Resources\PrinterIcons\Normal.png" />
