@@ -1,8 +1,12 @@
 ﻿using System;
-using System.Printing;
 using System.Collections.Generic;
+using System.Linq;
+using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Media3D;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace PrintDialogX.Internal
 {
@@ -257,15 +261,52 @@ namespace PrintDialogX.Internal
                 {
                     System.Xml.XmlDocument xmlDocument = new System.Xml.XmlDocument();
                     xmlDocument.Load(printCapabilitiesXml);
+
                     System.Xml.XmlNamespaceManager xmlManager = new System.Xml.XmlNamespaceManager(xmlDocument.NameTable);
                     xmlManager.AddNamespace(xmlDocument.DocumentElement.Prefix, xmlDocument.DocumentElement.NamespaceURI);
-                    foreach (System.Xml.XmlNode node in xmlDocument.SelectNodes("//psf:Feature[@name='psk:PageMediaSize']/psf:Option", xmlManager))
+
+                    foreach (System.Xml.XmlNode optionNode in xmlDocument.SelectNodes("//psf:Feature[@name='psk:PageMediaSize']/psf:Option", xmlManager))
                     {
-                        if (node.ChildNodes.Count > 1 && double.TryParse(node.ChildNodes[0].InnerText, out double width) && double.TryParse(node.ChildNodes[1].InnerText, out double height))
+                        // Determine the actual prefix of the Printer Schema Keywords namespace.
+                        // Include the separator character to simplify string manipulation.
+                        string pskPrefix = optionNode.GetPrefixOfNamespace("http://schemas.microsoft.com/windows/2003/08/printing/printschemakeywords");
+
+                        pskPrefix += ":";
+
+                        var properties = ParseOptionProperties(optionNode, xmlManager);
+
+                        string name = optionNode.Attributes["name"]?.Value;
+
+                        // Only process a node if it has all the bits we need to make sense of it.
+                        if ((name != null) && properties.ContainsKey("MediaSizeWidth") && properties.ContainsKey("MediaSizeHeight"))
                         {
-                            PageMediaSizeName sizeName = SettingsHelper.GetPageSizeName(node.Attributes["name"]?.Value);
-                            PageMediaSize size = new PageMediaSize(sizeName, width / 1000 * 96 / 25.4, height / 1000 * 96 / 25.4);
-                            optionSize.Items.Add(new ComboBoxItem() { Content = sizeName != PageMediaSizeName.Unknown ? SettingsHelper.GetPageSizeName(sizeName) : $"Custom: {Math.Round(width / 10000, 2)} × {Math.Round(height / 10000, 2)} cm", Tag = size });
+                            // Trim off the psk: prefix. Note that it could be something other than "psk:";
+                            // the document isn't required to use any particular prefix. Only the URI is
+                            // required to match.
+                            if (!name.StartsWith(pskPrefix))
+                            {
+                                name = name.Substring(pskPrefix.Length);
+                            }
+
+                            PageMediaSizeName sizeName = SettingsHelper.GetPageSizeName(name);
+
+                            // These properties must be of type integer per the specification.
+                            int width = Convert.ToInt32(properties["MediaSizeWidth"]);
+                            int height = Convert.ToInt32(properties["MediaSizeHeight"]);
+
+                            // Use the display name provided by the driver, if there is one.
+                            // Fall back to the description for the PageMediaSizeName enum value, if there is one.
+                            // Fall back to just emitting the size in cm.
+                            string displayName = properties.ContainsKey("DisplayName")
+                                ? properties["DisplayName"].ToString()
+                                : (sizeName != PageMediaSizeName.Unknown ? SettingsHelper.GetPageSizeName(sizeName) : $"Custom: {Math.Round(width / 10000.0, 2)} × {Math.Round(height / 10000.0, 2)} cm");
+
+                            const double DIPsPerMicron = (96 / 25.4 / 1000);
+
+                            PageMediaSize size = new PageMediaSize(sizeName, width * DIPsPerMicron, height * DIPsPerMicron);
+
+                            optionSize.Items.Add(new ComboBoxItem() { Content = displayName, Tag = size });
+
                             if (!isInitializing && sizeSelected != null && sizeSelected.PageMediaSizeName != PageMediaSizeName.Unknown && size.PageMediaSizeName == sizeSelected.PageMediaSizeName)
                             {
                                 optionSizeSelectedIndex = optionSize.Items.Count - 1;
@@ -327,6 +368,81 @@ namespace PrintDialogX.Internal
 
             _isRefreshRequested = true;
             RefreshDocument();
+        }
+
+        private static object ParseValue(XmlNode valueNode)
+        {
+            // Get the actual prefix of the XML Schema namespace. This is embedded into string
+            // values, so we can't just use the XmlDocument URI-based front end or assign our
+            // own prefix with XmlNamespaceManager.
+            string schemaPrefix = valueNode.GetPrefixOfNamespace("http://www.w3.org/2001/XMLSchema");
+
+            schemaPrefix += ":";
+
+            var typeAttribute = valueNode.Attributes["type", "http://www.w3.org/2001/XMLSchema-instance"];
+
+            if ((typeAttribute != null) && typeAttribute.Value.StartsWith(schemaPrefix))
+            {
+                string typeName = typeAttribute.Value.Substring(schemaPrefix.Length);
+
+                string valueString = valueNode.InnerText;
+
+                switch (typeName)
+                {
+                    case "string": return valueString;
+                    case "boolean": return XmlConvert.ToBoolean(valueString);
+                    case "decimal": return XmlConvert.ToDecimal(valueString);
+                    case "integer": return XmlConvert.ToInt32(valueString);
+                    case "float": return XmlConvert.ToSingle(valueString);
+                    case "double": return XmlConvert.ToDouble(valueString);
+                    case "date":
+                    case "time":
+                    case "dateTime": return XmlConvert.ToDateTime(valueString, XmlDateTimeSerializationMode.Unspecified);
+                    case "duration": return XmlConvert.ToTimeSpan(valueString);
+                    case "anyURI": return new Uri(valueString);
+                    case "QName": throw new NotSupportedException();
+                }
+            }
+
+            throw new NotSupportedException();
+        }
+
+        private static Dictionary<string, object> ParseOptionProperties(System.Xml.XmlNode optionNode, System.Xml.XmlNamespaceManager xmlManager)
+        {
+            // Determine the actual prefix of the Printer Schema Keywords namespace.
+            // Include the separator character to simplify string manipulation.
+            string pskPrefix = optionNode.GetPrefixOfNamespace("http://schemas.microsoft.com/windows/2003/08/printing/printschemakeywords");
+
+            pskPrefix += ":";
+
+            var ret = new Dictionary<string, object>();
+
+            foreach (System.Xml.XmlNode propertyNode in optionNode.SelectNodes("psf:Property|psf:ScoredProperty", xmlManager))
+            {
+                var attribute = propertyNode.Attributes["name"];
+
+                // Only process properties in the Printer Schema Keyword namespace.
+                // Some drivers add extra things, such as PaperID, XOffset and
+                // YOffset provided by Samsung drivers. These are in different
+                // namespaces.
+                if ((attribute != null) && attribute.Value.StartsWith(pskPrefix))
+                {
+                    string propertyName = attribute.Value.Substring(pskPrefix.Length);
+
+                    var valueNode = propertyNode.SelectSingleNode("psf:Value", xmlManager);
+
+                    if (valueNode != null)
+                    {
+                        try
+                        {
+                            ret[propertyName] = ParseValue(valueNode);
+                        }
+                        catch (NotSupportedException) { }
+                    }
+                }
+            }
+
+            return ret;
         }
 
         private void RefreshDocument()
