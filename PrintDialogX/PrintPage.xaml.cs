@@ -4,6 +4,8 @@ using System.Linq;
 using System.Printing;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Xml;
 using System.Xml.Linq;
@@ -507,7 +509,54 @@ namespace PrintDialogX.Internal
                 documentPages.Sort();
 
                 OutputColor documentColor = (optionColor.SelectedItem as ComboBoxItem).Tag as OutputColor? ?? OutputColor.Color;
-                (previewer.Template.FindName("PART_ContentHost", previewer) as ScrollViewer).Effect = documentColor == OutputColor.Grayscale || documentColor == OutputColor.Monochrome ? new Effects.GrayscaleEffect() : null;
+
+                if (previewer.Template.FindName("PART_ContentHost", previewer) is ScrollViewer svPreviewContent)
+                {
+                    var layoutRoot = VisualTreeHelper.GetChild(svPreviewContent, 0);
+
+                    if (layoutRoot != null)
+                    {
+                        var contentAttachmentPoint = VisualTreeHelper.GetChild(layoutRoot, 0);
+
+                        if (contentAttachmentPoint is FrameworkElement contentAttachmentPointElement)
+                        {
+                            var bounds = contentAttachmentPointElement.TransformToVisual(svPreviewContent).TransformBounds(
+                                LayoutInformation.GetLayoutSlot(contentAttachmentPointElement));
+
+                            switch (documentColor)
+                            {
+                                case OutputColor.Grayscale:
+                                {
+                                    contentAttachmentPointElement.Effect = new Effects.GrayscaleEffect();
+                                    break;
+                                }
+                                case OutputColor.Monochrome:
+                                {
+                                    var monochromeEffect =
+                                        new Effects.MonochromeEffect()
+                                        {
+                                            ViewportWidth = (float)bounds.Width,
+                                            ViewportHeight = (float)bounds.Height,
+                                        };
+
+                                    svPreviewContent.ScrollChanged +=
+                                        (_, args) =>
+                                        {
+                                            monochromeEffect.ViewportLeft = (float)Math.Floor(svPreviewContent.HorizontalOffset);
+                                            monochromeEffect.ViewportTop = (float)Math.Floor(svPreviewContent.VerticalOffset);
+                                        };
+
+                                    contentAttachmentPointElement.Effect = monochromeEffect;
+
+                                    break;
+                                }
+                                default:
+                                    contentAttachmentPointElement.Effect = null;
+                                    break;
+                            }
+                        }
+                    }
+                }
 
                 double documentScale = double.NaN;
                 switch (optionScale.SelectedIndex)
