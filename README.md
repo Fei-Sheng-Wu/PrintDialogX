@@ -1,4 +1,4 @@
-# PrintDialogX v2.2.0-dev
+# PrintDialogX v3.0.0-dev
 
 [![C#](https://img.shields.io/badge/C%23-100%25-blue.svg?style=flat-square)](#)
 [![Platform](https://img.shields.io/badge/Platform-WPF-green.svg?style=flat-square)](#)
@@ -48,6 +48,9 @@ PrintDialogX is a powerful and beautiful customized print dialog. It basically s
 - Wpf.Ui ≥ 4.0.0
 
 ## How to Use
+
+> [!IMPORTANT]
+> Please note that the following examples only apply to the previous version v2.1.6. The current development version introduces breaking changes that may invalidate the following code snippets. Furthermore, aspects such as the preview and the feature list may not accurately reflect the current state of the repository.
 
 An example project is included in the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) subfolder, with step-by-step configurations of `PrintDialog` and both examples of generating the document before or during the opening of `PrintDialog`.
 
