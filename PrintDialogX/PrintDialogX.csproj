@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+      
+    <Title>PrintDialogX</Title>
+    <Version>2.2.0</Version>
+    <Authors>FeiShengWu</Authors>
+    <Description>A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.</Description>
+    <Copyright>Copyright © 2025 FeiShengWu</Copyright>
+    <PackageProjectUrl>https://github.com/Fei-Sheng-Wu/PrintDialogX</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>C#;WPF;PrintDialog;PrinterDialog;Dialog;Printer;Document;Print;Printing;Preview;Previewer;DocumentPreview;DocumentPrinting</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ReachFramework" Condition="'$(TargetFramework)' == 'net472'" />
+    <Reference Include="System.Printing" Condition="'$(TargetFramework)' == 'net472'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="[4.0.0,)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\**" />
+  </ItemGroup>
+
+  <!--
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="&quot;$(FXC_DIR)fxc.exe&quot; /T ps_2_0 /E main /Fo&quot;$(SolutionDir)PrintDialogX\Resources\Effects\Grayscale.ps&quot; &quot;$(SolutionDir)PrintDialogX\Resources\Effects\Grayscale.fx&quot;" />
+    <Exec Command="&quot;$(FXC_DIR)fxc.exe&quot; /T ps_2_0 /E main /Fo&quot;$(SolutionDir)PrintDialogX\Resources\Effects\Monochrome.ps&quot; &quot;$(SolutionDir)PrintDialogX\Resources\Effects\Monochrome.fx&quot;" />
+  </Target>
+  -->
+</Project>
