@@ -719,7 +719,7 @@ namespace PrintDialogX
             {
                 if (page.Content.Parent != null)
                 {
-                    if (page.Content.Parent is not ContentPresenter parent)
+                    if (page.Content.Parent is not ContentControl parent)
                     {
                         throw new PrintDocumentException(page.Content, "The content is already the child of another element.");
                     }
@@ -979,4 +979,5 @@ namespace PrintDialogX
             NavigatePage(model.PreviewDocument.Value.Document.Count);
         }
     }
+
 }
