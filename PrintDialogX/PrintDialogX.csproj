@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-      
+
     <Title>PrintDialogX</Title>
     <Version>3.0.0</Version>
     <Authors>FeiShengWu</Authors>
