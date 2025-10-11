@@ -2,7 +2,6 @@
 using System.Printing;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 
 namespace PrintDialogX
 {
@@ -11,33 +10,6 @@ namespace PrintDialogX
     /// </summary>
     public class PrintDialog
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
-        /// </summary>
-        public PrintDialog()
-        {
-            try
-            {
-                DefaultPrinter = LocalPrintServer.GetDefaultPrintQueue();
-            }
-            catch { }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="Window"/> that owns the dialog.
-        /// </summary>
-        public Window? Owner { get; set; } = null;
-
-        /// <summary>
-        /// Gets or sets the title of the dialog.
-        /// </summary>
-        public string Title { get; set; } = "Print";
-
-        /// <summary>
-        /// Gets or sets the icon of the dialog.
-        /// </summary>
-        public ImageSource? Icon { get; set; } = null;
-
         /// <summary>
         /// Gets or sets the document that needs to be printed.
         /// </summary>
@@ -57,23 +29,15 @@ namespace PrintDialogX
 
         public InterfaceSettings Interface { get; set; } = new();
 
-        public Window PrintDialogWindow
-        {
-            get => window;
-        }
-        private PrintDialogWindow window = new();
+        public Window PrintDialogWindow { get => window; }
 
         /// <summary>
         /// Gets the total number of papers that the printer is calculated to be using.
         /// </summary>
-        public int TotalPapers
-        {
-            get
-            {
-                return totalPapers;
-            }
-        }
-        private int totalPapers = 0;
+        public int TotalPaper { get => result != null ? result.Value.TotalPaper : 0; }
+
+        private PrintDialogWindow window = new();
+        private (bool IsSuccess, int TotalPaper)? result = null;
 
         /// <summary>
         /// Opens the dialog and returns only when the dialog is closed.
@@ -98,17 +62,16 @@ namespace PrintDialogX
         }
 
         //TODO: documentation
-        public bool Show()
+        public void Show()
         {
-            return Show(null);
+            Show(null);
         }
 
-        public bool Show(Func<Task>? generation)
+        public void Show(Func<Task>? generation)
         {
             StartWindow(generation);
             window.Show();
-
-            return EndWindow();
+            window.Closed += (x, e) => EndWindow();
         }
 
         private void StartWindow(Func<Task>? generation = null)
@@ -119,18 +82,14 @@ namespace PrintDialogX
             }
 
             window.Create(this, generation);
-            window.Owner = Owner;
-            window.Title = Title;
-            window.Icon = Icon;
         }
 
         private bool EndWindow()
         {
-            bool value = window.ReturnValue;
-            totalPapers = window.TotalPapers;
+            result = window.Result;
             window = new();
 
-            return value;
+            return result != null && result.Value.IsSuccess;
         }
     }
 
@@ -156,6 +115,14 @@ namespace PrintDialogX
             Type,
             Source
         }
+
+        public string Title { get; set; } = (string)PrintDialogWindow.StringResources["StringResource_TitlePrint"];
+
+        public Wpf.Ui.Controls.IconElement? Icon { get; set; } = new Wpf.Ui.Controls.SymbolIcon()
+        {
+            Symbol = Wpf.Ui.Controls.SymbolRegular.Print20,
+            FontSize = 18
+        };
 
         public Option[] BasicSettings { get; set; } = [Option.Printer, Option.PrinterPreferences, Option.Void, Option.Copies, Option.Collation, Option.Pages, Option.Layout, Option.Size];
 

@@ -30,10 +30,10 @@ namespace PrintDialogX
         /// </summary>
         public double DocumentMargin
         {
-            get => documentMargin;
-            set => documentMargin = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value cannot be negative.");
+            get => margin;
+            set => margin = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value cannot be negative.");
         }
-        private double documentMargin = 60;
+        private double margin = 60;
 
         /// <summary>
         /// Gets or sets the collection of pages within the document.

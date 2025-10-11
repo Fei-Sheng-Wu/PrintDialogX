@@ -16,12 +16,25 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PrintDialogX;component/Global.xaml" />
-                <d:ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ui:FluentWindow.Resources>
+    <ui:FluentWindow.TaskbarItemInfo>
+        <TaskbarItemInfo />
+    </ui:FluentWindow.TaskbarItemInfo>
     <DockPanel>
-        <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Padding="16,10,12,10" Height="Auto" VerticalContentAlignment="Top" Icon="{ui:SymbolIcon Symbol=Print20, FontSize=18}" Title="{DynamicResource ResourceKey=StringResource_TitlePrint}" />
+        <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Height="Auto" VerticalContentAlignment="Top">
+            <ui:TitleBar.Style>
+                <Style TargetType="{x:Type TypeName=ui:TitleBar}" BasedOn="{StaticResource ResourceKey={x:Type TypeName=ui:TitleBar}}">
+                    <Setter Property="Padding" Value="16,10,12,10" />
+                    <Style.Triggers>
+                        <Trigger Property="Icon" Value="{x:Null}">
+                            <Setter Property="Padding" Value="8,10" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ui:TitleBar.Style>
+        </ui:TitleBar>
         <Border x:Name="content" DockPanel.Dock="Bottom">
             <ui:ProgressRing IsIndeterminate="True" />
         </Border>

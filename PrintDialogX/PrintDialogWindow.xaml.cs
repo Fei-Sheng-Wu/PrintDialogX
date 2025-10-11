@@ -6,8 +6,12 @@ namespace PrintDialogX
 {
     partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow
     {
-        public bool ReturnValue { get; set; } = false;
-        public int TotalPapers { get; set; } = 0;
+        public static readonly ResourceDictionary StringResources = new()
+        {
+            Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
+        };
+
+        public (bool IsSuccess, int TotalPaper)? Result { get; set; } = null;
 
         private PrintDialog? dialog;
         private Func<Task>? generation;
@@ -18,7 +22,10 @@ namespace PrintDialogX
 
             dialog = host;
             generation = callback;
-            Resources.MergedDictionaries.Add(PrintPageViewModel.StringResources);
+            Resources.MergedDictionaries.Add(StringResources);
+
+            title.Title = dialog.Interface.Title;
+            title.Icon = dialog.Interface.Icon;
         }
 
         private async void Start(object sender, RoutedEventArgs e)
@@ -26,18 +33,6 @@ namespace PrintDialogX
             if (dialog == null)
             {
                 return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(Title))
-            {
-                title.Title = Title;
-            }
-            if (Icon != null)
-            {
-                title.Icon = new Wpf.Ui.Controls.ImageIcon()
-                {
-                    Source = Icon
-                };
             }
 
             if (generation != null)
