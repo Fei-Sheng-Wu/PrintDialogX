@@ -8,19 +8,15 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:PrintDialogX"
              xmlns:enums="clr-namespace:PrintDialogX.Enums"
-             d:DataContext="{d:DesignInstance Type=local:PrintPageViewModel}"
+             d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}"
              mc:Ignorable="d"
              Unloaded="Exit">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PrintDialogX;component/Global.xaml" />
-                <d:ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Thickness x:Key="SizePageMargin">8</Thickness>
-            <Thickness x:Key="SizePageBorder">1</Thickness>
-            
             <local:ValueToDescriptionConverter x:Key="ValueToDescriptionConverter" />
             <local:ComparisonToStateConverter x:Key="EqualityToVisiblityConverter" StateTrue="{x:Static Member=Visibility.Visible}" StateFalse="{x:Static Member=Visibility.Collapsed}" />
             <local:ComparisonToStateConverter x:Key="ThresholdToBooleanConverter" Mode="Threshold" />
@@ -30,6 +26,12 @@
                 <TextBlock Text="{Binding Converter={StaticResource ResourceKey=ValueToDescriptionConverter}}" />
             </DataTemplate>
 
+            <Style TargetType="{x:Type TypeName=local:DocumentHostControl}">
+                <Setter Property="Margin" Value="8" />
+                <Setter Property="BorderBrush" Value="{StaticResource ResourceKey=CardBorderBrush}" />
+                <Setter Property="BorderThickness" Value="{StaticResource ResourceKey=CardBorderThemeThickness}" />
+                <Setter Property="Focusable" Value="True" />
+            </Style>
             <local:DocumentToContentConverter x:Key="DocumentToContentConverter" />
             <local:DocumentToDescriptionConverter x:Key="DocumentToDescriptionConverter" />
 
@@ -56,7 +58,7 @@
                             </DataTemplate>
                         </DockPanel.Resources>
                         <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey=StringResource_OptionPrinter}" />
-                        <ComboBox DockPanel.Dock="Right" Padding="0,7" Width="{DynamicResource ResourceKey=SizeOption}" SelectedItem="{Binding Path=Printer.Value, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey=StringResource_OptionPrinter}" DropDownOpened="LoadPrinters" SelectionChanged="AddPrinter">
+                        <ComboBox DockPanel.Dock="Right" Padding="0,7" Width="{DynamicResource ResourceKey=SizeOption}" SelectedItem="{Binding Path=Printer.Value, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey=StringResource_OptionPrinter}" DropDownOpened="UpdatePrinters" SelectionChanged="AddPrinter">
                             <ComboBox.ItemsSource>
                                 <CompositeCollection>
                                     <CollectionContainer Collection="{Binding Source={StaticResource ResourceKey=PrinterEntriesCollection}}" />
@@ -296,7 +298,7 @@
             </ScrollViewer.Content>
         </ScrollViewer>
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-            <ui:Button Appearance="Primary" Width="100" Content="{DynamicResource ResourceKey=StringResource_ButtonPrint}" Click="Print">
+            <ui:Button Appearance="Primary" Width="100" IsDefault="True" Content="{DynamicResource ResourceKey=StringResource_ButtonPrint}" Click="Print">
                 <ui:Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource ResourceKey=MultiBooleanConverter}">
                         <Binding Path="IsSettingsReady.Value" />
@@ -304,7 +306,7 @@
                     </MultiBinding>
                 </ui:Button.IsEnabled>
             </ui:Button>
-            <ui:Button Margin="8,0,0,0" Width="100" Content="{DynamicResource ResourceKey=StringResource_ButtonCancel}" Click="Cancel" />
+            <ui:Button Margin="8,0,0,0" Width="100" IsCancel="True" Content="{DynamicResource ResourceKey=StringResource_ButtonCancel}" Click="Cancel" />
         </StackPanel>
         <DockPanel Grid.Column="1" Grid.Row="0">
             <ui:Card DockPanel.Dock="Top" Margin="4" Padding="0">
@@ -317,39 +319,19 @@
                     <ui:Button Margin="6,4,0,4" Padding="8,6" Content="{ui:SymbolIcon Symbol=DocumentMultiple20, FontSize=18}" ToolTip="{DynamicResource ResourceKey=StringResource_ButtonTwoPages}" Click="ZoomPageTwo" />
                 </StackPanel>
             </ui:Card>
-            <ItemsControl DockPanel.Dock="Bottom" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling">
-                <ItemsControl.ItemsSource>
-                    <Binding Path="PreviewDocument.Value" Converter="{StaticResource ResourceKey=DocumentToContentConverter}">
-                        <Binding.ConverterParameter>
-                            <DataTemplate>
-                                <Border Margin="{StaticResource ResourceKey=SizePageMargin}" Padding="0" BorderBrush="{StaticResource ResourceKey=CardBorderBrush}" BorderThickness="{StaticResource ResourceKey=SizePageBorder}" d:BorderBrush="{x:Null}" d:BorderThickness="0">
-                                    <local:DocumentHostControl Content="{Binding Path=Content}" IsHitTestVisible="False" KeyboardNavigation.TabNavigation="None">
-                                        <local:DocumentHostControl.LayoutTransform>
-                                            <ScaleTransform ScaleX="{Binding Path=Scale}" ScaleY="{Binding Path=Scale}" CenterX="0" CenterY="0" />
-                                        </local:DocumentHostControl.LayoutTransform>
-                                    </local:DocumentHostControl>
-                                </Border>
-                            </DataTemplate>
-                        </Binding.ConverterParameter>
-                    </Binding>
-                </ItemsControl.ItemsSource>
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel Orientation="Vertical" Loaded="InitializeViewer" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <ItemsControl DockPanel.Dock="Bottom" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling" ItemsSource="{Binding Path=PreviewDocument.Value, Converter={StaticResource ResourceKey=DocumentToContentConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:DocumentHostPanel Orientation="Horizontal" HorizontalAlignment="Center" Pages="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
                 <ItemsControl.Template>
                     <ControlTemplate TargetType="{x:Type TypeName=ItemsControl}">
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both" CanContentScroll="True" ScrollChanged="UpdateViewer" SizeChanged="ZoomResume" PreviewMouseWheel="ZoomCustom">
-                            <ItemsPresenter />
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both" CanContentScroll="True" ScrollChanged="UpdateDocumentDescription" SizeChanged="ZoomResume" PreviewMouseWheel="UpdateViewer">
+                            <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical" UseLayoutRounding="False" Initialized="InitializeDocument" LayoutUpdated="UpdateDocument" />
                         </ScrollViewer>
                     </ControlTemplate>
                 </ItemsControl.Template>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentPresenter HorizontalAlignment="Center" Content="{Binding Path=Content}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
                 <ItemsControl.Visibility>
                     <Binding Path="IsDocumentReady.Value" Converter="{StaticResource ResourceKey=EqualityToVisiblityConverter}">
                         <Binding.ConverterParameter>
@@ -386,6 +368,12 @@
                 </Binding>
             </ui:ProgressRing.Visibility>
         </ui:ProgressRing>
-        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey=StringResource_LabelError}" Content="{Binding Path=ErrorContent.Value}" CloseButtonText="{DynamicResource ResourceKey=StringResource_ButtonOK}" Visibility="{Binding Path=IsError.Value, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" d:IsHidden="True" ButtonClicked="CloseErrorDialog" />
+        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey=StringResource_LabelError}" Content="{Binding Path=ErrorContent.Value}" CloseButtonText="{DynamicResource ResourceKey=StringResource_ButtonOK}" Visibility="{Binding Path=IsError.Value, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="CloseErrorDialog" IsVisibleChanged="UpdateDialog" />
+        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMargin="0" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey=StringResource_LabelPrinting}" CloseButtonText="{DynamicResource ResourceKey=StringResource_ButtonCancel}" Visibility="{Binding Path=IsPrinting.Value, Converter={StaticResource ResourceKey=BooleanToVisibilityConverter}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="ClosePrintingDialog" IsVisibleChanged="UpdateDialog">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Text="{Binding Path=PrintingContent.Value}" />
+                <ProgressBar Margin="0,12,0,0" Width="190" Value="{Binding Path=PrintingProgress.Value}" />
+            </StackPanel>
+        </ui:ContentDialog>
     </Grid>
 </UserControl>

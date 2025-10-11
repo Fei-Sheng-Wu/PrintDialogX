@@ -24,8 +24,8 @@ namespace PrintDialogX
             public Enums.Size FallbackSize { get; set; } = new()
             {
                 DefinedName = Enums.Size.DefinedSize.ISOA4,
-                Width = Enums.Size.ConvertInch(8.27),
-                Height = Enums.Size.ConvertInch(11.69)
+                Width = 8.27 * 96,
+                Height = 11.69 * 96
             };
             public Enums.Color FallbackColor { get; set; } = Enums.Color.Color;
             public Enums.Quality FallbackQuality { get; set; } = Enums.Quality.Automatic;
@@ -1228,6 +1228,7 @@ namespace PrintDialogX.Enums
 
         public override readonly int GetHashCode()
         {
+            //TODO: implement
             return base.GetHashCode();
         }
 
@@ -1239,11 +1240,6 @@ namespace PrintDialogX.Enums
         public static bool operator !=(Size? x, Size? y)
         {
             return !x.Equals(y);
-        }
-
-        public static double ConvertInch(double value)
-        {
-            return value * 96;
         }
     }
 
