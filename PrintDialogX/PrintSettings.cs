@@ -20,13 +20,7 @@ namespace PrintDialogX
             private int copiesMaximum = int.MaxValue;
             public bool FallbackIsCollationSupported { get; set; } = true;
 
-            //TODO: create from defined name alone
-            public Enums.Size FallbackSize { get; set; } = new()
-            {
-                DefinedName = Enums.Size.DefinedSize.ISOA4,
-                Width = 8.27 * 96,
-                Height = 11.69 * 96
-            };
+            public Enums.Size FallbackSize { get; set; } = new(Enums.Size.DefinedSize.ISOA4);
             public Enums.Color FallbackColor { get; set; } = Enums.Color.Color;
             public Enums.Quality FallbackQuality { get; set; } = Enums.Quality.Automatic;
             public bool FallbackIsDoubleSidedSupported { get; set; } = true;
@@ -1211,9 +1205,195 @@ namespace PrintDialogX.Enums
 
         public double Height { get; set; }
 
-        public readonly bool Equals(DefinedSize? name, double? width, double? height)
+        public Size(DefinedSize name)
         {
-            return (name != null && name == DefinedName) || (width != null && height != null && Math.Max(Math.Abs(width.Value - Width), Math.Abs(height.Value - Height)) < 0.5);
+            (double width, double height) = name switch
+            {
+                DefinedSize.ISOA0 => (3178.5826772, 4493.8582677),
+                DefinedSize.ISOA1 => (2245.0393701, 3178.5826772),
+                DefinedSize.ISOA10 => (98.267716535, 139.84251969),
+                DefinedSize.ISOA2 => (1587.4015748, 2245.0393701),
+                DefinedSize.ISOA3 => (1122.519685, 1587.4015748),
+                DefinedSize.ISOA3Rotated => (1587.4015748, 1122.519685),
+                DefinedSize.ISOA3Extra => (1217.007874, 1681.8897638),
+                DefinedSize.ISOA4 => (793.7007874, 1122.519685),
+                DefinedSize.ISOA4Rotated => (1122.519685, 793.7007874),
+                DefinedSize.ISOA4Extra => (889.92, 1218.24),
+                DefinedSize.ISOA5 => (559.37007874, 793.7007874),
+                DefinedSize.ISOA5Rotated => (793.7007874, 559.37007874),
+                DefinedSize.ISOA5Extra => (657.63779528, 888.18897638),
+                DefinedSize.ISOA6 => (396.8503937, 559.37007874),
+                DefinedSize.ISOA6Rotated => (559.37007874, 396.8503937),
+                DefinedSize.ISOA7 => (279.68503937, 396.8503937),
+                DefinedSize.ISOA8 => (196.53543307, 279.68503937),
+                DefinedSize.ISOA9 => (139.84251969, 196.53543307),
+                DefinedSize.ISOB0 => (3779.5275591, 5344.2519685),
+                DefinedSize.ISOB1 => (2672.1259843, 3779.5275591),
+                DefinedSize.ISOB10 => (117.16535433, 166.2992126),
+                DefinedSize.ISOB2 => (1889.7637795, 2672.1259843),
+                DefinedSize.ISOB3 => (1334.1732283, 1889.7637795),
+                DefinedSize.ISOB4 => (944.88188976, 1334.1732283),
+                DefinedSize.ISOB4Envelope => (944.88188976, 1334.1732283),
+                DefinedSize.ISOB5Envelope => (665.19685039, 944.88188976),
+                DefinedSize.ISOB5Extra => (759.68503937, 1043.1496063),
+                DefinedSize.ISOB7 => (332.5984252, 472.44094488),
+                DefinedSize.ISOB8 => (234.33070866, 332.5984252),
+                DefinedSize.ISOB9 => (166.2992126, 234.33070866),
+                DefinedSize.ISOC0 => (3465.8267717, 4902.0472441),
+                DefinedSize.ISOC1 => (2449.1338583, 3465.8267717),
+                DefinedSize.ISOC10 => (105.82677165, 151.18110236),
+                DefinedSize.ISOC2 => (1731.023622, 2449.1338583),
+                DefinedSize.ISOC3 => (1224.5669291, 1731.023622),
+                DefinedSize.ISOC3Envelope => (1224.5669291, 1731.023622),
+                DefinedSize.ISOC4 => (865.51181102, 1224.5669291),
+                DefinedSize.ISOC4Envelope => (865.51181102, 1224.5669291),
+                DefinedSize.ISOC5 => (612.28346457, 865.51181102),
+                DefinedSize.ISOC5Envelope => (612.28346457, 865.51181102),
+                DefinedSize.ISOC6 => (430.86614173, 612.28346457),
+                DefinedSize.ISOC6Envelope => (430.86614173, 612.28346457),
+                DefinedSize.ISOC6C5Envelope => (430.86614173, 865.51181102),
+                DefinedSize.ISOC7 => (306.14173228, 430.86614173),
+                DefinedSize.ISOC8 => (215.43307087, 306.14173228),
+                DefinedSize.ISOC9 => (151.18110236, 215.43307087),
+                DefinedSize.ISODLEnvelope => (415.7480315, 831.49606299),
+                DefinedSize.ISODLEnvelopeRotated => (831.49606299, 415.7480315),
+                DefinedSize.ISOSRA3 => (1209.4488189, 1700.7874016),
+                DefinedSize.JapanQuadrupleHagakiPostcard => (755.90551181, 559.37007874),
+                DefinedSize.JISB0 => (3892.9133858, 5502.992126),
+                DefinedSize.JISB1 => (2751.496063, 3892.9133858),
+                DefinedSize.JISB10 => (120.94488189, 170.07874016),
+                DefinedSize.JISB2 => (1946.4566929, 2751.496063),
+                DefinedSize.JISB3 => (1375.7480315, 1946.4566929),
+                DefinedSize.JISB4 => (971.33858268, 1375.7480315),
+                DefinedSize.JISB4Rotated => (1375.7480315, 971.33858268),
+                DefinedSize.JISB5 => (687.87401575, 971.33858268),
+                DefinedSize.JISB5Rotated => (971.33858268, 687.87401575),
+                DefinedSize.JISB6 => (483.77952756, 687.87401575),
+                DefinedSize.JISB6Rotated => (687.87401575, 483.77952756),
+                DefinedSize.JISB7 => (343.93700787, 483.77952756),
+                DefinedSize.JISB8 => (241.88976378, 343.93700787),
+                DefinedSize.JISB9 => (170.07874016, 241.88976378),
+                DefinedSize.JapanChou3Envelope => (453.54330709, 888.18897638),
+                DefinedSize.JapanChou3EnvelopeRotated => (888.18897638, 453.54330709),
+                DefinedSize.JapanChou4Envelope => (340.15748031, 774.80314961),
+                DefinedSize.JapanChou4EnvelopeRotated => (774.80314961, 340.15748031),
+                DefinedSize.JapanHagakiPostcard => (377.95275591, 559.37007874),
+                DefinedSize.JapanHagakiPostcardRotated => (559.37007874, 377.95275591),
+                DefinedSize.JapanKaku2Envelope => (907.08661417, 1254.8031496),
+                DefinedSize.JapanKaku2EnvelopeRotated => (1254.8031496, 907.08661417),
+                DefinedSize.JapanKaku3Envelope => (816.37795276, 1046.9291339),
+                DefinedSize.JapanKaku3EnvelopeRotated => (1046.9291339, 816.37795276),
+                DefinedSize.JapanYou4Envelope => (396.8503937, 888.18897638),
+                DefinedSize.NorthAmerica10x11 => (960, 1056),
+                DefinedSize.NorthAmerica10x14 => (960, 1344),
+                DefinedSize.NorthAmerica11x17 => (1056, 1632),
+                DefinedSize.NorthAmerica9x11 => (864, 1056),
+                DefinedSize.NorthAmericaArchitectureASheet => (864, 1152),
+                DefinedSize.NorthAmericaArchitectureBSheet => (1152, 1728),
+                DefinedSize.NorthAmericaArchitectureCSheet => (1728, 2304),
+                DefinedSize.NorthAmericaArchitectureDSheet => (2304, 3456),
+                DefinedSize.NorthAmericaArchitectureESheet => (3456, 4608),
+                DefinedSize.NorthAmericaCSheet => (1632, 2112),
+                DefinedSize.NorthAmericaDSheet => (2112, 3264),
+                DefinedSize.NorthAmericaESheet => (3264, 4224),
+                DefinedSize.NorthAmericaExecutive => (696, 1008),
+                DefinedSize.NorthAmericaGermanLegalFanfold => (816, 1248),
+                DefinedSize.NorthAmericaGermanStandardFanfold => (816, 1152),
+                DefinedSize.NorthAmericaLegal => (816, 1344),
+                DefinedSize.NorthAmericaLegalExtra => (912, 1440),
+                DefinedSize.NorthAmericaLetter => (816, 1056),
+                DefinedSize.NorthAmericaLetterRotated => (1056, 816),
+                DefinedSize.NorthAmericaLetterExtra => (912, 1152),
+                DefinedSize.NorthAmericaLetterPlus => (816, 1218.24),
+                DefinedSize.NorthAmericaMonarchEnvelope => (372, 720),
+                DefinedSize.NorthAmericaNote => (816, 1056),
+                DefinedSize.NorthAmericaNumber10Envelope => (396, 912),
+                DefinedSize.NorthAmericaNumber10EnvelopeRotated => (912, 396),
+                DefinedSize.NorthAmericaNumber9Envelope => (372, 852),
+                DefinedSize.NorthAmericaNumber11Envelope => (432, 996),
+                DefinedSize.NorthAmericaNumber12Envelope => (456, 1056),
+                DefinedSize.NorthAmericaNumber14Envelope => (480, 1104),
+                DefinedSize.NorthAmericaPersonalEnvelope => (348, 624),
+                DefinedSize.NorthAmericaQuarto => (812.5984252, 1039.3700787),
+                DefinedSize.NorthAmericaStatement => (528, 816),
+                DefinedSize.NorthAmericaSuperA => (857.95275591, 1345.511811),
+                DefinedSize.NorthAmericaSuperB => (1152.7559055, 1840.6299213),
+                DefinedSize.NorthAmericaTabloid => (1056, 1632),
+                DefinedSize.NorthAmericaTabloidExtra => (1122.24, 1728),
+                DefinedSize.OtherMetricA4Plus => (793.7007874, 1247.2440945),
+                DefinedSize.OtherMetricA3Plus => (1243.4645669, 1825.511811),
+                DefinedSize.OtherMetricFolio => (816, 1248),
+                DefinedSize.OtherMetricInviteEnvelope => (831.49606299, 831.49606299),
+                DefinedSize.OtherMetricItalianEnvelope => (415.7480315, 869.29133858),
+                DefinedSize.PRC1Envelope => (385.51181102, 623.62204724),
+                DefinedSize.PRC1EnvelopeRotated => (623.62204724, 385.51181102),
+                DefinedSize.PRC10Envelope => (1224.5669291, 1731.023622),
+                DefinedSize.PRC10EnvelopeRotated => (1731.023622, 1224.5669291),
+                DefinedSize.PRC16K => (551.81102362, 812.5984252),
+                DefinedSize.PRC16KRotated => (812.5984252, 551.81102362),
+                DefinedSize.PRC2Envelope => (385.51181102, 665.19685039),
+                DefinedSize.PRC2EnvelopeRotated => (665.19685039, 385.51181102),
+                DefinedSize.PRC32K => (366.61417323, 570.70866142),
+                DefinedSize.PRC32KRotated => (570.70866142, 366.61417323),
+                DefinedSize.PRC32KBig => (366.61417323, 570.70866142),
+                DefinedSize.PRC3Envelope => (472.44094488, 665.19685039),
+                DefinedSize.PRC3EnvelopeRotated => (665.19685039, 472.44094488),
+                DefinedSize.PRC4Envelope => (415.7480315, 786.14173228),
+                DefinedSize.PRC4EnvelopeRotated => (786.14173228, 415.7480315),
+                DefinedSize.PRC5Envelope => (415.7480315, 831.49606299),
+                DefinedSize.PRC5EnvelopeRotated => (831.49606299, 415.7480315),
+                DefinedSize.PRC6Envelope => (453.54330709, 869.29133858),
+                DefinedSize.PRC6EnvelopeRotated => (869.29133858, 453.54330709),
+                DefinedSize.PRC7Envelope => (604.72440945, 869.29133858),
+                DefinedSize.PRC7EnvelopeRotated => (869.29133858, 604.72440945),
+                DefinedSize.PRC8Envelope => (453.54330709, 1167.8740157),
+                DefinedSize.PRC8EnvelopeRotated => (1167.8740157, 453.54330709),
+                DefinedSize.PRC9Envelope => (865.51181102, 1224.5669291),
+                DefinedSize.PRC9EnvelopeRotated => (1224.5669291, 865.51181102),
+                DefinedSize.Roll04Inch => (384, 1056),
+                DefinedSize.Roll06Inch => (576, 1056),
+                DefinedSize.Roll08Inch => (768, 1056),
+                DefinedSize.Roll12Inch => (1152, 2304),
+                DefinedSize.Roll15Inch => (1440, 2304),
+                DefinedSize.Roll18Inch => (1728, 2304),
+                DefinedSize.Roll22Inch => (2112, 2304),
+                DefinedSize.Roll24Inch => (2304, 2304),
+                DefinedSize.Roll30Inch => (2880, 3456),
+                DefinedSize.Roll36Inch => (3456, 3456),
+                DefinedSize.Roll54Inch => (5184, 3456),
+                DefinedSize.JapanDoubleHagakiPostcard => (755.90551181, 559.37007874),
+                DefinedSize.JapanDoubleHagakiPostcardRotated => (559.37007874, 755.90551181),
+                DefinedSize.JapanLPhoto => (336.37795276, 480),
+                DefinedSize.Japan2LPhoto => (480, 672.75590551),
+                DefinedSize.JapanYou1Envelope => (453.54330709, 888.18897638),
+                DefinedSize.JapanYou2Envelope => (396.8503937, 559.37007874),
+                DefinedSize.JapanYou3Envelope => (370.39370079, 559.37007874),
+                DefinedSize.JapanYou4EnvelopeRotated => (888.18897638, 396.8503937),
+                DefinedSize.JapanYou6Envelope => (370.39370079, 718.11023622),
+                DefinedSize.JapanYou6EnvelopeRotated => (718.11023622, 370.39370079),
+                DefinedSize.NorthAmerica4x6 => (384, 576),
+                DefinedSize.NorthAmerica4x8 => (384, 768),
+                DefinedSize.NorthAmerica5x7 => (480, 672),
+                DefinedSize.NorthAmerica8x10 => (768, 960),
+                DefinedSize.NorthAmerica10x12 => (960, 1152),
+                DefinedSize.NorthAmerica14x17 => (1344, 1632),
+                DefinedSize.BusinessCard => (279.68503937, 196.53543307),
+                DefinedSize.CreditCard => (324, 204),
+                _ => (0, 0)
+            };
+            DefinedName = name;
+            Width = width;
+            Height = height;
+        }
+
+        public readonly (decimal Width, decimal Height) GetRoundedSize(int digits = 1)
+        {
+            return (Math.Round((decimal)Width, digits), Math.Round((decimal)Height, digits));
+        }
+
+        public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
+        {
+            return (name != null && name == DefinedName) || (width != null && height != null && (Math.Round((decimal)width.Value, digits), Math.Round((decimal)height.Value, digits)) == GetRoundedSize(digits));
         }
 
         public readonly bool Equals(PageMediaSize? size)
@@ -1228,8 +1408,7 @@ namespace PrintDialogX.Enums
 
         public override readonly int GetHashCode()
         {
-            //TODO: implement
-            return base.GetHashCode();
+            return (DefinedName, GetRoundedSize()).GetHashCode();
         }
 
         public static bool operator ==(Size? x, Size? y)
