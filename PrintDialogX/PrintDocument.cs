@@ -40,10 +40,7 @@ namespace PrintDialogX
         /// </summary>
         public ICollection<PrintPage> Pages { get; set; } = [];
 
-        public int PageCount
-        {
-            get => Pages.Count;
-        }
+        public int PageCount { get => Pages.Count; }
 
         //TODO: document refresh event listener
         public event EventHandler<PrintSettings>? OnPrintSettingsChanged = null;
@@ -65,15 +62,7 @@ namespace PrintDialogX
         public FrameworkElement? Content
         {
             get => content;
-            set
-            {
-                if (value != null && VisualTreeHelper.GetParent(value) != null)
-                {
-                    throw new PrintDocumentException(value, "The value is already the child of another element.");
-                }
-
-                content = value;
-            }
+            set => content = value == null || VisualTreeHelper.GetParent(value) == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
         }
         private FrameworkElement? content;
     }

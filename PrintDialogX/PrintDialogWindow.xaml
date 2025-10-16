@@ -35,9 +35,9 @@
                 </Style>
             </ui:TitleBar.Style>
         </ui:TitleBar>
-        <Border x:Name="content" DockPanel.Dock="Bottom">
+        <Decorator x:Name="content" DockPanel.Dock="Bottom">
             <ui:ProgressRing IsIndeterminate="True" />
-        </Border>
+        </Decorator>
     </DockPanel>
 </ui:FluentWindow>
 

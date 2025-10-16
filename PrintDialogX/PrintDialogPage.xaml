@@ -188,11 +188,11 @@
                         <DockPanel.Resources>
                             <local:SizeToDescriptionConverter x:Key="SizeToDescriptionConverter" />
                         </DockPanel.Resources>
-                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey=StringResource_SizeOption}" />
-                        <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey=SizeOption}" ItemsSource="{Binding Path=SizeEntries.Collection}" SelectedValue="{Binding Path=SizeEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey=StringResource_SizeOption}" IsEnabled="{Binding Path=IsSettingsReady.Value}">
+                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey=StringResource_OptionSize}" />
+                        <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey=SizeOption}" ItemsSource="{Binding Path=SizeEntries.Collection}" SelectedValue="{Binding Path=SizeEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey=StringResource_OptionSize}" IsEnabled="{Binding Path=IsSettingsReady.Value}">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Converter={StaticResource ResourceKey=SizeToDescriptionConverter}}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource ResourceKey=SizeToDescriptionConverter}, ConverterParameter=False}" ToolTip="{Binding Converter={StaticResource ResourceKey=SizeToDescriptionConverter}, ConverterParameter=True}" />
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
                         </ComboBox>
