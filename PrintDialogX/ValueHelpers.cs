@@ -220,6 +220,13 @@ namespace PrintDialogX
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
+        public class PrinterIcon(ImageSource? icon, double opacity, bool isSmall)
+        {
+            public ImageSource? Icon { get; set; } = icon;
+            public double Opacity { get; set; } = opacity;
+            public double Size { get; set; } = isSmall ? 18 : 36;
+        }
+
         public enum PrinterType
         {
             Printer = 16,
@@ -227,13 +234,6 @@ namespace PrintDialogX
             PrinterFile = 54,
             Fax = 52,
             FaxNetwork = 53
-        }
-
-        public class PrinterIcon(ImageSource? icon, double opacity, bool isSmall)
-        {
-            public ImageSource? Icon { get; set; } = icon;
-            public double Opacity { get; set; } = opacity;
-            public double Size { get; set; } = isSmall ? 18 : 36;
         }
 
         public static readonly Dictionary<(PrinterType, bool), ImageSource> Cache = [];
@@ -458,7 +458,9 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value) : size.FallbackName;
-            return name ?? $"{PrintDialogWindow.StringResources["StringResource_PrefixCustom"]}{Math.Round(size.Width * 2.54 / 96, 2)} × {Math.Round(size.Height * 2.54 / 96, 2)} cm";
+            string description = $"{Math.Round(size.Width * 2.54 / 96, 2)} × {Math.Round(size.Height * 2.54 / 96, 2)} cm";
+
+            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{PrintDialogWindow.StringResources["StringResource_PrefixCustom"]}{description}";
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -572,11 +574,11 @@ namespace PrintDialogX
 
             Width = page.Content.Width * page.Scale;
             Height = page.Content.Height * page.Scale;
-            Loaded += (x, e) => CompositionTarget.Rendering += UpdateContent;
-            Unloaded += (x, e) => CompositionTarget.Rendering -= UpdateContent;
+            Loaded += (x, e) => CompositionTarget.Rendering += UpdateViewport;
+            Unloaded += (x, e) => CompositionTarget.Rendering -= UpdateViewport;
         }
 
-        private void UpdateContent(object? sender, EventArgs e)
+        private void UpdateViewport(object? sender, EventArgs e)
         {
             if (Parameters.Viewer == null)
             {
@@ -644,15 +646,15 @@ namespace PrintDialogX
 
     internal class DocumentHostPanel : StackPanel
     {
-        public class Row(IEnumerable<PrintDialogViewModel.ModelDocument.Page> pages, double scale)
+        public class DocumentRow(IEnumerable<PrintDialogViewModel.ModelDocument.Page> pages, double scale)
         {
             public IEnumerable<PrintDialogViewModel.ModelDocument.Page> Pages { get; set; } = pages;
             public double Scale { get; set; } = scale;
         }
 
-        public static readonly DependencyProperty PagesProperty = DependencyProperty.Register(nameof(Pages), typeof(Row), typeof(DocumentHostPanel), new(null, (x, e) =>
+        public static readonly DependencyProperty PagesProperty = DependencyProperty.Register(nameof(Pages), typeof(DocumentRow), typeof(DocumentHostPanel), new(null, (x, e) =>
         {
-            if (x is not DocumentHostPanel panel || e.NewValue is not Row row)
+            if (x is not DocumentHostPanel panel || e.NewValue is not DocumentRow row)
             {
                 return;
             }
@@ -664,9 +666,9 @@ namespace PrintDialogX
             }
         }));
 
-        public Row Pages
+        public DocumentRow Pages
         {
-            get => (Row)GetValue(PagesProperty);
+            get => (DocumentRow)GetValue(PagesProperty);
             set => SetValue(PagesProperty, value);
         }
     }
@@ -680,7 +682,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            List<DocumentHostPanel.Row> rows = [];
+            List<DocumentHostPanel.DocumentRow> rows = [];
             document.UseDocument(x =>
             {
                 for (int i = 0; i < x.Count; i += document.ColumnCount)
