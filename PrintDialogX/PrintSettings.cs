@@ -5,31 +5,69 @@ using System.ComponentModel;
 namespace PrintDialogX
 {
     /// <summary>
-    /// Defines the print settings that can be used by a <see cref="PrintDialog"/> instance.
+    /// Initializes a new instance of the <see cref="PrintSettings"/> class.
     /// </summary>
-    public class PrintSettings
+    public class PrintSettings()
     {
-        //TODO: documentation
-        public class FallbackSettings
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FallbackSettings"/> class.
+        /// </summary>
+        public class FallbackSettings()
         {
+            /// <summary>
+            /// Gets or sets the fallback value of maximum copies.
+            /// </summary>
             public int FallbackMaximumCopies
             {
                 get => copiesMaximum;
                 set => copiesMaximum = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(FallbackMaximumCopies), "The value must be positive.");
             }
             private int copiesMaximum = int.MaxValue;
+
+            /// <summary>
+            /// Gets or sets the fallback value of whether collation is supported.
+            /// </summary>
             public bool FallbackIsCollationSupported { get; set; } = true;
 
+            /// <summary>
+            /// Gets or sets the fallback value of size.
+            /// </summary>
             public Enums.Size FallbackSize { get; set; } = new(Enums.Size.DefinedSize.ISOA4);
+
+            /// <summary>
+            /// Gets or sets the fallback value of color.
+            /// </summary>
             public Enums.Color FallbackColor { get; set; } = Enums.Color.Color;
+
+            /// <summary>
+            /// Gets or sets the fallback value of quality.
+            /// </summary>
             public Enums.Quality FallbackQuality { get; set; } = Enums.Quality.Automatic;
+
+            /// <summary>
+            /// Gets or sets the fallback value of whether double-sided is supported.
+            /// </summary>
             public bool FallbackIsDoubleSidedSupported { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets the fallback value of type.
+            /// </summary>
             public Enums.Type FallbackType { get; set; } = Enums.Type.AutoSelect;
+
+            /// <summary>
+            /// Gets or sets the fallback value of source.
+            /// </summary>
             public Enums.Source FallbackSource { get; set; } = Enums.Source.AutoSelect;
         }
 
+        /// <summary>
+        /// Gets or sets the fallback settings.
+        /// </summary>
         public FallbackSettings Fallbacks { get; set; } = new();
 
+        /// <summary>
+        /// Gets or sets the number of copies.
+        /// </summary>
         public int Copies
         {
             get => copies;
@@ -37,9 +75,19 @@ namespace PrintDialogX
         }
         private int copies = 1;
 
+        /// <summary>
+        /// Gets or sets the collation choice.
+        /// </summary>
         public Enums.Collation Collation { get; set; } = Enums.Collation.Collated;
 
+        /// <summary>
+        /// Gets or sets the pages to be printed.
+        /// </summary>
         public Enums.Pages Pages { get; set; } = Enums.Pages.AllPages;
+
+        /// <summary>
+        /// Gets or sets the custom pages to be printed, if <see cref="Pages"/> is set to <see cref="Enums.Pages.CustomPages"/>.
+        /// </summary>
         public string CustomPages
         {
             get => pagesCustom;
@@ -48,36 +96,43 @@ namespace PrintDialogX
         private string pagesCustom = string.Empty;
 
         /// <summary>
-        /// Gets or sets the value indicating how the page content is oriented for printing.
+        /// Gets or sets the layout.
         /// </summary>
         public Enums.Layout Layout { get; set; } = Enums.Layout.Portrait;
 
         /// <summary>
-        /// Gets or sets the page size for the paper or other print media that the printer uses for printing.
+        /// Gets or sets the size.
         /// </summary>
         public Enums.Size? Size { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value indicating how the printer handles content that has color or shades of gray.
+        /// Gets or sets the color.
         /// </summary>
         public Enums.Color? Color { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the value indicating the quality of output for printing.
+        /// Gets or sets the quality.
         /// </summary>
         public Enums.Quality? Quality { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the number of pages that print on each printed side of a sheet of paper.
+        /// Gets or sets the number of pages per sheet.
         /// </summary>
         public Enums.PagesPerSheet PagesPerSheet { get; set; } = Enums.PagesPerSheet.One;
 
         /// <summary>
-        /// Gets or sets the value indicating how a printer arranges multiple pages that print on each side of a sheet of paper.
+        /// Gets or sets the page order.
         /// </summary>
         public Enums.PageOrder PageOrder { get; set; } = Enums.PageOrder.Horizontal;
 
+        /// <summary>
+        /// Gets or sets the scale.
+        /// </summary>
         public Enums.Scale Scale { get; set; } = Enums.Scale.AutoFit;
+
+        /// <summary>
+        /// Gets or sets the custom scale, if <see cref="Scale"/> is set to <see cref="Enums.Scale.Custom"/>.
+        /// </summary>
         public int CustomScale
         {
             get => scaleCustom;
@@ -85,7 +140,14 @@ namespace PrintDialogX
         }
         private int scaleCustom = 100;
 
+        /// <summary>
+        /// Gets or sets the margin.
+        /// </summary>
         public Enums.Margin Margin { get; set; } = Enums.Margin.Default;
+
+        /// <summary>
+        /// Gets or sets the custom margin, if <see cref="Margin"/> is set to <see cref="Enums.Margin.Custom"/>.
+        /// </summary>
         public int CustomMargin
         {
             get => marginCustom;
@@ -94,15 +156,18 @@ namespace PrintDialogX
         private int marginCustom = 0;
 
         /// <summary>
-        /// Gets or sets the value indicating what kind of two-sided printing, if any, that the printer uses for printing.
+        /// Gets or sets the double-sided choice.
         /// </summary>
         public Enums.DoubleSided DoubleSided { get; set; } = Enums.DoubleSided.OneSided;
 
         /// <summary>
-        /// Gets or sets the value indicating the type of printing paper or other media that the printer uses for printing.
+        /// Gets or sets the type.
         /// </summary>
         public Enums.Type? Type { get; set; } = null;
 
+        /// <summary>
+        /// Gets or sets the source.
+        /// </summary>
         public Enums.Source? Source { get; set; } = null;
     }
 }
@@ -110,7 +175,7 @@ namespace PrintDialogX
 namespace PrintDialogX.Enums
 {
     /// <summary>
-    /// Specifies whether a printer collates output when it prints multiple copies of a multi-page print job.
+    /// Specifies whether the printer collates output when it prints multiple copies of a multi-page print job.
     /// </summary>
     public enum Collation
     {
@@ -170,10 +235,13 @@ namespace PrintDialogX.Enums
     }
 
     /// <summary>
-    /// Specifies the page size or roll width of the paper or other print media.
+    /// Initializes a new instance of the <see cref="Size"/> struct.
     /// </summary>
-    public struct Size
+    public struct Size()
     {
+        /// <summary>
+        /// Specifies the defined page size or roll width of the paper or other print media.
+        /// </summary>
         public enum DefinedSize
         {
             /// <summary>
@@ -1197,15 +1265,31 @@ namespace PrintDialogX.Enums
             CreditCard
         }
 
+        /// <summary>
+        /// Gets or sets the defined size associated with the size.
+        /// </summary>
         public DefinedSize? DefinedName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the fallback name of the size.
+        /// </summary>
         public string? FallbackName { get; set; }
 
+        /// <summary>
+        /// Gets or sets the width of the size.
+        /// </summary>
         public double Width { get; set; }
 
+        /// <summary>
+        /// Gets or sets the height of the size.
+        /// </summary>
         public double Height { get; set; }
 
-        public Size(DefinedSize name)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Size"/> struct.
+        /// </summary>
+        /// <param name="name">The defined size to set to.</param>
+        public Size(DefinedSize name) : this()
         {
             (double width, double height) = name switch
             {
@@ -1386,16 +1470,34 @@ namespace PrintDialogX.Enums
             Height = height;
         }
 
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
         public readonly (decimal Width, decimal Height) GetRoundedSize(int digits = 1)
         {
             return (Math.Round((decimal)Width, digits), Math.Round((decimal)Height, digits));
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="name">The defined size of the specified object.</param>
+        /// <param name="width">The width of the specified object.</param>
+        /// <param name="height">The height of the specified object.</param>
+        /// <param name="digits">The number of decimal places to be used for rounding.</param>
+        /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
         {
             return (name != null && name == DefinedName) || (width != null && height != null && (Math.Round((decimal)width.Value, digits), Math.Round((decimal)height.Value, digits)) == GetRoundedSize(digits));
         }
 
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="size">The specified object.</param>
+        /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(PageMediaSize? size)
         {
             return size != null && Equals(size.PageMediaSizeName != null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.SizeNameMapping) : null, size.Width, size.Height);
@@ -1566,6 +1668,9 @@ namespace PrintDialogX.Enums
         VerticalReverse
     }
 
+    /// <summary>
+    /// Specifies the percentage by which the printer enlarges or reduces the print content on a page.
+    /// </summary>
     public enum Scale
     {
         [Description("StringResource_EntryAutoFit")]
@@ -1593,6 +1698,9 @@ namespace PrintDialogX.Enums
         Custom
     }
 
+    /// <summary>
+    /// Specifies the size of the unprinted margin around the edge of a page.
+    /// </summary>
     public enum Margin
     {
         [Description("StringResource_EntryDefault")]
@@ -1609,7 +1717,7 @@ namespace PrintDialogX.Enums
     }
 
     /// <summary>
-    /// Specifies whether a printer uses one-sided printing or some type of two-sided (duplex) printing.
+    /// Specifies whether the printer uses one-sided printing or some type of two-sided (duplex) printing.
     /// </summary>
     public enum DoubleSided
     {

@@ -273,6 +273,7 @@ namespace PrintDialogX
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
 
             DataContext = model;
+            Resources.MergedDictionaries.Add(PrintDialogViewModel.StringResources);
 
             DocumentHostControl.Parameters = new();
 
