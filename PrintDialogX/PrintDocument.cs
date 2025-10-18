@@ -10,10 +10,7 @@ namespace PrintDialogX
     /// </summary>
     public class PrintDocument
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrintDocument"/> class.
-        /// </summary>
-        public PrintDocument() { }
+        public event EventHandler<PrintSettings>? PrintSettingsChanged = null;
 
         /// <summary>
         /// Gets or sets the name of the document, which will be visible in the print queue of the printer.
@@ -42,8 +39,10 @@ namespace PrintDialogX
 
         public int PageCount { get => Pages.Count; }
 
-        //TODO: document refresh event listener
-        public event EventHandler<PrintSettings>? OnPrintSettingsChanged = null;
+        public void OnPrintSettingsChanged(PrintSettings settings)
+        {
+            PrintSettingsChanged?.Invoke(this, settings);
+        }
     }
 
     /// <summary>
@@ -51,11 +50,6 @@ namespace PrintDialogX
     /// </summary>
     public class PrintPage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrintPage"/> class.
-        /// </summary>
-        public PrintPage() { }
-
         /// <summary>
         /// Gets or sets the content of the page.
         /// </summary>

@@ -1,45 +1,86 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Shell;
 
 namespace PrintDialogX
 {
-    partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow
+    internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
-        public static readonly ResourceDictionary StringResources = new()
-        {
-            Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
-        };
+        private KeyEventHandler? handler = null;
+        private Func<Task<FrameworkElement>>? generation = null;
+        private PrintDialogResult result = new();
 
-        public (bool IsSuccess, int TotalPaper)? Result { get; set; } = null;
-
-        private PrintDialog? dialog;
-        private Func<Task>? generation;
-
-        public void Create(PrintDialog host, Func<Task>? callback)
+        public PrintDialogWindow()
         {
             InitializeComponent();
-
-            dialog = host;
-            generation = callback;
-            Resources.MergedDictionaries.Add(StringResources);
-
-            title.Title = dialog.Interface.Title;
-            title.Icon = dialog.Interface.Icon;
         }
 
-        private async void Start(object sender, RoutedEventArgs e)
+        private void HandleShortcuts(object sender, KeyEventArgs e)
         {
-            if (dialog == null)
+            handler?.Invoke(sender, e);
+        }
+
+        private async void Attach(object sender, RoutedEventArgs e)
+        {
+            if (generation == null)
             {
                 return;
             }
 
-            if (generation != null)
+            content.Child = await generation();
+        }
+
+        public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> callback)
+        {
+            handler = null;
+            generation = callback;
+            result = new();
+
+            title.Title = dialog.InterfaceSettings.Title;
+            title.Icon = dialog.InterfaceSettings.Icon;
+            content.Child = new Wpf.Ui.Controls.ProgressRing()
             {
-                await generation.Invoke();
+                IsIndeterminate = true
+            };
+
+            if (isDialog)
+            {
+                ShowDialog();
             }
-            content.Child = new PrintDialogPage(this, dialog);
+            else
+            {
+                Show();
+            }
+        }
+
+        public PrintDialogResult GetResult()
+        {
+            return result;
+        }
+
+        public void SetResult(PrintDialogResult value)
+        {
+            result = value;
+            Close();
+        }
+
+        public void SetProgress(IPrintDialogHost.PrintDialogProgress progress)
+        {
+            TaskbarItemInfo.ProgressState = progress.State switch
+            {
+                IPrintDialogHost.PrintDialogProgressState.Indeterminate => TaskbarItemProgressState.Indeterminate,
+                IPrintDialogHost.PrintDialogProgressState.Normal => TaskbarItemProgressState.Normal,
+                IPrintDialogHost.PrintDialogProgressState.Error => TaskbarItemProgressState.Error,
+                _ => TaskbarItemProgressState.None
+            };
+            TaskbarItemInfo.ProgressValue = progress.Value / 100;
+        }
+
+        public void SetShortcutHandler(KeyEventHandler value)
+        {
+            handler = value;
         }
     }
 }

@@ -13,7 +13,6 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Xps;
 using System.Windows.Input;
-using System.Windows.Shell;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -23,8 +22,13 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal class PrintDialogViewModel(Dispatcher dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action printerCallback, Action settingsCallback)
+    internal class PrintDialogViewModel(Dispatcher dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action printerCallback, Action settingsVisualCallback, Action settingsInfoCallback)
     {
+        public static readonly ResourceDictionary StringResources = new()
+        {
+            Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
+        };
+
         public class ModelValue<T>(Dispatcher dispatcher, T initial, Action? callback = null) : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged = null;
@@ -43,12 +47,12 @@ namespace PrintDialogX
 
                     current = value;
 
-                    NotifyUpdate();
+                    OnPropertyChanged();
                     callback?.Invoke();
                 }
             }
 
-            public void NotifyUpdate()
+            public void OnPropertyChanged()
             {
                 dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new(nameof(Value))));
             }
@@ -84,12 +88,12 @@ namespace PrintDialogX
             private T? current = selection ?? null;
             private bool isCustomized = false;
 
-            public T? Selection
+            public T Selection
             {
-                get => current;
+                get => current ?? fallback;
                 set
                 {
-                    if (value == null || Equals(current, value))
+                    if (Equals(current, value))
                     {
                         return;
                     }
@@ -97,7 +101,7 @@ namespace PrintDialogX
                     isCustomized = true;
                     current = value;
 
-                    NotifyUpdate(nameof(Selection));
+                    OnPropertyChanged(nameof(Selection));
                     callback?.Invoke();
                 }
             }
@@ -107,7 +111,7 @@ namespace PrintDialogX
             public void Load<T2>(IEnumerable<T2>? capability, T2? target, Func<T2, T?> converter) where T2 : struct
             {
                 Collection.Reset(capability?.Select(converter), fallback);
-                NotifyUpdate(nameof(Collection));
+                OnPropertyChanged(nameof(Collection));
 
                 if (!isCustomized && selection != null && Collection.Contains(selection.Value))
                 {
@@ -121,16 +125,16 @@ namespace PrintDialogX
                 {
                     current = Collection.Contains(fallback) ? fallback : Collection.First();
                 }
-                NotifyUpdate(nameof(Selection));
+                OnPropertyChanged(nameof(Selection));
             }
 
             public void SilentSelect(T value)
             {
                 current = value;
-                NotifyUpdate(nameof(Selection));
+                OnPropertyChanged(nameof(Selection));
             }
 
-            public void NotifyUpdate(string property)
+            public void OnPropertyChanged(string property)
             {
                 dispatcher.Invoke(() => PropertyChanged?.Invoke(this, new(property)));
             }
@@ -221,40 +225,40 @@ namespace PrintDialogX
 
         public ObservableCollection<PrintQueue> PrinterEntries { get; } = [];
         public ModelValue<PrintQueue?> Printer { get; } = new(dispatcher, null, printerCallback);
+        public ModelValue<int> Copies { get; } = new(dispatcher, settings.Copies, settingsInfoCallback);
         public ModelValue<int> CopiesMaximum { get; } = new(dispatcher, settings.Fallbacks.FallbackMaximumCopies);
-        public ModelValue<int> Copies { get; } = new(dispatcher, settings.Copies);
-        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated);
+        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated, settingsInfoCallback);
         public ModelValue<bool> IsCollationSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsCollationSupported);
-        public ModelCollection<Enums.Pages> PagesEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Pages)).Cast<Enums.Pages>(), settings.Pages, Enums.Pages.AllPages, settingsCallback);
+        public ModelCollection<Enums.Pages> PagesEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Pages)).Cast<Enums.Pages>(), settings.Pages, Enums.Pages.AllPages, settingsVisualCallback);
         public ModelValue<double> PagesCurrent { get; } = new(dispatcher, 1);
-        public ModelValue<string> PagesCustom { get; } = new(dispatcher, settings.CustomPages, settingsCallback);
-        public ModelCollection<Enums.Layout> LayoutEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Layout)).Cast<Enums.Layout>(), settings.Layout, Enums.Layout.Portrait, settingsCallback);
-        public ModelCollection<Enums.Size> SizeEntries { get; } = new(dispatcher, [], settings.Size, settings.Fallbacks.FallbackSize, settingsCallback);
-        public ModelCollection<Enums.Color> ColorEntries { get; } = new(dispatcher, [], settings.Color, settings.Fallbacks.FallbackColor, settingsCallback);
-        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(dispatcher, [], settings.Quality, settings.Fallbacks.FallbackQuality);
-        public ModelCollection<Enums.PagesPerSheet> PagesPerSheetEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PagesPerSheet)).Cast<Enums.PagesPerSheet>(), settings.PagesPerSheet, Enums.PagesPerSheet.One, settingsCallback);
-        public ModelCollection<Enums.PageOrder> PageOrderEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PageOrder)).Cast<Enums.PageOrder>(), settings.PageOrder, Enums.PageOrder.Horizontal, settingsCallback);
-        public ModelCollection<Enums.Scale> ScaleEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Scale)).Cast<Enums.Scale>(), settings.Scale, Enums.Scale.AutoFit, settingsCallback);
-        public ModelValue<int> ScaleCustom { get; } = new(dispatcher, settings.CustomScale, settingsCallback);
-        public ModelCollection<Enums.Margin> MarginEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Margin)).Cast<Enums.Margin>(), settings.Margin, Enums.Margin.Default, settingsCallback);
-        public ModelValue<int> MarginCustom { get; } = new(dispatcher, settings.CustomMargin, settingsCallback);
-        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided);
+        public ModelValue<string> PagesCustom { get; } = new(dispatcher, settings.CustomPages, settingsVisualCallback);
+        public ModelCollection<Enums.Layout> LayoutEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Layout)).Cast<Enums.Layout>(), settings.Layout, Enums.Layout.Portrait, settingsVisualCallback);
+        public ModelCollection<Enums.Size> SizeEntries { get; } = new(dispatcher, [], settings.Size, settings.Fallbacks.FallbackSize, settingsVisualCallback);
+        public ModelCollection<Enums.Color> ColorEntries { get; } = new(dispatcher, [], settings.Color, settings.Fallbacks.FallbackColor, settingsVisualCallback);
+        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(dispatcher, [], settings.Quality, settings.Fallbacks.FallbackQuality, settingsInfoCallback);
+        public ModelCollection<Enums.PagesPerSheet> PagesPerSheetEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PagesPerSheet)).Cast<Enums.PagesPerSheet>(), settings.PagesPerSheet, Enums.PagesPerSheet.One, settingsVisualCallback);
+        public ModelCollection<Enums.PageOrder> PageOrderEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PageOrder)).Cast<Enums.PageOrder>(), settings.PageOrder, Enums.PageOrder.Horizontal, settingsVisualCallback);
+        public ModelCollection<Enums.Scale> ScaleEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Scale)).Cast<Enums.Scale>(), settings.Scale, Enums.Scale.AutoFit, settingsVisualCallback);
+        public ModelValue<int> ScaleCustom { get; } = new(dispatcher, settings.CustomScale, settingsVisualCallback);
+        public ModelCollection<Enums.Margin> MarginEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Margin)).Cast<Enums.Margin>(), settings.Margin, Enums.Margin.Default, settingsVisualCallback);
+        public ModelValue<int> MarginCustom { get; } = new(dispatcher, settings.CustomMargin, settingsVisualCallback);
+        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided, settingsInfoCallback);
         public ModelValue<bool> IsDoubleSidedSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsDoubleSidedSupported);
-        public ModelCollection<Enums.Type> TypeEntries { get; } = new(dispatcher, [], settings.Type, settings.Fallbacks.FallbackType);
-        public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource);
+        public ModelCollection<Enums.Type> TypeEntries { get; } = new(dispatcher, [], settings.Type, settings.Fallbacks.FallbackType, settingsInfoCallback);
+        public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource, settingsInfoCallback);
     }
 
-    partial class PrintDialogPage : UserControl
+    internal partial class PrintDialogControl : UserControl
     {
         public const double EPSILON = 0.01;
 
-        private readonly PrintDialogWindow owner;
+        private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
         private readonly (PrintServer Server, bool IsProvided) server;
 
         private (Task Task, CancellationTokenSource Cancellation)? task = null;
 
-        public PrintDialogPage(PrintDialogWindow window, PrintDialog dialog)
+        public PrintDialogControl(PrintDialog dialog, IPrintDialogHost window)
         {
             InitializeComponent();
 
@@ -263,9 +267,11 @@ namespace PrintDialogX
                 throw new InvalidOperationException("The document is unset.");
             }
 
-            owner = window;
-            model = new(Dispatcher, dialog.Document, dialog.Interface, dialog.DefaultSettings, LoadSettings, LoadDocument);
+            host = window;
+            host.SetShortcutHandler(HandleShortcuts);
+            model = new(Dispatcher, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, LoadSettings, LoadDocument, UpdateDocument);
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
+
             DataContext = model;
 
             DocumentHostControl.Parameters = new();
@@ -287,14 +293,14 @@ namespace PrintDialogX
 
         private void Exit(object sender, RoutedEventArgs e)
         {
-            StopTask(false);
+            TaskStop(false);
             if (!server.IsProvided)
             {
                 server.Server.Dispose();
             }
         }
 
-        private async void StopTask(bool wait = true)
+        private async void TaskStop(bool isWaiting = true)
         {
             if (task == null || task.Value.Task.IsCompleted)
             {
@@ -306,15 +312,15 @@ namespace PrintDialogX
                 task.Value.Cancellation.Cancel();
             }
             catch { }
-            if (wait)
+            if (isWaiting)
             {
                 await task.Value.Task;
             }
         }
 
-        private async void RunTask(Func<CancellationToken, Task> callback)
+        private async void TaskRun(Func<CancellationToken, Task> callback)
         {
-            StopTask();
+            TaskStop();
 
             CancellationTokenSource cancellation = new();
             task = (Task.Run(async () =>
@@ -333,13 +339,13 @@ namespace PrintDialogX
             await task.Value.Task;
         }
 
-        private void CloseErrorDialog(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
+        private void CloseDialogError(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsError.Value = false;
             model.ErrorCallback?.Invoke();
         }
 
-        private void ClosePrintingDialog(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
+        private void CloseDialogPrinting(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsPrinting.Value = false;
             model.PrintingCallback?.Invoke();
@@ -387,14 +393,18 @@ namespace PrintDialogX
 
             if (model.PrinterEntries.Count <= 0)
             {
-                model.ErrorContent.Value = PrintDialogWindow.StringResources["StringResource_MessageNoPrinter"];
-                model.ErrorCallback = () =>
+                model.ErrorContent.Value = PrintDialogViewModel.StringResources["StringResource_MessageNoPrinter"];
+                model.ErrorCallback = () => host.SetResult(new()
                 {
-                    owner.Result = (false, 0);
-                    owner.Close();
-                };
+                    IsSuccess = false,
+                    PaperCount = 0
+                });
                 model.IsError.Value = true;
-                owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Error;
+                host.SetProgress(new()
+                {
+                    State = IPrintDialogHost.PrintDialogProgressState.Error,
+                    Value = 0
+                });
             }
             else
             {
@@ -404,7 +414,7 @@ namespace PrintDialogX
             model.IsPrintersReady.Value = true;
         }
 
-        private void UpdatePrinters(object sender, EventArgs e)
+        private void LoadPrinters(object sender, EventArgs e)
         {
             try
             {
@@ -432,13 +442,13 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = PrintDialogWindow.StringResources["StringResource_MessageFailedAddPrinter"];
+                model.ErrorContent.Value = PrintDialogViewModel.StringResources["StringResource_MessageFailedAddPrinter"];
                 model.ErrorCallback = null;
                 model.IsError.Value = true;
             }
         }
 
-        private void PrinterPreferences(object sender, RoutedEventArgs e)
+        private void OpenPrinterPreferences(object sender, RoutedEventArgs e)
         {
             if (model.Printer.Value == null)
             {
@@ -457,7 +467,7 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = PrintDialogWindow.StringResources["StringResource_MessageFailedPrinterPreferences"];
+                model.ErrorContent.Value = PrintDialogViewModel.StringResources["StringResource_MessageFailedPrinterPreferences"];
                 model.ErrorCallback = null;
                 model.IsError.Value = true;
             }
@@ -470,7 +480,7 @@ namespace PrintDialogX
                 return;
             }
 
-            RunTask(async token =>
+            TaskRun(async token =>
             {
                 model.IsSettingsReady.Value = false;
                 model.IsDocumentReady.Value = false;
@@ -576,17 +586,15 @@ namespace PrintDialogX
                 return;
             }
 
-            RunTask(async token =>
+            TaskRun(async token =>
             {
                 model.IsDocumentReady.Value = false;
 
-                //TODO: document update callback
-                model.PrintDocument.NotifyUpdate();
+                UpdateDocument();
                 token.ThrowIfCancellationRequested();
 
                 bool isLandscape = model.LayoutEntries.Selection == Enums.Layout.Landscape;
-                Enums.Size size = model.SizeEntries.Selection ?? model.PrintSettings.Fallbacks.FallbackSize;
-                model.PreviewDocument.Value.PageSize = isLandscape ? new(size.Height, size.Width) : new(size.Width, size.Height);
+                model.PreviewDocument.Value.PageSize = isLandscape ? new(model.SizeEntries.Selection.Height, model.SizeEntries.Selection.Width) : new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height);
                 token.ThrowIfCancellationRequested();
 
                 (int Count, int Columns, int Rows) arrangement = model.PagesPerSheetEntries.Selection switch
@@ -624,7 +632,7 @@ namespace PrintDialogX
                         {
                             PageImageableArea area = await Dispatcher.InvokeAsync(() => model.Printer.Value.GetPrintCapabilities(new()
                             {
-                                PageMediaSize = new(size.Width, size.Height),
+                                PageMediaSize = new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                                 PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping)
                             }).PageImageableArea);
                             return (new double[] { area.OriginWidth, area.OriginHeight, model.PreviewDocument.Value.PageSize.Width - area.OriginWidth - area.ExtentWidth, model.PreviewDocument.Value.PageSize.Height - area.OriginHeight - area.ExtentHeight }).Max();
@@ -747,14 +755,14 @@ namespace PrintDialogX
                 token.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.Zoom = ZoomCurrent();
-                model.PreviewDocument.NotifyUpdate();
+                model.PreviewDocument.OnPropertyChanged();
                 model.IsDocumentReady.Value = true;
             });
         }
 
-        private void Print(object sender, RoutedEventArgs e)
+        private void Print()
         {
-            if (model.Printer.Value == null)
+            if (!model.IsDocumentReady.Value || model.Printer.Value == null)
             {
                 return;
             }
@@ -762,13 +770,12 @@ namespace PrintDialogX
             try
             {
                 XpsDocumentWriter writer = PrintQueue.CreateXpsDocumentWriter(model.Printer.Value);
-                Enums.Size size = model.SizeEntries.Selection ?? model.PrintSettings.Fallbacks.FallbackSize;
                 model.Printer.Value.CurrentJobSettings.CurrentPrintTicket = new()
                 {
                     CopyCount = model.Copies.Value,
                     Collation = ValueMappings.Map(model.CollationEntries.Selection, ValueMappings.CollationMapping),
                     PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping),
-                    PageMediaSize = new(size.DefinedName != null ? ValueMappings.Map(size.DefinedName, ValueMappings.SizeNameMapping) : PageMediaSizeName.Unknown, size.Width, size.Height),
+                    PageMediaSize = new(model.SizeEntries.Selection.DefinedName != null ? ValueMappings.Map(model.SizeEntries.Selection.DefinedName, ValueMappings.SizeNameMapping) : PageMediaSizeName.Unknown, model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                     OutputColor = ValueMappings.Map(model.ColorEntries.Selection, ValueMappings.ColorMapping),
                     OutputQuality = ValueMappings.Map(model.QualityEntries.Selection, ValueMappings.QualityMapping),
                     PagesPerSheet = 1,
@@ -780,8 +787,12 @@ namespace PrintDialogX
                 };
                 model.Printer.Value.CurrentJobSettings.Description = model.PrintDocument.Value.DocumentName;
 
-                owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
-                model.PrintingContent.Value = PrintDialogWindow.StringResources["StringResource_LabelInitializing"];
+                host.SetProgress(new()
+                {
+                    State = IPrintDialogHost.PrintDialogProgressState.Indeterminate,
+                    Value = 0
+                });
+                model.PrintingContent.Value = PrintDialogViewModel.StringResources["StringResource_LabelInitializing"];
                 model.PrintingProgress.Value = 0;
                 model.PrintingCallback = () =>
                 {
@@ -789,7 +800,22 @@ namespace PrintDialogX
                     {
                         writer.CancelAsync();
                     }
-                    catch { }
+                    catch
+                    {
+                        model.ErrorContent.Value = PrintDialogViewModel.StringResources["StringResource_MessagePrintJobCancelled"];
+                        model.ErrorCallback = () => host.SetProgress(new()
+                        {
+                            State = IPrintDialogHost.PrintDialogProgressState.None,
+                            Value = 0
+                        });
+                        model.IsError.Value = true;
+                        model.IsPrinting.Value = false;
+                        host.SetProgress(new()
+                        {
+                            State = IPrintDialogHost.PrintDialogProgressState.Error,
+                            Value = 0
+                        });
+                    }
                 };
                 model.IsPrinting.Value = true;
 
@@ -801,53 +827,103 @@ namespace PrintDialogX
                     }
 
                     double progress = 100.0 * e.Number / model.PreviewDocument.Value.PageCount;
-                    model.PrintingContent.Value = $"{PrintDialogWindow.StringResources["StringResource_PrefixProgress"]}{Math.Round(progress)}% ({e.Number} / {model.PreviewDocument.Value.PageCount})";
+                    model.PrintingContent.Value = $"{PrintDialogViewModel.StringResources["StringResource_PrefixProgress"]}{Math.Round(progress)}% ({e.Number} / {model.PreviewDocument.Value.PageCount})";
                     model.PrintingProgress.Value = progress;
-                    owner.TaskbarItemInfo.ProgressValue = progress / 100.0;
+                    host.SetProgress(new()
+                    {
+                        State = IPrintDialogHost.PrintDialogProgressState.Normal,
+                        Value = progress
+                    });
                 };
                 writer.WritingCompleted += (x, e) =>
                 {
                     if (e.Cancelled || e.Error != null)
                     {
-                        model.ErrorContent.Value = PrintDialogWindow.StringResources[e.Error != null ? "StringResource_MessagePrintJobError" : "StringResource_MessagePrintJobCancelled"];
-                        model.ErrorCallback = () =>
+                        model.ErrorContent.Value = PrintDialogViewModel.StringResources[e.Error != null ? "StringResource_MessagePrintJobError" : "StringResource_MessagePrintJobCancelled"];
+                        model.ErrorCallback = () => host.SetProgress(new()
                         {
-                            owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
-                        };
+                            State = IPrintDialogHost.PrintDialogProgressState.None,
+                            Value = 0
+                        });
                         model.IsError.Value = true;
                         model.IsPrinting.Value = false;
-                        owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Error;
+                        host.SetProgress(new()
+                        {
+                            State = IPrintDialogHost.PrintDialogProgressState.Error,
+                            Value = 0
+                        });
 
                         return;
                     }
 
-                    owner.Result = (true, (int)Math.Ceiling(model.PreviewDocument.Value.PageCount * model.Copies.Value * (model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? 1 : 0.5)));
-                    owner.Close();
+                    host.SetResult(new()
+                    {
+                        IsSuccess = true,
+                        PaperCount = (int)Math.Ceiling(model.PreviewDocument.Value.PageCount * model.Copies.Value * (model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? 1 : 0.5))
+                    });
                 };
                 writer.WriteAsync(model.PreviewDocument.Value);
             }
             catch
             {
-                model.ErrorContent.Value = PrintDialogWindow.StringResources["StringResource_MessageFailedPrintJob"];
-                model.ErrorCallback = () =>
+                model.ErrorContent.Value = PrintDialogViewModel.StringResources["StringResource_MessageFailedPrintJob"];
+                model.ErrorCallback = () => host.SetProgress(new()
                 {
-                    owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.None;
-                };
+                    State = IPrintDialogHost.PrintDialogProgressState.None,
+                    Value = 0
+                });
                 model.IsError.Value = true;
                 model.IsPrinting.Value = false;
-                owner.TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Error;
+                host.SetProgress(new()
+                {
+                    State = IPrintDialogHost.PrintDialogProgressState.Error,
+                    Value = 0
+                });
             }
+        }
+
+        private void UpdateDocument()
+        {
+            model.PrintDocument.Value.OnPrintSettingsChanged(new()
+            {
+                Fallbacks = model.PrintSettings.Fallbacks,
+                Copies = model.Copies.Value,
+                Collation = model.CollationEntries.Selection,
+                Pages = model.PagesEntries.Selection,
+                CustomPages = model.PagesCustom.Value,
+                Layout = model.LayoutEntries.Selection,
+                Size = model.SizeEntries.Selection,
+                Color = model.ColorEntries.Selection,
+                Quality = model.QualityEntries.Selection,
+                PagesPerSheet = model.PagesPerSheetEntries.Selection,
+                PageOrder = model.PageOrderEntries.Selection,
+                Scale = model.ScaleEntries.Selection,
+                CustomScale = model.ScaleCustom.Value,
+                Margin = model.MarginEntries.Selection,
+                CustomMargin = model.MarginCustom.Value,
+                DoubleSided = model.DoubleSidedEntries.Selection,
+                Type = model.TypeEntries.Selection,
+                Source = model.SourceEntries.Selection
+            });
+            model.PrintDocument.OnPropertyChanged();
+        }
+
+        private void Print(object sender, RoutedEventArgs e)
+        {
+            Print();
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
-            owner.Result = (false, 0);
-            owner.Close();
+            host.SetResult(new()
+            {
+                IsSuccess = false,
+                PaperCount = 0
+            });
         }
 
-        private void InitializeDocument(object sender, EventArgs e)
+        private void InitializeViewer(object sender, EventArgs e)
         {
-            //TODO: support for keyboard shortcuts
             if (sender is not VirtualizingStackPanel viewer)
             {
                 return;
@@ -857,7 +933,44 @@ namespace PrintDialogX
             DocumentHostControl.Parameters.Spacing = ((Style)Resources[typeof(DocumentHostControl)]).Setters.Select(x => x is Setter setter && setter.Property == MarginProperty && setter.Value is Thickness margin ? margin.Left : 0).Max();
         }
 
-        private void UpdateDocument(object sender, EventArgs e)
+        private void UpdateViewerDescription(object sender, ScrollChangedEventArgs e)
+        {
+            if (!model.IsDocumentReady.Value || DocumentHostControl.Parameters.Viewer == null)
+            {
+                return;
+            }
+
+            model.PagesCurrent.Value = Math.Max(1, Math.Min(model.PreviewDocument.Value.PageCount, DocumentHostControl.Parameters.Viewer.VerticalOffset / DocumentHostControl.GetSize(model.PreviewDocument.Value).Height * model.PreviewDocument.Value.ColumnCount + 1));
+        }
+
+        private void UpdateViewerScroll(object sender, MouseWheelEventArgs e)
+        {
+            if (DocumentHostControl.Parameters.Viewer == null)
+            {
+                return;
+            }
+
+            switch (Keyboard.Modifiers)
+            {
+                case ModifierKeys.Shift:
+                    DocumentHostControl.Parameters.Viewer.SetHorizontalOffset(DocumentHostControl.Parameters.Viewer.HorizontalOffset - e.Delta);
+                    e.Handled = true;
+                    break;
+                case ModifierKeys.Control:
+                    Point position = e.GetPosition(DocumentHostControl.Parameters.Viewer);
+                    double x = (DocumentHostControl.Parameters.Viewer.HorizontalOffset + position.X) / model.PreviewDocument.Value.Zoom;
+                    double y = (DocumentHostControl.Parameters.Viewer.VerticalOffset + position.Y) / model.PreviewDocument.Value.Zoom;
+                    double zoom = 0.15 * Math.Sign(e.Delta);
+                    model.PreviewDocument.Value.Zoom *= 1 + zoom;
+                    model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
+                    model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.Zoom - position.X, y * model.PreviewDocument.Value.Zoom - position.Y - DocumentHostControl.GetOffset(model.PreviewDocument.Value, Math.Floor(model.PagesCurrent.Value + EPSILON), DocumentHostControl.Parameters.Spacing * 2) * zoom);
+                    model.PreviewDocument.OnPropertyChanged();
+                    e.Handled = true;
+                    break;
+            }
+        }
+
+        private void UpdateViewerZoom(object sender, EventArgs e)
         {
             if (model.PreviewDocument.Value.ZoomTarget == null || DocumentHostControl.Parameters.Viewer == null)
             {
@@ -869,44 +982,6 @@ namespace PrintDialogX
                 DocumentHostControl.Parameters.Viewer.SetHorizontalOffset(model.PreviewDocument.Value.ZoomTarget.Value.X);
                 DocumentHostControl.Parameters.Viewer.SetVerticalOffset(model.PreviewDocument.Value.ZoomTarget.Value.Y);
                 model.PreviewDocument.Value.ZoomTarget = null;
-            }
-        }
-
-        private void UpdateDocumentDescription(object sender, ScrollChangedEventArgs e)
-        {
-            if (!model.IsDocumentReady.Value || DocumentHostControl.Parameters.Viewer == null)
-            {
-                return;
-            }
-
-            model.PagesCurrent.Value = Math.Max(1, Math.Min(model.PreviewDocument.Value.PageCount, DocumentHostControl.Parameters.Viewer.VerticalOffset / DocumentHostControl.GetSize(model.PreviewDocument.Value).Height * model.PreviewDocument.Value.ColumnCount + 1));
-        }
-
-        private void UpdateViewer(object sender, MouseWheelEventArgs e)
-        {
-            if (DocumentHostControl.Parameters.Viewer == null)
-            {
-                return;
-            }
-
-            if (Keyboard.Modifiers == ModifierKeys.Shift)
-            {
-                DocumentHostControl.Parameters.Viewer.SetHorizontalOffset(DocumentHostControl.Parameters.Viewer.HorizontalOffset - e.Delta);
-
-                e.Handled = true;
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                Point position = e.GetPosition(DocumentHostControl.Parameters.Viewer);
-                double x = (DocumentHostControl.Parameters.Viewer.HorizontalOffset + position.X) / model.PreviewDocument.Value.Zoom;
-                double y = (DocumentHostControl.Parameters.Viewer.VerticalOffset + position.Y) / model.PreviewDocument.Value.Zoom;
-                double zoom = 0.15 * Math.Sign(e.Delta);
-                model.PreviewDocument.Value.Zoom *= 1 + zoom;
-                model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
-                model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.Zoom - position.X, y * model.PreviewDocument.Value.Zoom - position.Y - DocumentHostControl.GetOffset(model.PreviewDocument.Value, Math.Floor(model.PagesCurrent.Value + EPSILON), DocumentHostControl.Parameters.Spacing * 2) * zoom);
-                model.PreviewDocument.NotifyUpdate();
-
-                e.Handled = true;
             }
         }
 
@@ -961,29 +1036,44 @@ namespace PrintDialogX
             }
 
             model.PreviewDocument.Value.Zoom = ZoomCurrent();
-            model.PreviewDocument.NotifyUpdate();
+            model.PreviewDocument.OnPropertyChanged();
+        }
+
+        private void ZoomIn()
+        {
+            model.PreviewDocument.Value.Zoom = ZoomDelta(0.25);
+            model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
+            model.PreviewDocument.OnPropertyChanged();
         }
 
         private void ZoomIn(object sender, RoutedEventArgs e)
         {
-            model.PreviewDocument.Value.Zoom = ZoomDelta(0.25);
+            ZoomIn();
+        }
+
+        private void ZoomOut()
+        {
+            model.PreviewDocument.Value.Zoom = ZoomDelta(-0.25);
             model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
-            model.PreviewDocument.NotifyUpdate();
+            model.PreviewDocument.OnPropertyChanged();
         }
 
         private void ZoomOut(object sender, RoutedEventArgs e)
         {
-            model.PreviewDocument.Value.Zoom = ZoomDelta(-0.25);
-            model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
-            model.PreviewDocument.NotifyUpdate();
+            ZoomOut();
         }
 
-        private void ZoomActual(object sender, RoutedEventArgs e)
+        private void ZoomActual()
         {
             model.PreviewDocument.Value.Zoom = 1;
             model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.Custom;
             model.PreviewDocument.Value.ZoomTarget = new(0, DocumentHostControl.GetOffset(model.PreviewDocument.Value, Math.Round(model.PagesCurrent.Value)));
-            model.PreviewDocument.NotifyUpdate();
+            model.PreviewDocument.OnPropertyChanged();
+        }
+
+        private void ZoomActual(object sender, RoutedEventArgs e)
+        {
+            ZoomActual();
         }
 
         private void ZoomFit(object sender, RoutedEventArgs e)
@@ -991,7 +1081,7 @@ namespace PrintDialogX
             model.PreviewDocument.Value.Zoom = ZoomHorizontal();
             model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.FitToWidth;
             model.PreviewDocument.Value.ZoomTarget = new(0, DocumentHostControl.GetOffset(model.PreviewDocument.Value, Math.Round(model.PagesCurrent.Value)));
-            model.PreviewDocument.NotifyUpdate();
+            model.PreviewDocument.OnPropertyChanged();
         }
 
         private void ZoomPage(int column)
@@ -1000,7 +1090,7 @@ namespace PrintDialogX
             model.PreviewDocument.Value.Zoom = Math.Min(ZoomHorizontal(), ZoomVertical());
             model.PreviewDocument.Value.ZoomMode = PrintDialogViewModel.ModelDocument.Mode.FitToPage;
             model.PreviewDocument.Value.ZoomTarget = new(0, DocumentHostControl.GetOffset(model.PreviewDocument.Value, Math.Round(model.PagesCurrent.Value)));
-            model.PreviewDocument.NotifyUpdate();
+            model.PreviewDocument.OnPropertyChanged();
         }
 
         private void ZoomPageWhole(object sender, RoutedEventArgs e)
@@ -1023,24 +1113,75 @@ namespace PrintDialogX
             DocumentHostControl.Parameters.Viewer.SetVerticalOffset(DocumentHostControl.GetOffset(model.PreviewDocument.Value, index));
         }
 
-        private void NavigatePageFirst(object sender, RoutedEventArgs e)
+        private void NavigatePageFirst()
         {
             NavigatePage(1);
         }
 
-        private void NavigatePagePrevious(object sender, RoutedEventArgs e)
+        private void NavigatePageFirst(object sender, RoutedEventArgs e)
+        {
+            NavigatePageFirst();
+        }
+
+        private void NavigatePagePrevious()
         {
             NavigatePage(Math.Ceiling(model.PagesCurrent.Value - EPSILON) - model.PreviewDocument.Value.ColumnCount);
         }
 
-        private void NavigatePageNext(object sender, RoutedEventArgs e)
+        private void NavigatePagePrevious(object sender, RoutedEventArgs e)
+        {
+            NavigatePagePrevious();
+        }
+
+        private void NavigatePageNext()
         {
             NavigatePage(Math.Floor(model.PagesCurrent.Value + EPSILON) + model.PreviewDocument.Value.ColumnCount);
         }
 
-        private void NavigatePageLast(object sender, RoutedEventArgs e)
+        private void NavigatePageNext(object sender, RoutedEventArgs e)
+        {
+            NavigatePageNext();
+        }
+
+        private void NavigatePageLast()
         {
             NavigatePage(model.PreviewDocument.Value.PageCount);
+        }
+
+        private void NavigatePageLast(object sender, RoutedEventArgs e)
+        {
+            NavigatePageLast();
+        }
+
+        private void HandleShortcuts(object sender, KeyEventArgs e)
+        {
+            Action? action = (Keyboard.Modifiers, e.Key) switch
+            {
+                (ModifierKeys.Control, Key.P) => Print,
+                (ModifierKeys.Control, Key.OemPlus) => ZoomIn,
+                (ModifierKeys.Control, Key.Add) => ZoomIn,
+                (ModifierKeys.Control, Key.OemMinus) => ZoomOut,
+                (ModifierKeys.Control, Key.Subtract) => ZoomOut,
+                (ModifierKeys.Control, Key.D0) => ZoomActual,
+                (ModifierKeys.Control, Key.NumPad0) => ZoomActual,
+                (ModifierKeys.Alt, Key.System) => e.SystemKey switch
+                {
+                    Key.Home => NavigatePageFirst,
+                    Key.Left => NavigatePagePrevious,
+                    Key.Right => NavigatePageNext,
+                    Key.End => NavigatePageLast,
+                    _ => null
+                },
+                (ModifierKeys.None, Key.PageUp) => NavigatePagePrevious,
+                (ModifierKeys.None, Key.PageDown) => NavigatePageNext,
+                _ => null
+            };
+
+            if (action != null)
+            {
+                action();
+                e.Handled = true;
+            }
         }
     }
 }
