@@ -57,28 +57,28 @@ namespace PrintDialogX
             return Binding.DoNothing;
         }
 
-        public static void ApplyInterface(Panel container, IEnumerable<InterfaceSettings.Options> options, ResourceDictionary resources)
+        public static void ApplyInterface(Panel container, IEnumerable<InterfaceSettings.Option> options, ResourceDictionary resources)
         {
-            foreach (InterfaceSettings.Options option in options)
+            foreach (InterfaceSettings.Option option in options)
             {
                 container.Children.Add((UIElement)resources[option switch
                 {
-                    InterfaceSettings.Options.Printer => "OptionPrinter",
-                    InterfaceSettings.Options.PrinterPreferences => "OptionPrinterPreferences",
-                    InterfaceSettings.Options.Copies => "OptionCopies",
-                    InterfaceSettings.Options.Collation => "OptionCollation",
-                    InterfaceSettings.Options.Pages => "OptionPages",
-                    InterfaceSettings.Options.Layout => "OptionLayout",
-                    InterfaceSettings.Options.Size => "OptionSize",
-                    InterfaceSettings.Options.Color => "OptionColor",
-                    InterfaceSettings.Options.Quality => "OptionQuality",
-                    InterfaceSettings.Options.PagesPerSheet => "OptionPagesPerSheet",
-                    InterfaceSettings.Options.PageOrder => "OptionPageOrder",
-                    InterfaceSettings.Options.Scale => "OptionScale",
-                    InterfaceSettings.Options.Margin => "OptionMargin",
-                    InterfaceSettings.Options.DoubleSided => "OptionDoubleSided",
-                    InterfaceSettings.Options.Type => "OptionType",
-                    InterfaceSettings.Options.Source => "OptionSource",
+                    InterfaceSettings.Option.Printer => "OptionPrinter",
+                    InterfaceSettings.Option.PrinterPreferences => "OptionPrinterPreferences",
+                    InterfaceSettings.Option.Copies => "OptionCopies",
+                    InterfaceSettings.Option.Collation => "OptionCollation",
+                    InterfaceSettings.Option.Pages => "OptionPages",
+                    InterfaceSettings.Option.Layout => "OptionLayout",
+                    InterfaceSettings.Option.Size => "OptionSize",
+                    InterfaceSettings.Option.Color => "OptionColor",
+                    InterfaceSettings.Option.Quality => "OptionQuality",
+                    InterfaceSettings.Option.PagesPerSheet => "OptionPagesPerSheet",
+                    InterfaceSettings.Option.PageOrder => "OptionPageOrder",
+                    InterfaceSettings.Option.Scale => "OptionScale",
+                    InterfaceSettings.Option.Margin => "OptionMargin",
+                    InterfaceSettings.Option.DoubleSided => "OptionDoubleSided",
+                    InterfaceSettings.Option.Type => "OptionType",
+                    InterfaceSettings.Option.Source => "OptionSource",
                     _ => "OptionVoid"
                 }]);
             }

@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shell;
+using System.Windows.Threading;
 
 namespace PrintDialogX
 {
     internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
         private KeyEventHandler? handler = null;
-        private Func<Task<FrameworkElement>>? generation = null;
         private PrintDialogResult result = new();
 
         public PrintDialogWindow()
@@ -24,20 +24,9 @@ namespace PrintDialogX
             handler?.Invoke(sender, e);
         }
 
-        private async void Attach(object sender, RoutedEventArgs e)
-        {
-            if (generation == null)
-            {
-                return;
-            }
-
-            content.Child = await generation();
-        }
-
         public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> callback)
         {
             handler = null;
-            generation = callback;
             result = new();
 
             title.Title = dialog.InterfaceSettings.Title;
@@ -47,6 +36,7 @@ namespace PrintDialogX
                 IsIndeterminate = true
             };
 
+            Dispatcher.InvokeAsync(async () => content.Child = await callback(), DispatcherPriority.Loaded);
             if (isDialog)
             {
                 ShowDialog();

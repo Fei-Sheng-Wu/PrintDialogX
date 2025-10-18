@@ -24,7 +24,7 @@ namespace PrintDialogX
 {
     internal class PrintDialogViewModel(Dispatcher dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action printerCallback, Action settingsVisualCallback, Action settingsInfoCallback)
     {
-        public static readonly ResourceDictionary StringResources = new()
+        public static ResourceDictionary StringResources = new()
         {
             Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
         };
