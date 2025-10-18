@@ -1,4 +1,6 @@
-﻿namespace PrintDialogX
+﻿using System;
+
+namespace PrintDialogX
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InterfaceSettings"/> class.
@@ -8,7 +10,7 @@
         /// <summary>
         /// Specifies the interface control of a specific print setting.
         /// </summary>
-        public enum Options
+        public enum Option
         {
             /// <summary>
             /// An empty gap with a height of 20 pixels.
@@ -97,6 +99,17 @@
         }
 
         /// <summary>
+        /// Specifies the interface language.
+        /// </summary>
+        public enum Language
+        {
+            /// <summary>
+            /// English (United States).
+            /// </summary>
+            en_US
+        }
+
+        /// <summary>
         /// Gets or sets the title of the interface.
         /// </summary>
         public string Title { get; set; } = (string)PrintDialogViewModel.StringResources["StringResource_TitlePrint"];
@@ -113,11 +126,31 @@
         /// <summary>
         /// Gets or sets the collection of basic interface controls to be placed outside the print settings expander.
         /// </summary>
-        public Options[] BasicSettings { get; set; } = [Options.Printer, Options.PrinterPreferences, Options.Void, Options.Copies, Options.Collation, Options.Pages, Options.Layout, Options.Size];
+        public Option[] BasicSettings { get; set; } = [Option.Printer, Option.PrinterPreferences, Option.Void, Option.Copies, Option.Collation, Option.Pages, Option.Layout, Option.Size];
 
         /// <summary>
         /// Gets or sets the collection of advanced interface controls to be placed inside the print settings expander.
         /// </summary>
-        public Options[] AdvancedSettings { get; set; } = [Options.Color, Options.Quality, Options.PagesPerSheet, Options.PageOrder, Options.Scale, Options.Margin, Options.DoubleSided, Options.Type, Options.Source];
+        public Option[] AdvancedSettings { get; set; } = [Option.Color, Option.Quality, Option.PagesPerSheet, Option.PageOrder, Option.Scale, Option.Margin, Option.DoubleSided, Option.Type, Option.Source];
+
+        /// <summary>
+        /// Gets or sets the display language of the interface.
+        /// </summary>
+        public Language DisplayLanguage
+        {
+            get => language;
+            set
+            {
+                language = value;
+                PrintDialogViewModel.StringResources = new()
+                {
+                    Source = new($"/PrintDialogX;component/Resources/Languages/{language switch
+                    {
+                        _ => "en-US"
+                    }}.xaml", UriKind.Relative)
+                };
+            }
+        }
+        private Language language = Language.en_US;
     }
 }

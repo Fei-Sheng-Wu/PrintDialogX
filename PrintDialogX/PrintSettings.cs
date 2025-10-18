@@ -101,17 +101,17 @@ namespace PrintDialogX
         public Enums.Layout Layout { get; set; } = Enums.Layout.Portrait;
 
         /// <summary>
-        /// Gets or sets the size.
+        /// Gets or sets the size. If set to <see langword="null"/>, the default setting of the printer is used.
         /// </summary>
         public Enums.Size? Size { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the color.
+        /// Gets or sets the color. If set to <see langword="null"/>, the default setting of the printer is used.
         /// </summary>
         public Enums.Color? Color { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the quality.
+        /// Gets or sets the quality. If set to <see langword="null"/>, the default setting of the printer is used.
         /// </summary>
         public Enums.Quality? Quality { get; set; } = null;
 
@@ -161,12 +161,12 @@ namespace PrintDialogX
         public Enums.DoubleSided DoubleSided { get; set; } = Enums.DoubleSided.OneSided;
 
         /// <summary>
-        /// Gets or sets the type.
+        /// Gets or sets the type. If set to <see langword="null"/>, the default setting of the printer is used.
         /// </summary>
         public Enums.Type? Type { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the source.
+        /// Gets or sets the source. If set to <see langword="null"/>, the default setting of the printer is used.
         /// </summary>
         public Enums.Source? Source { get; set; } = null;
     }

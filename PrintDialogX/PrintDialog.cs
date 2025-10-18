@@ -65,7 +65,7 @@ namespace PrintDialogX
         /// </summary>
         public void Show()
         {
-            Host.Start(this, false, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
+            Host.Start(this, false, GetCallback(null));
         }
 
         /// <summary>
@@ -74,11 +74,7 @@ namespace PrintDialogX
         /// <param name="generation">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
         public void Show(Func<Task> generation)
         {
-            Host.Start(this, false, async () =>
-            {
-                await generation();
-                return new PrintDialogControl(this, Host);
-            });
+            Host.Start(this, false, GetCallback(generation));
         }
 
         /// <summary>
@@ -87,7 +83,7 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog()
         {
-            Host.Start(this, true, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
+            Host.Start(this, true, GetCallback(null));
 
             return Host.GetResult().IsSuccess;
         }
@@ -99,13 +95,22 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog(Func<Task> generation)
         {
-            Host.Start(this, true, async () =>
-            {
-                await generation();
-                return new PrintDialogControl(this, Host);
-            });
+            Host.Start(this, true, GetCallback(generation));
 
             return Host.GetResult().IsSuccess;
+        }
+
+        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generation)
+        {
+            return async () =>
+            {
+                if (generation != null)
+                {
+                    await generation();
+                }
+
+                return new PrintDialogControl(this, Host);
+            };
         }
     }
 }
