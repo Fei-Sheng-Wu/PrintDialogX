@@ -15,6 +15,8 @@ namespace PrintDialogX
         public PrintDialogWindow()
         {
             InitializeComponent();
+
+            Resources.MergedDictionaries.Add(PrintDialogViewModel.StringResources);
         }
 
         private void HandleShortcuts(object sender, KeyEventArgs e)
