@@ -8,8 +8,17 @@ namespace PrintDialogX
     /// <summary>
     /// Provides a custom print dialog with preview in real-time and powerful options.
     /// </summary>
-    public class PrintDialog
+    public class PrintDialog(IPrintDialogHost host)
     {
+        public PrintDialog() : this(new PrintDialogWindow()) { }
+
+        public PrintDialog(Action<Window> callback) : this()
+        {
+            callback((Window)Host);
+        }
+
+        public IPrintDialogHost Host { get; set; } = host;
+
         /// <summary>
         /// Gets or sets the document that needs to be printed.
         /// </summary>
@@ -25,19 +34,26 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the default print settings to be used.
         /// </summary>
-        public PrintSettings DefaultSettings { get; set; } = new();
+        public PrintSettings PrintSettings { get; set; } = new();
 
-        public InterfaceSettings Interface { get; set; } = new();
+        public InterfaceSettings InterfaceSettings { get; set; } = new();
 
-        public Window PrintDialogWindow { get => window; }
+        public PrintDialogResult Result { get => Host.GetResult(); }
 
-        /// <summary>
-        /// Gets the total number of papers that the printer is calculated to be using.
-        /// </summary>
-        public int TotalPaper { get => result != null ? result.Value.TotalPaper : 0; }
+        //TODO: documentation
+        public void Show()
+        {
+            Host.Start(this, false, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
+        }
 
-        private PrintDialogWindow window = new();
-        private (bool IsSuccess, int TotalPaper)? result = null;
+        public void Show(Func<Task> generation)
+        {
+            Host.Start(this, false, async () =>
+            {
+                await generation();
+                return new PrintDialogControl(this, Host);
+            });
+        }
 
         /// <summary>
         /// Opens the dialog and returns only when the dialog is closed.
@@ -45,7 +61,9 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the "Print" button was clicked; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog()
         {
-            return ShowDialog(null);
+            Host.Start(this, true, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
+
+            return Host.GetResult().IsSuccess;
         }
 
         /// <summary>
@@ -53,79 +71,15 @@ namespace PrintDialogX
         /// </summary>
         /// <param name="generation">The function that will be invoked to synchronously generate the document while the dialog is openning. The <see cref="Document"/> property must be set before the function completes.</param>
         /// <returns><see langword="true"/> if the "Print" button was clicked; otherwise, <see langword="false"/>.</returns>
-        public bool ShowDialog(Func<Task>? generation)
+        public bool ShowDialog(Func<Task> generation)
         {
-            StartWindow(generation);
-            window.ShowDialog();
-
-            return EndWindow();
-        }
-
-        //TODO: documentation
-        public void Show()
-        {
-            Show(null);
-        }
-
-        public void Show(Func<Task>? generation)
-        {
-            StartWindow(generation);
-            window.Show();
-            window.Closed += (x, e) => EndWindow();
-        }
-
-        private void StartWindow(Func<Task>? generation = null)
-        {
-            if (PrintDialogWindow is not PrintDialogWindow window)
+            Host.Start(this, true, async () =>
             {
-                throw new InvalidOperationException("Unable to create the print dialog.");
-            }
+                await generation();
+                return new PrintDialogControl(this, Host);
+            });
 
-            window.Create(this, generation);
+            return Host.GetResult().IsSuccess;
         }
-
-        private bool EndWindow()
-        {
-            result = window.Result;
-            window = new();
-
-            return result != null && result.Value.IsSuccess;
-        }
-    }
-
-    public class InterfaceSettings
-    {
-        public enum Option
-        {
-            Void = -1,
-            Printer,
-            PrinterPreferences,
-            Copies,
-            Collation,
-            Pages,
-            Layout,
-            Size,
-            Color,
-            Quality,
-            PagesPerSheet,
-            PageOrder,
-            Scale,
-            Margin,
-            DoubleSided,
-            Type,
-            Source
-        }
-
-        public string Title { get; set; } = (string)PrintDialogWindow.StringResources["StringResource_TitlePrint"];
-
-        public Wpf.Ui.Controls.IconElement? Icon { get; set; } = new Wpf.Ui.Controls.SymbolIcon()
-        {
-            Symbol = Wpf.Ui.Controls.SymbolRegular.Print20,
-            FontSize = 18
-        };
-
-        public Option[] BasicSettings { get; set; } = [Option.Printer, Option.PrinterPreferences, Option.Void, Option.Copies, Option.Collation, Option.Pages, Option.Layout, Option.Size];
-
-        public Option[] AdvancedSettings { get; set; } = [Option.Color, Option.Quality, Option.PagesPerSheet, Option.PageOrder, Option.Scale, Option.Margin, Option.DoubleSided, Option.Type, Option.Source];
     }
 }
