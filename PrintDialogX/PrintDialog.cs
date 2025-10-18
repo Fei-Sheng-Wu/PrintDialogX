@@ -6,46 +6,72 @@ using System.Windows;
 namespace PrintDialogX
 {
     /// <summary>
-    /// Provides a custom print dialog with preview in real-time and powerful options.
+    /// Initializes a new instance of the <see cref="PrintDialog"/> class.
     /// </summary>
+    /// <param name="host">The custom <see cref="IPrintDialogHost"/> instance to be used to host the actual control for the print operation.</param>
     public class PrintDialog(IPrintDialogHost host)
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
+        /// </summary>
         public PrintDialog() : this(new PrintDialogWindow()) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
+        /// </summary>
+        /// <param name="callback">The callback function that is invoked to customize the default <see cref="IPrintDialogHost"/> instance, which derives from <see cref="Window"/>.</param>
         public PrintDialog(Action<Window> callback) : this()
         {
             callback((Window)Host);
         }
 
+        /// <summary>
+        /// Gets or sets the <see cref="IPrintDialogHost"/> instance to host the actual control for the print operation.
+        /// </summary>
         public IPrintDialogHost Host { get; set; } = host;
 
         /// <summary>
-        /// Gets or sets the document that needs to be printed.
+        /// Gets or sets the document to be printed.
         /// </summary>
         public PrintDocument? Document { get; set; } = null;
 
+        /// <summary>
+        /// Gets ot sets the <see cref="System.Printing.PrintServer"/> instance to be used to find printers. If set to <see langword="null"/>, the default <see cref="System.Printing.PrintServer"/> is used.
+        /// </summary>
         public PrintServer? PrintServer { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the default printer to be used.
+        /// Gets or sets the default printer.
         /// </summary>
         public PrintQueue? DefaultPrinter { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the default print settings to be used.
+        /// Gets or sets the default print settings.
         /// </summary>
         public PrintSettings PrintSettings { get; set; } = new();
 
+        /// <summary>
+        /// Gets or sets the interface settings.
+        /// </summary>
         public InterfaceSettings InterfaceSettings { get; set; } = new();
 
+        /// <summary>
+        /// Gets the result of the print operation.
+        /// </summary>
         public PrintDialogResult Result { get => Host.GetResult(); }
 
-        //TODO: documentation
+        /// <summary>
+        /// Opens the dialog.
+        /// </summary>
         public void Show()
         {
             Host.Start(this, false, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
         }
 
+        /// <summary>
+        /// Opens the dialog.
+        /// </summary>
+        /// <param name="generation">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
         public void Show(Func<Task> generation)
         {
             Host.Start(this, false, async () =>
@@ -58,7 +84,7 @@ namespace PrintDialogX
         /// <summary>
         /// Opens the dialog and returns only when the dialog is closed.
         /// </summary>
-        /// <returns><see langword="true"/> if the "Print" button was clicked; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog()
         {
             Host.Start(this, true, () => Task.FromResult<FrameworkElement>(new PrintDialogControl(this, Host)));
@@ -67,10 +93,10 @@ namespace PrintDialogX
         }
 
         /// <summary>
-        /// Opens the dialog with a synchronized document generation function and returns only when the dialog is closed.
+        /// Opens the dialog and returns only when the dialog is closed.
         /// </summary>
-        /// <param name="generation">The function that will be invoked to synchronously generate the document while the dialog is openning. The <see cref="Document"/> property must be set before the function completes.</param>
-        /// <returns><see langword="true"/> if the "Print" button was clicked; otherwise, <see langword="false"/>.</returns>
+        /// <param name="generation">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
+        /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog(Func<Task> generation)
         {
             Host.Start(this, true, async () =>
