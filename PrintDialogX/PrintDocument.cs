@@ -21,7 +21,7 @@ namespace PrintDialogX
         public string DocumentName { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the size of the document.
+        /// Gets or sets the size of the document. If set to <see langword="null"/>, the document automatically adapts to the sizes calculated from the print settings.
         /// </summary>
         public Enums.Size? DocumentSize { get; set; } = null;
 
