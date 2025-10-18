@@ -29,10 +29,6 @@
     <Resource Include="Resources\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Remove="Resources\Languages\en-US.xaml" />
-  </ItemGroup>
-
   <!--
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="&quot;$(FXC_DIR)fxc.exe&quot; /T ps_2_0 /E main /Fo&quot;$(SolutionDir)PrintDialogX\Resources\Effects\Grayscale.ps&quot; &quot;$(SolutionDir)PrintDialogX\Resources\Effects\Grayscale.fx&quot;" />
