@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -14,12 +16,14 @@ namespace PrintDialogX.Test
     public partial class MainWindow : Window
     {
         private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
-        private static readonly Dictionary<object, (Func<int, PrintSettings, FrameworkElement> Callback, bool IsDynamic)> templates = new()
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, FrameworkElement> Callback, bool IsDynamic)> templates = new()
         {
             { "Debug Information Test", (GenerateContentDebugInformation, true) },
             { "UI Library Test", (GenerateContentUILibrary, false) },
             { "Mock Dataset Test", (GenerateContentMockDataset, true) },
         };
+
+        #region Core Logic
 
         public MainWindow()
         {
@@ -29,7 +33,7 @@ namespace PrintDialogX.Test
             {
                 optionTemplate.Items.Add(entry);
             }
-            optionTemplate.SelectedItem = "UI Library Test";
+            optionTemplate.SelectedItem = "Debug Information Test";
 
             AddOption(containerDocument, "documentAsynchronous", "Generation", CreateCheck("Asynchronous"), true);
             AddOption(containerDocument, "documentName", "Name", new TextBox(), string.Empty);
@@ -430,7 +434,7 @@ namespace PrintDialogX.Test
         {
             for (int i = 0; i < int.Parse(optionCount.Text); i++)
             {
-                document.Pages.Add(GeneratePage(i, settings));
+                document.Pages.Add(GeneratePage(i, document, settings));
             }
         }
 
@@ -438,17 +442,17 @@ namespace PrintDialogX.Test
         {
             for (int i = 0; i < int.Parse(optionCount.Text); i++)
             {
-                document.Pages.Add(GeneratePage(i, settings));
+                document.Pages.Add(GeneratePage(i, document, settings));
 
                 await Dispatcher.Yield();
             }
         }
 
-        private PrintPage GeneratePage(int index, PrintSettings settings)
+        private PrintPage GeneratePage(int index, PrintDocument document, PrintSettings settings)
         {
             return new PrintPage()
             {
-                Content = templates[optionTemplate.SelectedItem].Callback(index, settings)
+                Content = templates[optionTemplate.SelectedItem].Callback(index, document, settings)
             };
         }
 
@@ -459,27 +463,114 @@ namespace PrintDialogX.Test
                 return;
             }
 
-            int index = 0;
-            foreach (PrintPage page in document.Pages)
+            Dispatcher.Invoke(() =>
             {
-                page.Content = templates[optionTemplate.SelectedItem].Callback(index, e);
-                index++;
-            }
+                int index = 0;
+                foreach (PrintPage page in document.Pages)
+                {
+                    page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e);
+                    index++;
+                }
+            });
         }
 
-        private static FrameworkElement GenerateContentDebugInformation(int index, PrintSettings settings)
+        #endregion
+
+        #region Debug Information Test
+
+        private static FrameworkElement GenerateContentDebugInformation(int index, PrintDocument document, PrintSettings settings)
         {
-            return new();
+            double sizeGuideline = 24;
+
+            Brush brushPlaceholder = Brushes.WhiteSmoke;
+            Brush brushDeadzone = Brushes.LightPink;
+            Brush brushGuideline = Brushes.Orange;
+            Brush brushGuidelineFill = Brushes.LightYellow;
+            Brush brushCenterline = Brushes.LightBlue;
+
+            Border container = new()
+            {
+                BorderBrush = Brushes.DarkGray,
+                BorderThickness = new(1)
+            };
+
+            Grid grid = new();
+            container.Child = grid;
+
+            StackPanel panel = new() { Orientation = Orientation.Vertical };
+            grid.Children.Add(new Border() { Margin = new(sizeGuideline - 1), Padding = new(12), BorderBrush = brushGuideline, BorderThickness = new(1), Child = panel });
+
+            panel.Children.Add(new TextBlock() { Padding = new(8, 4, 8, 4), FontSize = 24, FontWeight = FontWeights.Bold, Background = brushPlaceholder, Text = $"Test Page #{index + 1}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 16, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Document Information" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Name:",-25} \"{document.DocumentName}\"" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Size:",-25} {(document.DocumentSize != null ? $"\"{document.DocumentSize.Value.DefinedName?.ToString() ?? document.DocumentSize.Value.FallbackName}\" ({document.DocumentSize.Value.Width} × {document.DocumentSize.Value.Height} px)" : "(Dynamic Size)")}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Margin:",-25} {document.DocumentMargin}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Page Count:",-25} {document.PageCount}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Print Settings Information" });
+
+            Grid columns = new();
+            columns.ColumnDefinitions.Add(new());
+            columns.ColumnDefinitions.Add(new());
+            panel.Children.Add(columns);
+
+            StackPanel left = new() { Orientation = Orientation.Vertical };
+            Grid.SetColumn(left, 0);
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Copies:",-20} {settings.Copies}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Collation:",-20} {settings.Collation}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Pages:",-20} {settings.Pages}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Pages:",-20} {settings.CustomPages}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Layout:",-20} {settings.Layout}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Size:",-20} {(settings.Size != null ? settings.Size.Value.DefinedName?.ToString() ?? settings.Size.Value.FallbackName : string.Empty)}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Color:",-20} {settings.Color}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Quality:",-20} {settings.Quality}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Pages per Sheet:",-20} {settings.PagesPerSheet}" });
+            columns.Children.Add(left);
+
+            StackPanel right = new() { Orientation = Orientation.Vertical };
+            Grid.SetColumn(right, 1);
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Page Order:",-20} {settings.PageOrder}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Scale:",-20} {settings.Scale}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Scale:",-20} {settings.CustomScale}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Margin:",-20} {settings.Margin}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Margin:",-20} {settings.CustomMargin}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Double-Sided:",-20} {settings.DoubleSided}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Type:",-20} {settings.Type}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Source:",-20} {settings.Source}" });
+            columns.Children.Add(right);
+
+            panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Miscellaneous" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Page Generation Time:",-25} {DateTime.Now:yyyy-MM-dd (UTCzzz) HH\\:mm\\:ss\\:fffffff}" });
+
+            grid.Children.Add(new Rectangle() { Margin = new(sizeGuideline + 12), Height = sizeGuideline, VerticalAlignment = VerticalAlignment.Bottom, Fill = brushDeadzone });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 0, 1, 1) });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 0, 0, 1) });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 1, 1, 0) });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 1, 0, 0) });
+            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 1, Y2 = 0, Stretch = Stretch.Fill, VerticalAlignment = VerticalAlignment.Center, Stroke = brushCenterline, StrokeThickness = 1 });
+            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 0, Y2 = 1, Stretch = Stretch.Fill, HorizontalAlignment = HorizontalAlignment.Center, Stroke = brushCenterline, StrokeThickness = 1 });
+            grid.Children.Add(new Rectangle() { Width = sizeGuideline, Height = sizeGuideline, Stroke = brushCenterline, StrokeThickness = 1 });
+
+            return container;
         }
 
-        private static FrameworkElement GenerateContentUILibrary(int index, PrintSettings settings)
+        #endregion
+
+        #region UI Library Test
+
+        private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings)
         {
-            return new();
+            throw new NotImplementedException();
         }
 
-        private static FrameworkElement GenerateContentMockDataset(int index, PrintSettings settings)
+        #endregion
+
+        #region Mock Dataset Test
+
+        private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings)
         {
-            return new();
+            throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
