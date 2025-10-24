@@ -170,6 +170,29 @@ namespace PrintDialogX
         /// </summary>
         public Enums.Source? Source { get; set; } = null;
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PrintSettingsEventArgs"/> class.
+    /// </summary>
+    /// <param name="printer"></param>
+    /// <param name="settings"></param>
+    public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings) : EventArgs
+    {
+        /// <summary>
+        /// Gets or sets whether the preview generation should be delayed until <see cref="IsBlocking"/> is set to <see langword="false"/>.
+        /// </summary>
+        public bool IsBlocking { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the current printer.
+        /// </summary>
+        public PrintQueue CurrentPrinter { get; set; } = printer;
+
+        /// <summary>
+        /// Gets or sets the current print settings.
+        /// </summary>
+        public PrintSettings CurrentSettings { get; set; } = settings;
+    }
 }
 
 namespace PrintDialogX.Enums

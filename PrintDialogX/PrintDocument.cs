@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace PrintDialogX
 {
@@ -13,7 +14,7 @@ namespace PrintDialogX
         /// <summary>
         /// Occurs when the print settings have changed.
         /// </summary>
-        public event EventHandler<PrintSettings>? PrintSettingsChanged = null;
+        public event EventHandler<PrintSettingsEventArgs>? PrintSettingsChanged = null;
 
         /// <summary>
         /// Gets or sets the name of the document.
@@ -48,10 +49,11 @@ namespace PrintDialogX
         /// <summary>
         /// Raises the <see cref="PrintSettingsChanged"/> event.
         /// </summary>
-        /// <param name="settings">The <see cref="PrintSettings"/> instance of the new print settings.</param>
-        public void OnPrintSettingsChanged(PrintSettings settings)
+        /// <param name="dispatcher">The <see cref="Dispatcher"/> instance to be used to invoke the handler.</param>
+        /// <param name="settings">The <see cref="PrintSettingsEventArgs"/> instance of the new print settings.</param>
+        public void OnPrintSettingsChanged(Dispatcher dispatcher, PrintSettingsEventArgs settings)
         {
-            PrintSettingsChanged?.Invoke(this, settings);
+            dispatcher.Invoke(() => PrintSettingsChanged?.Invoke(this, settings));
         }
     }
 
