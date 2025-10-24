@@ -456,22 +456,25 @@ namespace PrintDialogX.Test
             };
         }
 
-        private void HandlePrintSettingsChanged(object? sender, PrintSettings e)
+        private async void HandlePrintSettingsChanged(object? sender, PrintSettingsEventArgs e)
         {
             if (sender is not PrintDocument document)
             {
                 return;
             }
 
-            Dispatcher.Invoke(() =>
+            e.IsBlocking = true;
+
+            int index = 0;
+            foreach (PrintPage page in document.Pages)
             {
-                int index = 0;
-                foreach (PrintPage page in document.Pages)
-                {
-                    page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e);
-                    index++;
-                }
-            });
+                page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings);
+                index++;
+
+                await Dispatcher.Yield();
+            }
+
+            e.IsBlocking = false;
         }
 
         #endregion
