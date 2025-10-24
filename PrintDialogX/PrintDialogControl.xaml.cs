@@ -269,7 +269,7 @@ namespace PrintDialogX
 
             host = window;
             host.SetShortcutHandler(HandleShortcuts);
-            model = new(Dispatcher, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, LoadSettings, LoadDocument, UpdateDocument);
+            model = new(Dispatcher, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, LoadSettings, LoadDocument, async () => await UpdateDocument());
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
 
             DataContext = model;
@@ -591,7 +591,7 @@ namespace PrintDialogX
             {
                 model.IsDocumentReady.Value = false;
 
-                UpdateDocument();
+                await UpdateDocument(true);
                 token.ThrowIfCancellationRequested();
 
                 bool isLandscape = model.LayoutEntries.Selection == Enums.Layout.Landscape;
@@ -761,6 +761,47 @@ namespace PrintDialogX
             });
         }
 
+        private async Task UpdateDocument(bool isGeneration = false)
+        {
+            if (model.Printer.Value == null)
+            {
+                return;
+            }
+
+            PrintSettingsEventArgs settings = new(model.Printer.Value, new()
+            {
+                Fallbacks = model.PrintSettings.Fallbacks,
+                Copies = model.Copies.Value,
+                Collation = model.CollationEntries.Selection,
+                Pages = model.PagesEntries.Selection,
+                CustomPages = model.PagesCustom.Value,
+                Layout = model.LayoutEntries.Selection,
+                Size = model.SizeEntries.Selection,
+                Color = model.ColorEntries.Selection,
+                Quality = model.QualityEntries.Selection,
+                PagesPerSheet = model.PagesPerSheetEntries.Selection,
+                PageOrder = model.PageOrderEntries.Selection,
+                Scale = model.ScaleEntries.Selection,
+                CustomScale = model.ScaleCustom.Value,
+                Margin = model.MarginEntries.Selection,
+                CustomMargin = model.MarginCustom.Value,
+                DoubleSided = model.DoubleSidedEntries.Selection,
+                Type = model.TypeEntries.Selection,
+                Source = model.SourceEntries.Selection
+            });
+            model.PrintDocument.Value.OnPrintSettingsChanged(Dispatcher, settings);
+            model.PrintDocument.OnPropertyChanged();
+
+            if (isGeneration && settings.IsBlocking == true)
+            {
+                while (settings.IsBlocking)
+                {
+                    await Task.Delay(50);
+                }
+                model.PrintDocument.OnPropertyChanged();
+            }
+        }
+
         private void Print()
         {
             if (!model.IsDocumentReady.Value || model.Printer.Value == null)
@@ -881,32 +922,6 @@ namespace PrintDialogX
                     Value = 0
                 });
             }
-        }
-
-        private void UpdateDocument()
-        {
-            model.PrintDocument.Value.OnPrintSettingsChanged(new()
-            {
-                Fallbacks = model.PrintSettings.Fallbacks,
-                Copies = model.Copies.Value,
-                Collation = model.CollationEntries.Selection,
-                Pages = model.PagesEntries.Selection,
-                CustomPages = model.PagesCustom.Value,
-                Layout = model.LayoutEntries.Selection,
-                Size = model.SizeEntries.Selection,
-                Color = model.ColorEntries.Selection,
-                Quality = model.QualityEntries.Selection,
-                PagesPerSheet = model.PagesPerSheetEntries.Selection,
-                PageOrder = model.PageOrderEntries.Selection,
-                Scale = model.ScaleEntries.Selection,
-                CustomScale = model.ScaleCustom.Value,
-                Margin = model.MarginEntries.Selection,
-                CustomMargin = model.MarginCustom.Value,
-                DoubleSided = model.DoubleSidedEntries.Selection,
-                Type = model.TypeEntries.Selection,
-                Source = model.SourceEntries.Selection
-            });
-            model.PrintDocument.OnPropertyChanged();
         }
 
         private void Print(object sender, RoutedEventArgs e)
