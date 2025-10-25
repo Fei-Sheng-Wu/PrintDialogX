@@ -6,9 +6,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 
 namespace PrintDialogX.Test
@@ -33,7 +35,7 @@ namespace PrintDialogX.Test
             {
                 optionTemplate.Items.Add(entry);
             }
-            optionTemplate.SelectedItem = "Debug Information Test";
+            optionTemplate.SelectedItem = "UI Library Test";
 
             AddOption(containerDocument, "documentAsynchronous", "Generation", CreateCheck("Asynchronous"), true);
             AddOption(containerDocument, "documentName", "Name", new TextBox(), string.Empty);
@@ -562,7 +564,81 @@ namespace PrintDialogX.Test
 
         private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings)
         {
-            throw new NotImplementedException();
+            Brush brushPrimary = Brushes.SlateGray;
+            Brush brushContrast = Brushes.White;
+
+            Border container = new()
+            {
+                Background = new LinearGradientBrush(Colors.SlateGray, Colors.DimGray, 90)
+            };
+
+            StackPanel panel = new() { Margin = new(32), Orientation = Orientation.Vertical };
+            container.Child = new Border() { Margin = new(32), CornerRadius = new(16), Background = Brushes.WhiteSmoke, BorderBrush = brushPrimary, BorderThickness = new(1), Opacity = 0.9, Child = panel };
+
+            panel.Children.Add(new TextBlock() { FontSize = 36, FontWeight = FontWeights.Bold, Foreground = brushPrimary, Text = "Lorem Ipsum" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 24, 0, 0), FontSize = 14, TextWrapping = TextWrapping.Wrap, Foreground = brushPrimary, Text = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos." });
+
+            StackPanel buttons = new() { Margin = new(0, 16, 0, 0), HorizontalAlignment = HorizontalAlignment.Right, Orientation = Orientation.Horizontal };
+            buttons.Children.Add(new Button() { Width = 128, Height = 32, Background = brushPrimary, Foreground = brushContrast, BorderThickness = new(0), Content = "Get Started" });
+            buttons.Children.Add(new Button() { Margin = new(16, 0, 0, 0), Width = 128, Height = 32, Background = brushContrast, Foreground = brushPrimary, BorderBrush = brushPrimary, Content = "Learn More" });
+            panel.Children.Add(buttons);
+
+            WriteableBitmap bitmap = new(128, 32, 96, 96, PixelFormats.Bgr32, null);
+            byte[] bitmapPixels = new byte[128 * 32 * 4];
+            for (int y = 0; y < 32; y++)
+            {
+                for (int x = 0; x < 128; x++)
+                {
+                    int i = y * 128 * 4 + x * 4;
+                    bitmapPixels[i + 0] = (byte)((Math.Sin(x * 0.15) * 0.5 + 0.5) * 255);
+                    bitmapPixels[i + 1] = (byte)((Math.Sin(y * 0.15) * 0.5 + 0.5) * 255);
+                    bitmapPixels[i + 2] = (byte)((Math.Sin((x + y) * 0.15) * 0.5 + 0.5) * 255);
+                }
+            }
+            bitmap.WritePixels(new(0, 0, 128, 32), bitmapPixels, 128 * 4, 0);
+            bitmap.Freeze();
+            panel.Children.Add(new Image() { Margin = new(0, 32, 0, 0), Source = bitmap });
+
+            DockPanel input = new() { Margin = new(0, 16, 0, 0) };
+            input.Children.Add(new CheckBox() { Width = 140, Foreground = brushPrimary, VerticalAlignment = VerticalAlignment.Center, IsChecked = true, Content = "TextBox:" });
+            input.Children.Add(new TextBox() { Margin = new(8, 0, 0, 0), Padding = new(8), FontStyle = FontStyles.Italic, Foreground = brushPrimary, Text = "Lorem ipsum dolor sit amet consectetur adipiscing elit." });
+            panel.Children.Add(input);
+
+            DockPanel combo = new() { Margin = new(0, 8, 0, 0) };
+            combo.Children.Add(new CheckBox() { Width = 140, Foreground = brushPrimary, VerticalAlignment = VerticalAlignment.Center, IsChecked = null, Content = "ComboBox:" });
+            combo.Children.Add(new ComboBox() { Margin = new(8, 0, 0, 0), Padding = new(8), FontWeight = FontWeights.Bold, Foreground = brushPrimary, SelectedIndex = 0, ItemsSource = new string[] { "Lorem ipsum dolor sit amet consectetur adipiscing elit." } });
+            panel.Children.Add(combo);
+
+            DockPanel slider = new() { Margin = new(0, 8, 0, 0) };
+            slider.Children.Add(new RadioButton() { Width = 140, Foreground = brushPrimary, VerticalAlignment = VerticalAlignment.Center, IsChecked = true, Content = "Slider:" });
+            slider.Children.Add(new Slider() { Margin = new(8, 0, 0, 0), Padding = new(8), Foreground = brushPrimary, TickPlacement = TickPlacement.Both, Value = 5 });
+            panel.Children.Add(slider);
+
+            DockPanel progress = new() { Margin = new(0, 8, 0, 0) };
+            progress.Children.Add(new RadioButton() { Width = 140, Foreground = brushPrimary, VerticalAlignment = VerticalAlignment.Center, Content = "ProgressBar:" });
+            progress.Children.Add(new ProgressBar() { Margin = new(8, 0, 0, 0), Padding = new(8), Foreground = brushPrimary, Value = 75 });
+            panel.Children.Add(progress);
+
+            DockPanel group = new() { Margin = new(4) };
+            group.Children.Add(new GroupBox() { Margin = new(4), Header = "Calendar", Content = new Calendar() { Margin = new(4), Foreground = brushPrimary } });
+            group.Children.Add(new GroupBox() { Margin = new(4), Header = "ListBox", Content = new ListBox() { Margin = new(4), Foreground = brushPrimary, SelectedIndex = 1, ItemsSource = new string[] { "Lorem ipsum", "Dolor sit", "Amet consectetur", "Adipiscing elit", "Quisque faucibus", "Ex sapien", "Vitae pellentesque", "Sem placerat", "In id", "Cursus mi", "Pretium tellus", "Duis convallis" } } });
+
+            StackPanel palette = new() { Margin = new(4), Orientation = Orientation.Vertical };
+            palette.Children.Add(new TextBlock() { Padding = new(4), Background = Brushes.LightBlue, Foreground = brushPrimary, HorizontalAlignment = HorizontalAlignment.Left, Text = "Lorem ipsum dolor sit" });
+            palette.Children.Add(new TextBlock() { Margin = new(0, 4, 0, 0), Padding = new(4), Background = Brushes.LightSeaGreen, Foreground = brushContrast, HorizontalAlignment = HorizontalAlignment.Center, Text = "Lorem ipsum dolor sit" });
+            palette.Children.Add(new TextBlock() { Margin = new(0, 4, 0, 0), Padding = new(4), Background = Brushes.LemonChiffon, Foreground = brushPrimary, HorizontalAlignment = HorizontalAlignment.Right, Text = "Lorem ipsum dolor sit" });
+            palette.Children.Add(new TextBlock() { Margin = new(0, 4, 0, 0), Padding = new(4), Background = Brushes.LightCoral, Foreground = brushContrast, Text = "Lorem ipsum dolor sit" });
+            palette.Children.Add(new TextBlock() { Margin = new(0, 16, 0, 0), Padding = new(4), Background = brushPrimary, Foreground = brushContrast, FontSize = 8, TextWrapping = TextWrapping.Wrap, TextAlignment = TextAlignment.Justify, Text = "Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor." });
+            group.Children.Add(palette);
+
+            TabControl tabs = new() { Margin = new(0, 16, 0, 0), Height = 240 };
+            tabs.Items.Add(new TabItem() { Foreground = brushPrimary, Header = "Lorem", Content = group });
+            tabs.Items.Add(new TabItem() { FontStyle = FontStyles.Italic, Foreground = brushPrimary, Header = "Ipsum" });
+            tabs.Items.Add(new TabItem() { FontWeight = FontWeights.Bold, Foreground = brushPrimary, Header = "Dolor" });
+            tabs.Items.Add(new TabItem() { FontWeight = FontWeights.Bold, FontStyle = FontStyles.Italic, Foreground = brushPrimary, Header = "Sit" });
+            panel.Children.Add(tabs);
+
+            return container;
         }
 
         #endregion
