@@ -9,7 +9,7 @@
     <Title>PrintDialogX</Title>
     <Version>3.0.0</Version>
     <Authors>FeiShengWu</Authors>
-    <Description>A custom PrintDialog for WPF with preview in real-time. Full options with print settings, including copies, custom pages, orientation, color, quality, scale, pages-per-sheet, double-siding, paper size, paper type, paper source, etc. Support updatable documents according to the changes in settings. Equipped with a fast and elegant user interface.</Description>
+    <Description>A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.</Description>
     <Copyright>Copyright © 2025 FeiShengWu</Copyright>
     <PackageProjectUrl>https://github.com/Fei-Sheng-Wu/PrintDialogX</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
