@@ -11,7 +11,7 @@
 
 ## Preview
 
-![Screenshot](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/preview.png)
+![Preview](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/preview.png)
 
 ## Features
 
