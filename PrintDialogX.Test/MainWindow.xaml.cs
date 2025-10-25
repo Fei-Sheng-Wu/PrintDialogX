@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Controls;
@@ -645,9 +644,93 @@ namespace PrintDialogX.Test
 
         #region Mock Dataset Test
 
+        private static int parameterMockDataset = 0;
+
         private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings)
         {
-            throw new NotImplementedException();
+            if (document.MeasuredSize == Size.Empty)
+            {
+                return new();
+            }
+
+            double sizeRow = 36;
+            double sizeFooter = 24;
+
+            Brush brushBorder = Brushes.LightGray;
+            Brush brushHeader = Brushes.WhiteSmoke;
+
+            StackPanel container = new()
+            {
+                Orientation = Orientation.Vertical
+            };
+
+            double height = document.MeasuredSize.Height - sizeFooter;
+            if (index <= 0)
+            {
+                parameterMockDataset = 0;
+
+                container.Children.Add(new TextBlock() { FontSize = 24, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Text = $"Mock Dataset" });
+                container.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 32), HorizontalAlignment = HorizontalAlignment.Center, Text = $"ID: #{Guid.NewGuid()}" });
+
+                container.Measure(new(double.PositiveInfinity, double.PositiveInfinity));
+                height -= container.DesiredSize.Height;
+            }
+
+            int count = (int)Math.Floor(height / sizeRow);
+            for (int j = 0; j < count; j++)
+            {
+                if (j > 0)
+                {
+                    parameterMockDataset++;
+                }
+
+                Grid row = new();
+                row.ColumnDefinitions.Add(new() { Width = new(60, GridUnitType.Pixel) });
+                row.ColumnDefinitions.Add(new() { Width = new(60, GridUnitType.Pixel) });
+                row.ColumnDefinitions.Add(new() { Width = new(2, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new() { Width = new(2, GridUnitType.Star) });
+                row.ColumnDefinitions.Add(new() { Width = new(1, GridUnitType.Star) });
+                container.Children.Add(new Border() { Height = sizeRow, BorderBrush = brushBorder, BorderThickness = new(0, j <= 0 ? 1 : 0, 0, 1), Child = row });
+
+                for (int k = 0; k < row.ColumnDefinitions.Count; k++)
+                {
+                    Border cell = new()
+                    {
+                        Background = j <= 0 ? brushHeader : Brushes.Transparent,
+                        BorderBrush = brushBorder,
+                        BorderThickness = new(k <= 0 ? 1 : 0, 0, 1, 0),
+                        Child = new TextBlock()
+                        {
+                            Margin = new(8, 0, 8, 0),
+                            FontWeight = j <= 0 ? FontWeights.Bold : FontWeights.Normal,
+                            TextTrimming = TextTrimming.CharacterEllipsis,
+                            Foreground = (j <= 0 ? -1 : k) switch
+                            {
+                                1 => new SolidColorBrush(Color.FromRgb((byte)((1 - (parameterMockDataset - 1) % 26 / 26.0) * 255), (byte)(Math.Sin((parameterMockDataset - 1) % 26 / 26.0 * Math.PI) * 255), (byte)((parameterMockDataset - 1) % 26 / 26.0 * 255))),
+                                3 => $"{parameterMockDataset}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green,
+                                4 => Brushes.DarkGray,
+                                _ => Brushes.Black
+                            },
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Text = $"{(j <= 0 ? (new string[] { "Index", "Label", "Calculation", "Hash", "Random" })[k] : k switch
+                            {
+                                0 => parameterMockDataset,
+                                1 => (char)('A' + (parameterMockDataset - 1) % 26),
+                                2 => $"f({parameterMockDataset}) = {Math.Sin(parameterMockDataset * 12.34) * 4321.1234 % 1:0.000000000000}",
+                                3 => $"{parameterMockDataset}".GetHashCode(),
+                                4 => Random.Shared.Next(),
+                                _ => string.Empty
+                            })}"
+                        }
+                    };
+                    Grid.SetColumn(cell, k);
+                    row.Children.Add(cell);
+                }
+            }
+
+            container.Children.Add(new Border() { Margin = new(0, height - sizeRow * count, 0, 0), Height = sizeFooter, Child = new TextBlock() { HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Text = $"Automatically Generated at {DateTime.Now}." } });
+
+            return container;
         }
 
         #endregion
