@@ -270,9 +270,9 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Column="0" Grid.Row="0" Padding="16,6,20,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" d:DataContext="{d:DesignInstance Type=local:DesignTimeInterfaceSettings, IsDesignTimeCreatable=True}">
+        <ScrollViewer Grid.Column="0" Grid.Row="0" Padding="16,6,20,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly" d:DataContext="{d:DesignInstance Type=local:InterfaceSettings, IsDesignTimeCreatable=True}">
             <ScrollViewer.Content>
-                <Binding Path="InterfaceSettings" Converter="{StaticResource ResourceKey=InterfaceToContentConverter}">
+                <Binding Path="InterfaceSettings" Converter="{StaticResource ResourceKey=InterfaceToContentConverter}" d:Path=".">
                     <Binding.ConverterParameter>
                         <ControlTemplate TargetType="{x:Type TypeName=ContentControl}">
                             <StackPanel Orientation="Vertical">

@@ -18,11 +18,6 @@ using System.Windows.Controls;
 
 namespace PrintDialogX
 {
-    internal class DesignTimeInterfaceSettings
-    {
-        public InterfaceSettings InterfaceSettings { get; set; } = new();
-    }
-
     internal class InterfaceToContentConverter : IValueConverter
     {
         public ResourceDictionary Resources { get; set; } = [];
