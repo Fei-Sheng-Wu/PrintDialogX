@@ -11,6 +11,7 @@
                  Title="{DynamicResource ResourceKey=StringResource_TitlePrint}"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica"
+                 ContentRendered="AttachControl"
                  PreviewKeyDown="HandleShortcuts">
     <ui:FluentWindow.Resources>
         <ResourceDictionary>
@@ -36,7 +37,9 @@
                 </Style>
             </ui:TitleBar.Style>
         </ui:TitleBar>
-        <Decorator x:Name="content" DockPanel.Dock="Bottom" />
+        <Decorator x:Name="content" DockPanel.Dock="Bottom">
+            <ui:ProgressRing IsIndeterminate="True" />
+        </Decorator>
     </DockPanel>
 </ui:FluentWindow>
 
