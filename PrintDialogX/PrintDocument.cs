@@ -47,6 +47,11 @@ namespace PrintDialogX
         public int PageCount { get => Pages.Count; }
 
         /// <summary>
+        /// Gets or sets the computed size of the available space for the content of the document, excluding the margin.
+        /// </summary>
+        public Size MeasuredSize { get; set; } = Size.Empty;
+
+        /// <summary>
         /// Raises the <see cref="PrintSettingsChanged"/> event.
         /// </summary>
         /// <param name="dispatcher">The <see cref="Dispatcher"/> instance to be used to invoke the handler.</param>
