@@ -591,9 +591,6 @@ namespace PrintDialogX
             {
                 model.IsDocumentReady.Value = false;
 
-                await UpdateDocument(true);
-                token.ThrowIfCancellationRequested();
-
                 bool isLandscape = model.LayoutEntries.Selection == Enums.Layout.Landscape;
                 model.PreviewDocument.Value.PageSize = isLandscape ? new(model.SizeEntries.Selection.Height, model.SizeEntries.Selection.Width) : new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height);
                 token.ThrowIfCancellationRequested();
@@ -669,7 +666,8 @@ namespace PrintDialogX
                 token.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.UseDocument(x => x.Clear());
-                Size boundary = new(Math.Max(0, model.PreviewDocument.Value.PageSize.Width - margin * 2), Math.Max(0, model.PreviewDocument.Value.PageSize.Height - margin * 2));
+                model.PrintDocument.Value.MeasuredSize = new(Math.Max(0, model.PreviewDocument.Value.PageSize.Width - margin * 2), Math.Max(0, model.PreviewDocument.Value.PageSize.Height - margin * 2));
+                await UpdateDocument(true);
                 token.ThrowIfCancellationRequested();
 
                 int start = 0;
@@ -695,8 +693,8 @@ namespace PrintDialogX
                         Enums.PageOrder.VerticalReverse => (step / arrangement.Rows, arrangement.Rows - step % arrangement.Rows - 1),
                         _ => (step % arrangement.Columns, step / arrangement.Columns)
                     };
-                    double width = boundary.Width / arrangement.Columns;
-                    double height = boundary.Height / arrangement.Rows;
+                    double width = model.PrintDocument.Value.MeasuredSize.Width / arrangement.Columns;
+                    double height = model.PrintDocument.Value.MeasuredSize.Height / arrangement.Rows;
 
                     await Dispatcher.InvokeAsync(async () =>
                     {
@@ -725,8 +723,8 @@ namespace PrintDialogX
                             Decorator container = new()
                             {
                                 Child = element,
-                                Width = model.PrintDocument.Value.DocumentSize != null ? model.PrintDocument.Value.DocumentSize.Value.Width - model.PrintDocument.Value.DocumentMargin * 2 : boundary.Width,
-                                Height = model.PrintDocument.Value.DocumentSize != null ? model.PrintDocument.Value.DocumentSize.Value.Height - model.PrintDocument.Value.DocumentMargin * 2 : boundary.Height
+                                Width = model.PrintDocument.Value.DocumentSize != null ? model.PrintDocument.Value.DocumentSize.Value.Width - model.PrintDocument.Value.DocumentMargin * 2 : model.PrintDocument.Value.MeasuredSize.Width,
+                                Height = model.PrintDocument.Value.DocumentSize != null ? model.PrintDocument.Value.DocumentSize.Value.Height - model.PrintDocument.Value.DocumentMargin * 2 : model.PrintDocument.Value.MeasuredSize.Height
                             };
 
                             double factor = scale ?? Math.Min(width / container.Width, height / container.Height);
