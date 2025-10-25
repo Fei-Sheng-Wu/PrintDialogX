@@ -636,7 +636,7 @@ namespace PrintDialogX
                                 PageMediaSize = new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                                 PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping)
                             }).PageImageableArea);
-                            return (new double[] { area.OriginWidth, area.OriginHeight, model.PreviewDocument.Value.PageSize.Width - area.OriginWidth - area.ExtentWidth, model.PreviewDocument.Value.PageSize.Height - area.OriginHeight - area.ExtentHeight }).Max();
+                            return Math.Min(Math.Min(model.PreviewDocument.Value.PageSize.Width, model.PreviewDocument.Value.PageSize.Height) / 2, Math.Max(area.OriginWidth, area.OriginHeight));
                         }
                         catch
                         {
@@ -669,7 +669,7 @@ namespace PrintDialogX
                 token.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.UseDocument(x => x.Clear());
-                Size boundary = new(model.PreviewDocument.Value.PageSize.Width - margin * 2, model.PreviewDocument.Value.PageSize.Height - margin * 2);
+                Size boundary = new(Math.Max(0, model.PreviewDocument.Value.PageSize.Width - margin * 2), Math.Max(0, model.PreviewDocument.Value.PageSize.Height - margin * 2));
                 token.ThrowIfCancellationRequested();
 
                 int start = 0;
