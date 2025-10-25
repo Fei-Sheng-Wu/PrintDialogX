@@ -37,7 +37,138 @@ The print settings responsively adapt to the capabilities of specific printers, 
 
 ## How to Use
 
-@TODO
+An example project is included under the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) folder, with custom configurations to generate the print dialog accordingly, and three template documents to showcase the capability of PrintDialogX.
+
+### Quick Start
+
+The usage of PrintDialogX is straightforward:
+
+```c#
+// Create a new document
+PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();
+
+// Create the pages of the document
+for (int i = 0; i < 100; i++)
+{
+    PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
+    page.Content = GenerateContent(i);
+    document.Pages.Add(page);
+}
+
+// Initialize the print dialog
+PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog();
+dialog.Document = document;
+
+// Open the print dialog
+dialog.ShowDialog();
+
+// Retrieve the result of the operation
+bool isSuccess = dialog.Result.IsSuccess;
+int paperCount = dialog.Result.PaperCount;
+```
+
+### Asynchronous Document Generation
+
+PrintDialogX supports the ability to delay the document generation until the dialog is loaded, so that a spinner is shown during the generation:
+
+```c#
+// Initialize the print dialog
+PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog();
+
+// Open the print dialog
+dialog.ShowDialog(async () =>
+{
+    // Create a new document
+    PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();
+
+    // Create the pages of the document asynchronously
+    for (int i = 0; i < 100; i++)
+    {
+        PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
+        page.Content = await GenerateContentAsync(i);
+        document.Pages.Add(page);
+
+        // Allow for other UI updates
+        await Dispatcher.Yield();
+    }
+    dialog.Document = document;
+});
+```
+
+### Document Configuration
+
+It is easy to customize the document information (by default, the document is dynamically sized and takes up the entirety of the available space, but one may also choose to fix the size of the document):
+
+```c#
+document.DocumentName = "Untitled Document";
+document.DocumentSize = new PrintDialogX.Enums.Size(PrintDialogX.Enums.Size.DefinedSize.NorthAmericaLetter);
+document.DocumentMargin = 50.0;
+```
+
+### Dynamically Updatable Documents
+
+PrintDialogX raises an event when the print settings are changed:
+
+```c#
+document.PrintSettingsChanged += HandlePrintSettingsChanged;
+```
+```c#
+private async void HandlePrintSettingsChanged(object? sender, PrintDialogX.PrintSettingsEventArgs e)
+{
+    if (sender is not PrintDialogX.PrintDocument document)
+    {
+        return;
+    }
+
+    // Block the preview generation until the document is updated, due to the use of await
+    e.IsBlocking = true;
+
+    int index = 0;
+    foreach (PrintDialogX.PrintPage page in document.Pages)
+    {
+        // Update the content according to the print settings
+        page.Content = await UpdateContentAsync(index, e.CurrentSettings);
+        index++;
+
+        // Allow for other UI updates
+        await Dispatcher.Yield();
+    }
+
+    e.IsBlocking = false;
+}
+```
+
+### Print Settings Customizations
+
+The default settings can be set individually (certain settings accept `null` and use `null` by default, which represents that the default configuration of the selected printer will be used):
+
+```c#
+dialog.PrintSettings.Copies = 2;
+dialog.PrintSettings.Collation = PrintDialogX.Enums.Collation.Collated;
+dialog.PrintSettings.Pages = PrintDialogX.Enums.Pages.CustomPages;
+dialog.PrintSettings.CustomPages = "2-5, 8";
+dialog.PrintSettings.Layout = PrintDialogX.Enums.Layout.Landscape;
+dialog.PrintSettings.Color = PrintDialogX.Enums.Color.Grayscale;
+```
+
+### Interface Customizations
+
+PrintDialogX offers the ability to both customize the window of the print dialog and the exact interface to be used within the print dialog:
+
+```c#
+// Initialize the print dialog
+PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog(window =>
+{
+    // Customize the dialog window
+    window.Topmost = true;
+    window.ShowInTaskbar = false;
+});
+
+// Customize the interface
+dialog.InterfaceSettings.Title = "Test Print";
+dialog.InterfaceSettings.BasicSettings = [PrintDialogX.InterfaceSettings.Option.Printer, PrintDialogX.InterfaceSettings.Option.Void, PrintDialogX.InterfaceSettings.Option.Pages, PrintDialogX.InterfaceSettings.Option.Layout, PrintDialogX.InterfaceSettings.Option.Size];
+dialog.InterfaceSettings.AdvancedSettings = [PrintDialogX.InterfaceSettings.Option.Color, PrintDialogX.InterfaceSettings.Option.Quality, PrintDialogX.InterfaceSettings.Option.Scale, PrintDialogX.InterfaceSettings.Option.Margin, PrintDialogX.InterfaceSettings.Option.DoubleSided, PrintDialogX.InterfaceSettings.Option.Type, PrintDialogX.InterfaceSettings.Option.Source];
+```
 
 ## License
 
