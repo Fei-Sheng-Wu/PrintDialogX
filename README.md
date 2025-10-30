@@ -17,7 +17,7 @@
 
 PrintDialogX is a powerful and user-friendly print dialog tailored for modern demands. It supports all essential and advanced features expected from a next-generation print dialog, delivering real-time document previews at lightning speed. Without relying on the built-in controls for document hosting and printing, this next-level print dialog is able to truly take full control over the print pipeline, enabling more thorough customizations and better performance.
 
-The print settings responsively adapt to the capabilities of specific printers, adhering to industry standards in addition to intelligently maintaining the user's preferences. With the ability to respond to any changes in print settings made by the user, documents remain flexible and dynamically reactive to these adjustments. Powered by [Wpf.Ui](https://wpfui.lepo.co/index.html), the compelling interface allows complete personalization to suit specific scenarios, while its carefully crafted structure minimizes lag and ensures a fluid, modern printing experience.
+The print settings responsively adapt to the capabilities of specific printers, adhering to industry standards in addition to intelligently maintaining the user's preferences. With the ability to respond to any changes in print settings made by the user, documents remain flexible and dynamically reactive to these adjustments. Powered by [Wpf.Ui](https://wpfui.lepo.co), the compelling interface allows complete personalization to suit specific scenarios, while its carefully crafted structure minimizes lag and ensures a fluid, modern printing experience.
 
 - [x] Comprehensive printer selection
   - [x] Detailed printer information with graphics
