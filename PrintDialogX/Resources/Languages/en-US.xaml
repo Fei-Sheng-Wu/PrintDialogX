@@ -269,7 +269,7 @@
     <system:String x:Key="StringResource_EntryPhotographicSatin">Satin Photographic</system:String>
     <system:String x:Key="StringResource_EntryPhotographicSemiGloss">Semi-Gloss Photographic</system:String>
     <system:String x:Key="StringResource_EntryPlain">Plain</system:String>
-    <system:String x:Key="StringResource_EntryScreen">Screen</system:String>
+    <system:String x:Key="StringResource_EntryScreen">Continuous Screen</system:String>
     <system:String x:Key="StringResource_EntryScreenPaged">Paged Screen</system:String>
     <system:String x:Key="StringResource_EntryStationery">Stationery</system:String>
     <system:String x:Key="StringResource_EntryTabStockFull">Full Tab Stock</system:String>

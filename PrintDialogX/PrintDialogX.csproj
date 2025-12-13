@@ -4,7 +4,7 @@
     <TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>14.0</LangVersion>
 
     <Title>PrintDialogX</Title>
     <Version>3.0.0</Version>

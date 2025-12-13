@@ -19,10 +19,9 @@ namespace PrintDialogX
             /// </summary>
             public int FallbackMaximumCopies
             {
-                get => copiesMaximum;
-                set => copiesMaximum = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(FallbackMaximumCopies), "The value must be positive.");
-            }
-            private int copiesMaximum = int.MaxValue;
+                get;
+                set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(FallbackMaximumCopies), "The value must be positive.");
+            } = int.MaxValue;
 
             /// <summary>
             /// Gets or sets the fallback value of whether collation is supported.
@@ -70,10 +69,9 @@ namespace PrintDialogX
         /// </summary>
         public int Copies
         {
-            get => copies;
-            set => copies = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(Copies), "The value must be positive.");
-        }
-        private int copies = 1;
+            get;
+            set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(Copies), "The value must be positive.");
+        } = 1;
 
         /// <summary>
         /// Gets or sets the collation choice.
@@ -90,10 +88,9 @@ namespace PrintDialogX
         /// </summary>
         public string CustomPages
         {
-            get => pagesCustom;
-            set => pagesCustom = CustomPagesValidationRule.TryConvert(value, int.MaxValue).IsValid ? value : throw new ArgumentOutOfRangeException(nameof(CustomPages), "The value is invalid.");
-        }
-        private string pagesCustom = string.Empty;
+            get;
+            set => field = CustomPagesValidationRule.TryConvert(value, int.MaxValue).IsValid ? value : throw new ArgumentOutOfRangeException(nameof(CustomPages), "The value is invalid.");
+        } = string.Empty;
 
         /// <summary>
         /// Gets or sets the layout.
@@ -135,10 +132,9 @@ namespace PrintDialogX
         /// </summary>
         public int CustomScale
         {
-            get => scaleCustom;
-            set => scaleCustom = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomScale), "The value cannot be negative.");
-        }
-        private int scaleCustom = 100;
+            get;
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomScale), "The value cannot be negative.");
+        } = 100;
 
         /// <summary>
         /// Gets or sets the margin.
@@ -150,10 +146,9 @@ namespace PrintDialogX
         /// </summary>
         public int CustomMargin
         {
-            get => marginCustom;
-            set => marginCustom = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomMargin), "The value cannot be negative.");
-        }
-        private int marginCustom = 0;
+            get;
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomMargin), "The value cannot be negative.");
+        } = 0;
 
         /// <summary>
         /// Gets or sets the double-sided choice.
@@ -176,13 +171,8 @@ namespace PrintDialogX
     /// </summary>
     /// <param name="printer"></param>
     /// <param name="settings"></param>
-    public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings) : EventArgs
+    public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings, bool isUpdating) : EventArgs
     {
-        /// <summary>
-        /// Gets or sets whether the preview generation should be delayed until <see cref="IsBlocking"/> is set to <see langword="false"/>.
-        /// </summary>
-        public bool IsBlocking { get; set; } = false;
-
         /// <summary>
         /// Gets or sets the current printer.
         /// </summary>
@@ -192,6 +182,16 @@ namespace PrintDialogX
         /// Gets or sets the current print settings.
         /// </summary>
         public PrintSettings CurrentSettings { get; set; } = settings;
+
+        /// <summary>
+        /// Gets or sets whether the preview is planned to be updated.
+        /// </summary>
+        public bool IsUpdating { get; set; } = isUpdating;
+
+        /// <summary>
+        /// Gets or sets whether the preview update should be delayed until <see cref="IsBlocking"/> is set to <see langword="false"/>.
+        /// </summary>
+        public bool IsBlocking { get; set; } = false;
     }
 }
 

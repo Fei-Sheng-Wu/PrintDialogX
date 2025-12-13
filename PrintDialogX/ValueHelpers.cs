@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Interop;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace PrintDialogX
 {
@@ -56,26 +57,30 @@ namespace PrintDialogX
         {
             foreach (InterfaceSettings.Option option in options)
             {
-                container.Children.Add((UIElement)resources[option switch
+                container.Children.Add(new ContentControl()
                 {
-                    InterfaceSettings.Option.Printer => "OptionPrinter",
-                    InterfaceSettings.Option.PrinterPreferences => "OptionPrinterPreferences",
-                    InterfaceSettings.Option.Copies => "OptionCopies",
-                    InterfaceSettings.Option.Collation => "OptionCollation",
-                    InterfaceSettings.Option.Pages => "OptionPages",
-                    InterfaceSettings.Option.Layout => "OptionLayout",
-                    InterfaceSettings.Option.Size => "OptionSize",
-                    InterfaceSettings.Option.Color => "OptionColor",
-                    InterfaceSettings.Option.Quality => "OptionQuality",
-                    InterfaceSettings.Option.PagesPerSheet => "OptionPagesPerSheet",
-                    InterfaceSettings.Option.PageOrder => "OptionPageOrder",
-                    InterfaceSettings.Option.Scale => "OptionScale",
-                    InterfaceSettings.Option.Margin => "OptionMargin",
-                    InterfaceSettings.Option.DoubleSided => "OptionDoubleSided",
-                    InterfaceSettings.Option.Type => "OptionType",
-                    InterfaceSettings.Option.Source => "OptionSource",
-                    _ => "OptionVoid"
-                }]);
+                    Template = (ControlTemplate)resources[option switch
+                    {
+                        InterfaceSettings.Option.Printer => "OptionPrinter",
+                        InterfaceSettings.Option.PrinterPreferences => "OptionPrinterPreferences",
+                        InterfaceSettings.Option.Copies => "OptionCopies",
+                        InterfaceSettings.Option.Collation => "OptionCollation",
+                        InterfaceSettings.Option.Pages => "OptionPages",
+                        InterfaceSettings.Option.Layout => "OptionLayout",
+                        InterfaceSettings.Option.Size => "OptionSize",
+                        InterfaceSettings.Option.Color => "OptionColor",
+                        InterfaceSettings.Option.Quality => "OptionQuality",
+                        InterfaceSettings.Option.PagesPerSheet => "OptionPagesPerSheet",
+                        InterfaceSettings.Option.PageOrder => "OptionPageOrder",
+                        InterfaceSettings.Option.Scale => "OptionScale",
+                        InterfaceSettings.Option.Margin => "OptionMargin",
+                        InterfaceSettings.Option.DoubleSided => "OptionDoubleSided",
+                        InterfaceSettings.Option.Type => "OptionType",
+                        InterfaceSettings.Option.Source => "OptionSource",
+                        _ => "OptionVoid"
+                    }],
+                    Focusable = false
+                });
             }
         }
     }
@@ -94,7 +99,7 @@ namespace PrintDialogX
 
         public static object GetDescription(object value)
         {
-            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(DescriptionAttribute)) is DescriptionAttribute description ? PrintDialogViewModel.StringResources[description.Description] : value;
+            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(DescriptionAttribute)) is DescriptionAttribute description ? InterfaceSettings.StringResources[description.Description] : value;
         }
     }
 
@@ -296,6 +301,7 @@ namespace PrintDialogX
 
                 if (icon != null)
                 {
+                    icon.Freeze();
                     Cache[key] = icon;
                 }
                 return new PrinterIcon(icon, opacity, isSmall);
@@ -320,7 +326,7 @@ namespace PrintDialogX
             try
             {
                 printer.Refresh();
-                return PrintDialogViewModel.StringResources[printer.QueueStatus switch
+                return InterfaceSettings.StringResources[printer.QueueStatus switch
                 {
                     PrintQueueStatus.None => "StringResource_LabelReady",
                     PrintQueueStatus.Busy => "StringResource_LabelBusy",
@@ -352,7 +358,7 @@ namespace PrintDialogX
             }
             catch
             {
-                return PrintDialogViewModel.StringResources["StringResource_LabelError"];
+                return InterfaceSettings.StringResources["StringResource_LabelError"];
             }
         }
 
@@ -380,19 +386,19 @@ namespace PrintDialogX
 
             try
             {
-                info.Add($"{PrintDialogViewModel.StringResources["StringResource_PrefixDocuments"]}{printer.NumberOfJobs}");
+                info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixDocuments"]}{printer.NumberOfJobs}");
             }
             catch { }
             try
             {
-                info.Add($"{PrintDialogViewModel.StringResources["StringResource_PrefixLocation"]}{(string.IsNullOrWhiteSpace(printer.Location) ? PrintDialogViewModel.StringResources["StringResource_LabelUnknown"] : printer.Location)}");
+                info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixLocation"]}{(string.IsNullOrWhiteSpace(printer.Location) ? InterfaceSettings.StringResources["StringResource_LabelUnknown"] : printer.Location)}");
             }
             catch { }
             try
             {
                 if (!string.IsNullOrWhiteSpace(printer.Comment))
                 {
-                    info.Add($"{PrintDialogViewModel.StringResources["StringResource_PrefixComment"]}{printer.Comment}");
+                    info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixComment"]}{printer.Comment}");
                 }
             }
             catch { }
@@ -406,45 +412,27 @@ namespace PrintDialogX
         }
     }
 
-    internal class CustomPagesValidationParameters : Freezable
-    {
-        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(nameof(Maximum), typeof(int), typeof(CustomPagesValidationParameters), new(int.MaxValue));
-
-        public int Maximum
-        {
-            get => (int)GetValue(MaximumProperty);
-            set => SetValue(MaximumProperty, value);
-        }
-
-        protected override Freezable CreateInstanceCore()
-        {
-            return new CustomPagesValidationParameters();
-        }
-    }
-
     internal class CustomPagesValidationRule : ValidationRule
     {
-        public CustomPagesValidationParameters? Parameters { get; set; } = null;
+        public static int Maximum { get; set; } = int.MaxValue;
 
         public override System.Windows.Controls.ValidationResult Validate(object value, CultureInfo culture)
         {
-            return TryConvert(value, Parameters?.Maximum ?? int.MaxValue).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
+            return TryConvert(value).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<int> Result) TryConvert(object value, int maximum)
+        public static (bool IsValid, List<int> Result) TryConvert(object value, int? maximum = null)
         {
             List<int> result = [];
             foreach (string entry in (value.ToString() ?? string.Empty).Split(',').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-');
-                if (range.Length > 2 || !int.TryParse(range.First(), out int start) || !int.TryParse(range.Last(), out int end) || start < 1 || end < start || maximum < end)
+                if (range.Length > 2 || !int.TryParse(range.First(), out int start) || !int.TryParse(range.Last(), out int end) || start < 1 || end < start || (maximum ?? Maximum) < end)
                 {
                     return (false, []);
                 }
-                else
-                {
-                    result.AddRange(Enumerable.Range(start, end - start + 1));
-                }
+
+                result.AddRange(Enumerable.Range(start, end - start + 1));
             }
 
             return (true, result);
@@ -463,7 +451,7 @@ namespace PrintDialogX
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value) : size.FallbackName;
             string description = $"{Math.Round(size.Width * 2.54 / 96, 2)} × {Math.Round(size.Height * 2.54 / 96, 2)} cm";
 
-            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{PrintDialogViewModel.StringResources["StringResource_PrefixCustom"]}{description}";
+            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{InterfaceSettings.StringResources["StringResource_PrefixCustom"]}{description}";
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -490,106 +478,167 @@ namespace PrintDialogX
         }
     }
 
-    internal class DocumentColorEffect : ShaderEffect
-    {
-        public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty(nameof(Input), typeof(DocumentColorEffect), 0);
-        public static readonly DependencyProperty ViewportLeftProperty = DependencyProperty.Register(nameof(ViewportLeft), typeof(float), typeof(DocumentColorEffect), new(0.0f, PixelShaderConstantCallback(0)));
-        public static readonly DependencyProperty ViewportTopProperty = DependencyProperty.Register(nameof(ViewportTop), typeof(float), typeof(DocumentColorEffect), new(0.0f, PixelShaderConstantCallback(1)));
-        public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Register(nameof(ViewportWidth), typeof(float), typeof(DocumentColorEffect), new(0.0f, PixelShaderConstantCallback(2)));
-        public static readonly DependencyProperty ViewportHeightProperty = DependencyProperty.Register(nameof(ViewportHeight), typeof(float), typeof(DocumentColorEffect), new(0.0f, PixelShaderConstantCallback(3)));
-
-        public Brush Input
-        {
-            get => (Brush)GetValue(InputProperty);
-            set => SetValue(InputProperty, value);
-        }
-        public float ViewportLeft
-        {
-            get => (float)GetValue(ViewportLeftProperty);
-            set => SetValue(ViewportLeftProperty, value);
-        }
-        public float ViewportTop
-        {
-            get => (float)GetValue(ViewportTopProperty);
-            set => SetValue(ViewportTopProperty, value);
-        }
-        public float ViewportWidth
-        {
-            get => (float)GetValue(ViewportWidthProperty);
-            set => SetValue(ViewportWidthProperty, value);
-        }
-        public float ViewportHeight
-        {
-            get => (float)GetValue(ViewportHeightProperty);
-            set => SetValue(ViewportHeightProperty, value);
-        }
-
-        public string Name { get; set; }
-
-        public DocumentColorEffect(string name)
-        {
-            Name = name;
-            PixelShader = new()
-            {
-                UriSource = new($"/PrintDialogX;component/Resources/Effects/{name}.ps", UriKind.Relative)
-            };
-            UpdateShaderValue(InputProperty);
-            UpdateShaderValue(ViewportLeftProperty);
-            UpdateShaderValue(ViewportTopProperty);
-            UpdateShaderValue(ViewportWidthProperty);
-            UpdateShaderValue(ViewportHeightProperty);
-        }
-    }
-
     internal class DocumentHostControl : Border
     {
-        public class DocumentParameters
+        public class Document : DocumentPaginator
         {
+            public enum Zoom
+            {
+                Custom,
+                FitToWidth,
+                FitToHeight,
+                FitToPage
+            }
+
+            public List<(int Index, Canvas Content)> Pages { get; set; } = [];
+            public object Lock { get; set; } = new();
+
             public VirtualizingStackPanel? Viewer { get; set; } = null;
-            public double Spacing { get; set; } = 0;
-            public string? Effect { get; set; } = null;
+            public double ZoomValue
+            {
+                get;
+                set => field = Math.Max(0.05, Math.Min(10000, value));
+            } = 1;
+            public Zoom ZoomMode { get; set; } = Zoom.FitToWidth;
+            public Point? ZoomTarget { get; set; } = null;
+            public int ColumnCount { get; set; } = 1;
+
+            public override bool IsPageCountValid { get => true; }
+            public override int PageCount { get => Pages.Count; }
+            public override Size PageSize { get; set; } = new();
+            public override IDocumentPaginatorSource? Source { get => null; }
+            public override DocumentPage GetPage(int index)
+            {
+                lock (Lock)
+                {
+                    if (index < 0 || index >= Pages.Count)
+                    {
+                        return DocumentPage.Missing;
+                    }
+
+                    Canvas content = Pages[index].Content;
+                    content.Measure(PageSize);
+                    content.Arrange(new(PageSize));
+                    return new(content, PageSize, new(PageSize), new(PageSize));
+                }
+            }
         }
 
-        public static DocumentParameters Parameters = new();
-
-        private readonly (Canvas Content, double Scale) page;
-        private readonly (VisualBrush Brush, Rectangle Container, VisualBrush Visual) brush;
-
-        private Rect viewport = new();
-        private DocumentColorEffect? effect = null;
-
-        public DocumentHostControl(Canvas content, double scale)
+        public class DocumentEffect : ShaderEffect
         {
-            page = (content, scale);
+            public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty(nameof(Input), typeof(DocumentEffect), 0);
+            public static readonly DependencyProperty ViewportLeftProperty = DependencyProperty.Register(nameof(ViewportLeft), typeof(float), typeof(DocumentEffect), new(0.0f, PixelShaderConstantCallback(0)));
+            public static readonly DependencyProperty ViewportTopProperty = DependencyProperty.Register(nameof(ViewportTop), typeof(float), typeof(DocumentEffect), new(0.0f, PixelShaderConstantCallback(1)));
+            public static readonly DependencyProperty ViewportWidthProperty = DependencyProperty.Register(nameof(ViewportWidth), typeof(float), typeof(DocumentEffect), new(0.0f, PixelShaderConstantCallback(2)));
+            public static readonly DependencyProperty ViewportHeightProperty = DependencyProperty.Register(nameof(ViewportHeight), typeof(float), typeof(DocumentEffect), new(0.0f, PixelShaderConstantCallback(3)));
+
+            public Brush Input
+            {
+                get => (Brush)GetValue(InputProperty);
+                set => SetValue(InputProperty, value);
+            }
+            public float ViewportLeft
+            {
+                get => (float)GetValue(ViewportLeftProperty);
+                set => SetValue(ViewportLeftProperty, value);
+            }
+            public float ViewportTop
+            {
+                get => (float)GetValue(ViewportTopProperty);
+                set => SetValue(ViewportTopProperty, value);
+            }
+            public float ViewportWidth
+            {
+                get => (float)GetValue(ViewportWidthProperty);
+                set => SetValue(ViewportWidthProperty, value);
+            }
+            public float ViewportHeight
+            {
+                get => (float)GetValue(ViewportHeightProperty);
+                set => SetValue(ViewportHeightProperty, value);
+            }
+
+            public DocumentEffect(string name)
+            {
+                PixelShader = new()
+                {
+                    UriSource = new($"/PrintDialogX;component/Resources/Effects/{name}.ps", UriKind.Relative)
+                };
+                UpdateShaderValue(InputProperty);
+                UpdateShaderValue(ViewportLeftProperty);
+                UpdateShaderValue(ViewportTopProperty);
+                UpdateShaderValue(ViewportWidthProperty);
+                UpdateShaderValue(ViewportHeightProperty);
+            }
+        }
+
+        public static readonly double Spacing = 8;
+        public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
+        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(Canvas), typeof(DocumentHostControl), new(null, (x, e) =>
+        {
+            if (x is not DocumentHostControl host || e.NewValue is not Canvas content)
+            {
+                return;
+            }
+
             VisualBrush visual = new()
             {
-                Visual = page.Content,
+                Visual = content,
                 ViewboxUnits = BrushMappingMode.Absolute
             };
             Rectangle container = new()
             {
                 Fill = visual
             };
-            brush = (new()
+            host.brush = (new()
             {
                 Visual = container
             }, container, visual);
+        }));
+        public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(nameof(Zoom), typeof(double), typeof(DocumentHostControl), new(1.0));
+        public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Enums.Color), typeof(DocumentHostControl), new FrameworkPropertyMetadata(Enums.Color.Color, FrameworkPropertyMetadataOptions.AffectsRender));
 
-            Width = page.Content.Width * page.Scale;
-            Height = page.Content.Height * page.Scale;
+        public VirtualizingStackPanel? Viewer
+        {
+            get => (VirtualizingStackPanel?)GetValue(ViewerProperty);
+            set => SetValue(ViewerProperty, value);
+        }
+        public Canvas Content
+        {
+            get => (Canvas)GetValue(ContentProperty);
+            set => SetValue(ContentProperty, value);
+        }
+        public double Zoom
+        {
+            get => (double)GetValue(ZoomProperty);
+            set => SetValue(ZoomProperty, value);
+        }
+        public Enums.Color Color
+        {
+            get => (Enums.Color)GetValue(ColorProperty);
+            set => SetValue(ColorProperty, value);
+        }
+
+
+        private Rect viewport = new();
+        private (VisualBrush Brush, Rectangle Container, VisualBrush Visual)? brush = null;
+        private (Enums.Color Color, DocumentEffect? Effect) effect = (Enums.Color.Color, null);
+
+        public DocumentHostControl()
+        {
             Loaded += (x, e) => CompositionTarget.Rendering += UpdateViewport;
             Unloaded += (x, e) => CompositionTarget.Rendering -= UpdateViewport;
         }
 
         private void UpdateViewport(object? sender, EventArgs e)
         {
-            if (Parameters.Viewer == null)
+            if (Viewer == null)
             {
                 return;
             }
 
-            Point origin = Parameters.Viewer.TranslatePoint(new(0, 0), this);
-            Point extent = Parameters.Viewer.TranslatePoint(new(Parameters.Viewer.ViewportWidth, Parameters.Viewer.ViewportHeight), this);
+            Point origin = Viewer.TranslatePoint(new(0, 0), this);
+            Point extent = Viewer.TranslatePoint(new(Viewer.ViewportWidth, Viewer.ViewportHeight), this);
             if ((extent - origin).Length <= 0)
             {
                 return;
@@ -609,90 +658,64 @@ namespace PrintDialogX
 
         protected override void OnRender(DrawingContext context)
         {
-            if (Parameters.Effect == null)
-            {
-                effect = null;
-            }
-            else if (effect == null || effect.Name != Parameters.Effect)
-            {
-                effect = new(Parameters.Effect);
-            }
-
-            Rect clip = new(viewport.X / page.Scale, viewport.Y / page.Scale, viewport.Width / page.Scale, viewport.Height / page.Scale);
-            if (effect != null)
-            {
-                effect.ViewportLeft = (float)clip.X;
-                effect.ViewportTop = (float)clip.Y;
-                effect.ViewportWidth = (float)clip.Width;
-                effect.ViewportHeight = (float)clip.Height;
-            }
-            brush.Visual.Viewbox = clip;
-            brush.Container.Width = viewport.Width;
-            brush.Container.Height = viewport.Height;
-            brush.Container.Effect = effect;
-            context.DrawRectangle(Brushes.White, null, viewport);
-            context.DrawRectangle(brush.Brush, null, viewport);
-
-            base.OnRender(context);
-        }
-
-        public static Size GetSize(PrintDialogViewModel.ModelDocument document, double? scale = null)
-        {
-            return new(document.PageSize.Width * (scale ?? document.Zoom) + Parameters.Spacing * 2, document.PageSize.Height * (scale ?? document.Zoom) + Parameters.Spacing * 2);
-        }
-
-        public static double GetOffset(PrintDialogViewModel.ModelDocument document, double index, double? unit = null)
-        {
-            return (unit ?? GetSize(document).Height) * Math.Floor((Math.Max(1, Math.Min(document.PageCount, index)) - 1) / document.ColumnCount);
-        }
-    }
-
-    internal class DocumentHostPanel : StackPanel
-    {
-        public class DocumentRow(IEnumerable<PrintDialogViewModel.ModelDocument.Page> pages, double scale)
-        {
-            public IEnumerable<PrintDialogViewModel.ModelDocument.Page> Pages { get; set; } = pages;
-            public double Scale { get; set; } = scale;
-        }
-
-        public static readonly DependencyProperty PagesProperty = DependencyProperty.Register(nameof(Pages), typeof(DocumentRow), typeof(DocumentHostPanel), new(null, (x, e) =>
-        {
-            if (x is not DocumentHostPanel panel || e.NewValue is not DocumentRow row)
+            if (brush == null)
             {
                 return;
             }
 
-            panel.Children.Clear();
-            foreach (PrintDialogViewModel.ModelDocument.Page page in row.Pages)
+            if (effect.Color != Color)
             {
-                panel.Children.Add(new DocumentHostControl(page.Content, row.Scale));
+                effect = (Color, Color switch
+                {
+                    Enums.Color.Grayscale => new("Grayscale"),
+                    Enums.Color.Monochrome => new("Monochrome"),
+                    _ => null
+                });
             }
-        }));
 
-        public DocumentRow Pages
-        {
-            get => (DocumentRow)GetValue(PagesProperty);
-            set => SetValue(PagesProperty, value);
+            Rect clip = new(viewport.X / Zoom, viewport.Y / Zoom, viewport.Width / Zoom, viewport.Height / Zoom);
+            if (effect.Effect != null)
+            {
+                effect.Effect.ViewportLeft = (float)clip.X;
+                effect.Effect.ViewportTop = (float)clip.Y;
+                effect.Effect.ViewportWidth = (float)clip.Width;
+                effect.Effect.ViewportHeight = (float)clip.Height;
+            }
+            brush.Value.Visual.Viewbox = clip;
+            brush.Value.Container.Width = viewport.Width;
+            brush.Value.Container.Height = viewport.Height;
+            brush.Value.Container.Effect = effect.Effect;
+            context.DrawRectangle(Brushes.White, null, viewport);
+            context.DrawRectangle(brush.Value.Brush, null, viewport);
+
+            base.OnRender(context);
         }
     }
 
     internal class DocumentToContentConverter : IValueConverter
     {
+        public class Content(DocumentHostControl.Document document, Canvas page)
+        {
+            public DocumentHostControl.Document Document { get; set; } = document;
+            public Canvas Page { get; set; } = page;
+            public Size Size { get; set; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
+        }
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not PrintDialogViewModel.ModelDocument document)
+            if (value is not DocumentHostControl.Document document)
             {
                 return Binding.DoNothing;
             }
 
-            List<DocumentHostPanel.DocumentRow> rows = [];
-            document.UseDocument(x =>
+            List<IEnumerable<Content>> rows = [];
+            lock (document.Lock)
             {
-                for (int i = 0; i < x.Count; i += document.ColumnCount)
+                for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add(new(x.GetRange(i, Math.Min(document.ColumnCount, x.Count - i)), document.Zoom));
+                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, x.Content)));
                 }
-            }, false);
+            }
 
             return rows;
         }
@@ -707,12 +730,12 @@ namespace PrintDialogX
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2 || values.First() is not double current || values.Last() is not PrintDialogViewModel.ModelDocument document)
+            if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document)
             {
                 return Binding.DoNothing;
             }
 
-            return $"{PrintDialogViewModel.StringResources["StringResource_LabelPage"]} {Math.Floor(current + PrintDialogControl.EPSILON)} / {document.PageCount}";
+            return $"{InterfaceSettings.StringResources["StringResource_LabelPage"]} {Math.Floor(current + PrintDialogControl.EPSILON)} / {document.PageCount}";
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)

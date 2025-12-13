@@ -5,7 +5,6 @@
                     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                     mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
-        <ui:ThemesDictionary Theme="Light" />
         <ui:ControlsDictionary />
         <d:ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
     </ResourceDictionary.MergedDictionaries>

@@ -16,7 +16,7 @@ namespace PrintDialogX
         {
             InitializeComponent();
 
-            Resources.MergedDictionaries.Add(PrintDialogViewModel.StringResources);
+            Resources.MergedDictionaries.Add(InterfaceSettings.StringResources);
         }
 
         private async void AttachControl(object sender, EventArgs e)
@@ -40,6 +40,10 @@ namespace PrintDialogX
 
             title.Title = dialog.InterfaceSettings.Title;
             title.Icon = dialog.InterfaceSettings.Icon;
+
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed += (x, e) => Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+            Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
             if (isDialog)
             {
