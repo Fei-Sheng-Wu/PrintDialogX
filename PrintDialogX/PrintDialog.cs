@@ -71,10 +71,10 @@ namespace PrintDialogX
         /// <summary>
         /// Opens the dialog.
         /// </summary>
-        /// <param name="generation">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
-        public void Show(Func<Task> generation)
+        /// <param name="generator">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
+        public void Show(Func<Task> generator)
         {
-            Host.Start(this, false, GetCallback(generation));
+            Host.Start(this, false, GetCallback(generator));
         }
 
         /// <summary>
@@ -91,22 +91,22 @@ namespace PrintDialogX
         /// <summary>
         /// Opens the dialog and returns only when the dialog is closed.
         /// </summary>
-        /// <param name="generation">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
+        /// <param name="generator">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
-        public bool ShowDialog(Func<Task> generation)
+        public bool ShowDialog(Func<Task> generator)
         {
-            Host.Start(this, true, GetCallback(generation));
+            Host.Start(this, true, GetCallback(generator));
 
             return Host.GetResult().IsSuccess;
         }
 
-        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generation)
+        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator)
         {
             return async () =>
             {
-                if (generation != null)
+                if (generator != null)
                 {
-                    await generation();
+                    await generator();
                 }
 
                 return new PrintDialogControl(this, Host);

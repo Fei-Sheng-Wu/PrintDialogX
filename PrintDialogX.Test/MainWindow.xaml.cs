@@ -17,11 +17,11 @@ namespace PrintDialogX.Test
     public partial class MainWindow : Window
     {
         private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
-        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, FrameworkElement> Callback, bool IsDynamic)> templates = new()
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, FrameworkElement> Callback, bool IsDynamic, bool IsSensitive)> templates = new()
         {
-            { "Debug Information Test", (GenerateContentDebugInformation, true) },
-            { "UI Library Test", (GenerateContentUILibrary, false) },
-            { "Mock Dataset Test", (GenerateContentMockDataset, true) },
+            { "Debug Information Test", (GenerateContentDebugInformation, true, true) },
+            { "UI Library Test", (GenerateContentUILibrary, false, false) },
+            { "Mock Dataset Test", (GenerateContentMockDataset, true, false) },
         };
 
         #region Core Logic
@@ -464,6 +464,10 @@ namespace PrintDialogX.Test
                 return;
             }
 
+            if (templates[optionTemplate.SelectedItem].IsSensitive)
+            {
+                e.IsUpdating = true;
+            }
             e.IsBlocking = true;
 
             int index = 0;

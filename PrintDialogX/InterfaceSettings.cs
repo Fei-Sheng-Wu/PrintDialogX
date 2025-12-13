@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 
 namespace PrintDialogX
 {
@@ -7,6 +8,11 @@ namespace PrintDialogX
     /// </summary>
     public class InterfaceSettings()
     {
+        internal static ResourceDictionary StringResources = new()
+        {
+            Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
+        };
+
         /// <summary>
         /// Specifies the interface control of a specific print setting.
         /// </summary>
@@ -106,13 +112,18 @@ namespace PrintDialogX
             /// <summary>
             /// English (United States).
             /// </summary>
-            en_US
+            en_US,
+
+            /// <summary>
+            /// Chinese (China).
+            /// </summary>
+            zh_CN
         }
 
         /// <summary>
         /// Gets or sets the title of the interface.
         /// </summary>
-        public string Title { get; set; } = (string)PrintDialogViewModel.StringResources["StringResource_TitlePrint"];
+        public string Title { get; set; } = (string)StringResources["StringResource_TitlePrint"];
 
         /// <summary>
         /// Gets or sets the icon of the interface.
@@ -138,19 +149,19 @@ namespace PrintDialogX
         /// </summary>
         public Language DisplayLanguage
         {
-            get => language;
+            get;
             set
             {
-                language = value;
-                PrintDialogViewModel.StringResources = new()
+                field = value;
+                StringResources = new()
                 {
-                    Source = new($"/PrintDialogX;component/Resources/Languages/{language switch
+                    Source = new($"/PrintDialogX;component/Resources/Languages/{field switch
                     {
+                        Language.zh_CN => "zh-CN",
                         _ => "en-US"
                     }}.xaml", UriKind.Relative)
                 };
             }
-        }
-        private Language language = Language.en_US;
+        } = Language.en_US;
     }
 }

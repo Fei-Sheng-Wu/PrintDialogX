@@ -7,6 +7,21 @@ using System.Windows.Threading;
 namespace PrintDialogX
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="PrintPage"/> class.
+    /// </summary>
+    public class PrintPage
+    {
+        /// <summary>
+        /// Gets or sets the content of the page.
+        /// </summary>
+        public FrameworkElement? Content
+        {
+            get;
+            set => field = value == null || VisualTreeHelper.GetParent(value) == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
+        } = null;
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PrintDocument"/> class.
     /// </summary>
     public class PrintDocument()
@@ -31,10 +46,9 @@ namespace PrintDialogX
         /// </summary>
         public double DocumentMargin
         {
-            get => margin;
-            set => margin = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value cannot be negative.");
-        }
-        private double margin = 60;
+            get;
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value cannot be negative.");
+        } = 60;
 
         /// <summary>
         /// Gets or sets the collection of pages in the document.
@@ -60,22 +74,6 @@ namespace PrintDialogX
         {
             dispatcher.Invoke(() => PrintSettingsChanged?.Invoke(this, settings));
         }
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="PrintPage"/> class.
-    /// </summary>
-    public class PrintPage
-    {
-        /// <summary>
-        /// Gets or sets the content of the page.
-        /// </summary>
-        public FrameworkElement? Content
-        {
-            get => content;
-            set => content = value == null || VisualTreeHelper.GetParent(value) == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
-        }
-        private FrameworkElement? content;
     }
 
     /// <summary>
