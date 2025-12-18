@@ -38,8 +38,6 @@
     <system:String x:Key="StringResource_OptionPaperType">纸张类型</system:String>
     <system:String x:Key="StringResource_OptionPaperSource">纸张来源</system:String>
 
-    <system:String x:Key="StringResource_EntryCollated">逐份打印</system:String>
-    <system:String x:Key="StringResource_EntryUncollated">非逐份打印</system:String>
     <system:String x:Key="StringResource_EntryAllPages">全部页</system:String>
     <system:String x:Key="StringResource_EntryCurrentPage">当前页</system:String>
     <system:String x:Key="StringResource_EntryCustomPages">自定义</system:String>

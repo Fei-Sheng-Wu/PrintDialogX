@@ -1,13 +1,17 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shell;
+using System.Windows.Controls;
 
 namespace PrintDialogX
 {
     internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
+        private bool isAvailable = true;
         private Func<Task<FrameworkElement>>? loader = null;
         private KeyEventHandler? handler = null;
         private PrintDialogResult result = new();
@@ -15,8 +19,6 @@ namespace PrintDialogX
         public PrintDialogWindow()
         {
             InitializeComponent();
-
-            Resources.MergedDictionaries.Add(InterfaceSettings.StringResources);
         }
 
         private async void AttachControl(object sender, EventArgs e)
@@ -36,13 +38,25 @@ namespace PrintDialogX
 
         public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> callback)
         {
+            if (!isAvailable)
+            {
+                throw new InvalidOperationException("The print dialog has already been used.");
+            }
+
+            isAvailable = false;
             loader = callback;
 
-            title.Title = dialog.InterfaceSettings.Title;
+            InterfaceToContentConverter.ApplyLanguage(Resources, dialog.InterfaceSettings.DisplayLanguage);
+            title.Header = new TextBlock()
+            {
+                Margin = new(dialog.InterfaceSettings.Icon == null ? 16 : 0, 10, 0, 10),
+                FontSize = title.FontSize,
+                Text = dialog.InterfaceSettings.Title ?? Title
+            };
             title.Icon = dialog.InterfaceSettings.Icon;
 
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
-            Wpf.Ui.Appearance.ApplicationThemeManager.Changed += (x, e) => Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
             if (isDialog)
@@ -81,6 +95,24 @@ namespace PrintDialogX
         public void SetShortcutHandler(KeyEventHandler value)
         {
             handler = value;
+        }
+
+        public void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+
+            if (content.Child is FrameworkElement element)
+            {
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(element);
+            }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
+            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
+
+            base.OnClosing(e);
         }
     }
 }

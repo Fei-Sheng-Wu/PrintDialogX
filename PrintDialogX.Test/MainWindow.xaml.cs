@@ -296,7 +296,7 @@ namespace PrintDialogX.Test
                 });
                 HandleConfiguration<string>("printerDefault", x =>
                 {
-                    dialog.DefaultPrinter = new PrintServer().GetPrintQueue(x);
+                    dialog.DefaultPrinter = (dialog.PrintServer ?? new()).GetPrintQueue(x);
                     GenerateCode($"dialog.DefaultPrinter = GetPrintQueue(\"{x}\");");
                 });
             }

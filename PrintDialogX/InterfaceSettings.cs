@@ -1,18 +1,10 @@
-﻿using System;
-using System.Windows;
-
-namespace PrintDialogX
+﻿namespace PrintDialogX
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="InterfaceSettings"/> class.
     /// </summary>
     public class InterfaceSettings()
     {
-        internal static ResourceDictionary StringResources = new()
-        {
-            Source = new("/PrintDialogX;component/Resources/Languages/en-US.xaml", UriKind.Relative)
-        };
-
         /// <summary>
         /// Specifies the interface control of a specific print setting.
         /// </summary>
@@ -121,12 +113,12 @@ namespace PrintDialogX
         }
 
         /// <summary>
-        /// Gets or sets the title of the interface.
+        /// Gets or sets the title of the interface. If set to <see langword="null"/>, the default title is used.
         /// </summary>
-        public string Title { get; set; } = (string)StringResources["StringResource_TitlePrint"];
+        public string? Title { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the icon of the interface.
+        /// Gets or sets the icon of the interface. If set to <see langword="null"/>, no icon is used.
         /// </summary>
         public Wpf.Ui.Controls.IconElement? Icon { get; set; } = new Wpf.Ui.Controls.SymbolIcon()
         {
@@ -147,21 +139,6 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the display language of the interface.
         /// </summary>
-        public Language DisplayLanguage
-        {
-            get;
-            set
-            {
-                field = value;
-                StringResources = new()
-                {
-                    Source = new($"/PrintDialogX;component/Resources/Languages/{field switch
-                    {
-                        Language.zh_CN => "zh-CN",
-                        _ => "en-US"
-                    }}.xaml", UriKind.Relative)
-                };
-            }
-        } = Language.en_US;
+        public Language DisplayLanguage { get; set; } = Language.en_US;
     }
 }
