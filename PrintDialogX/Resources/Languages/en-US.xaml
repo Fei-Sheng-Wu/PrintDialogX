@@ -38,8 +38,6 @@
     <system:String x:Key="StringResource_OptionPaperType">Paper Type</system:String>
     <system:String x:Key="StringResource_OptionPaperSource">Paper Source</system:String>
 
-    <system:String x:Key="StringResource_EntryCollated">Collated</system:String>
-    <system:String x:Key="StringResource_EntryUncollated">Uncollated</system:String>
     <system:String x:Key="StringResource_EntryAllPages">All Pages</system:String>
     <system:String x:Key="StringResource_EntryCurrentPage">Current Page</system:String>
     <system:String x:Key="StringResource_EntryCustomPages">Custom Pages</system:String>

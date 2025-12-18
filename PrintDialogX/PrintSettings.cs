@@ -205,13 +205,11 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Collated output.
         /// </summary>
-        [Description("StringResource_EntryCollated")]
         Collated,
 
         /// <summary>
         /// Uncollated output.
         /// </summary>
-        [Description("StringResource_EntryUncollated")]
         Uncollated
     }
 

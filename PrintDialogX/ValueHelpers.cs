@@ -83,13 +83,27 @@ namespace PrintDialogX
                 });
             }
         }
+
+        public static void ApplyLanguage(ResourceDictionary resources, InterfaceSettings.Language language)
+        {
+            resources.MergedDictionaries.Add(new()
+            {
+                Source = new($"/PrintDialogX;component/Resources/Languages/{language switch
+                {
+                    InterfaceSettings.Language.zh_CN => "zh-CN",
+                    _ => "en-US"
+                }}.xaml", UriKind.Relative)
+            });
+        }
     }
 
     internal class ValueToDescriptionConverter : IValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            return value != null ? GetDescription(value) : Binding.DoNothing;
+            return value != null ? GetDescription(value, Resources) : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -97,9 +111,9 @@ namespace PrintDialogX
             return Binding.DoNothing;
         }
 
-        public static object GetDescription(object value)
+        public static object GetDescription(object value, ResourceDictionary resources)
         {
-            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(DescriptionAttribute)) is DescriptionAttribute description ? InterfaceSettings.StringResources[description.Description] : value;
+            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(DescriptionAttribute)) is DescriptionAttribute description ? resources[description.Description] : value;
         }
     }
 
@@ -182,6 +196,8 @@ namespace PrintDialogX
 
     internal class PrinterComparer : IEqualityComparer<PrintQueue>
     {
+        public static readonly PrinterComparer Instance = new();
+
         public bool Equals(PrintQueue? x, PrintQueue? y)
         {
             try
@@ -220,11 +236,11 @@ namespace PrintDialogX
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
-        public class PrinterIcon(ImageSource? icon, double opacity, bool isSmall)
+        public class PrinterIcon(ImageSource? icon, double opacity, double size)
         {
             public ImageSource? Icon { get; set; } = icon;
             public double Opacity { get; set; } = opacity;
-            public double Size { get; set; } = isSmall ? 18 : 36;
+            public double Size { get; set; } = size;
         }
 
         public enum PrinterType
@@ -237,10 +253,10 @@ namespace PrintDialogX
         }
 
         public static readonly Dictionary<(PrinterType, bool), ImageSource> Cache = [];
+        public static readonly string[] FilterFile = ["portprompt", "nul", "file"];
 
-        public static PrintQueueCollection CollectionFax = [];
-        public static PrintQueueCollection CollectionNetwork = [];
-        public static string[] FilterFile = ["portprompt", "nul", "file"];
+        public PrintQueueCollection CollectionFax { get; set; } = [];
+        public PrintQueueCollection CollectionNetwork { get; set; } = [];
 
         public object? Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -249,8 +265,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            PrinterComparer comparer = new();
-            PrinterType target = (CollectionFax.Contains(printer, comparer), CollectionNetwork.Contains(printer, comparer), ((Func<bool>)(() =>
+            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), ((Func<bool>)(() =>
             {
                 try
                 {
@@ -279,11 +294,7 @@ namespace PrintDialogX
             catch { }
 
             (PrinterType, bool) key = (target, isSmall);
-            if (Cache.TryGetValue(key, out ImageSource? icon))
-            {
-                return new PrinterIcon(icon, opacity, isSmall);
-            }
-            else
+            if (!Cache.TryGetValue(key, out ImageSource? icon))
             {
                 try
                 {
@@ -304,8 +315,9 @@ namespace PrintDialogX
                     icon.Freeze();
                     Cache[key] = icon;
                 }
-                return new PrinterIcon(icon, opacity, isSmall);
             }
+
+            return new PrinterIcon(icon, opacity, isSmall ? 18 : 36);
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -316,6 +328,8 @@ namespace PrintDialogX
 
     internal class PrinterToStatusConverter : IValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not PrintQueue printer)
@@ -326,7 +340,7 @@ namespace PrintDialogX
             try
             {
                 printer.Refresh();
-                return InterfaceSettings.StringResources[printer.QueueStatus switch
+                return Resources[printer.QueueStatus switch
                 {
                     PrintQueueStatus.None => "StringResource_LabelReady",
                     PrintQueueStatus.Busy => "StringResource_LabelBusy",
@@ -358,7 +372,7 @@ namespace PrintDialogX
             }
             catch
             {
-                return InterfaceSettings.StringResources["StringResource_LabelError"];
+                return Resources["StringResource_LabelError"];
             }
         }
 
@@ -370,6 +384,8 @@ namespace PrintDialogX
 
     internal class PrinterToDescriptionConverter : IValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not PrintQueue printer)
@@ -386,19 +402,19 @@ namespace PrintDialogX
 
             try
             {
-                info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixDocuments"]}{printer.NumberOfJobs}");
+                info.Add($"{Resources["StringResource_PrefixDocuments"]}{printer.NumberOfJobs}");
             }
             catch { }
             try
             {
-                info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixLocation"]}{(string.IsNullOrWhiteSpace(printer.Location) ? InterfaceSettings.StringResources["StringResource_LabelUnknown"] : printer.Location)}");
+                info.Add($"{Resources["StringResource_PrefixLocation"]}{(string.IsNullOrWhiteSpace(printer.Location) ? Resources["StringResource_LabelUnknown"] : printer.Location)}");
             }
             catch { }
             try
             {
                 if (!string.IsNullOrWhiteSpace(printer.Comment))
                 {
-                    info.Add($"{InterfaceSettings.StringResources["StringResource_PrefixComment"]}{printer.Comment}");
+                    info.Add($"{Resources["StringResource_PrefixComment"]}{printer.Comment}");
                 }
             }
             catch { }
@@ -414,20 +430,20 @@ namespace PrintDialogX
 
     internal class CustomPagesValidationRule : ValidationRule
     {
-        public static int Maximum { get; set; } = int.MaxValue;
+        public int Maximum { get; set; } = int.MaxValue;
 
         public override System.Windows.Controls.ValidationResult Validate(object value, CultureInfo culture)
         {
-            return TryConvert(value).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
+            return TryConvert(value, Maximum).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<int> Result) TryConvert(object value, int? maximum = null)
+        public static (bool IsValid, List<int> Result) TryConvert(object value, int maximum)
         {
             List<int> result = [];
             foreach (string entry in (value.ToString() ?? string.Empty).Split(',').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-');
-                if (range.Length > 2 || !int.TryParse(range.First(), out int start) || !int.TryParse(range.Last(), out int end) || start < 1 || end < start || (maximum ?? Maximum) < end)
+                if (range.Length > 2 || !int.TryParse(range.First(), out int start) || !int.TryParse(range.Last(), out int end) || start < 1 || end < start || maximum < end)
                 {
                     return (false, []);
                 }
@@ -441,6 +457,8 @@ namespace PrintDialogX
 
     internal class SizeToDescriptionConverter : IValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not Enums.Size size)
@@ -448,10 +466,10 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value) : size.FallbackName;
+            object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
             string description = $"{Math.Round(size.Width * 2.54 / 96, 2)} × {Math.Round(size.Height * 2.54 / 96, 2)} cm";
 
-            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{InterfaceSettings.StringResources["StringResource_PrefixCustom"]}{description}";
+            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{Resources["StringResource_PrefixCustom"]}{description}";
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -494,6 +512,7 @@ namespace PrintDialogX
             public object Lock { get; set; } = new();
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
+
             public double ZoomValue
             {
                 get;
@@ -572,7 +591,8 @@ namespace PrintDialogX
             }
         }
 
-        public static readonly double Spacing = 8;
+        public const double SPACING = 8;
+
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(Canvas), typeof(DocumentHostControl), new(null, (x, e) =>
         {
@@ -581,19 +601,15 @@ namespace PrintDialogX
                 return;
             }
 
-            VisualBrush visual = new()
+            VisualBrush visual = new(content)
             {
-                Visual = content,
                 ViewboxUnits = BrushMappingMode.Absolute
             };
             Rectangle container = new()
             {
                 Fill = visual
             };
-            host.brush = (new()
-            {
-                Visual = container
-            }, container, visual);
+            host.Brush = (new(container), container, visual);
         }));
         public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(nameof(Zoom), typeof(double), typeof(DocumentHostControl), new(1.0));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Enums.Color), typeof(DocumentHostControl), new FrameworkPropertyMetadata(Enums.Color.Color, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -603,9 +619,9 @@ namespace PrintDialogX
             get => (VirtualizingStackPanel?)GetValue(ViewerProperty);
             set => SetValue(ViewerProperty, value);
         }
-        public Canvas Content
+        public Canvas? Content
         {
-            get => (Canvas)GetValue(ContentProperty);
+            get => (Canvas?)GetValue(ContentProperty);
             set => SetValue(ContentProperty, value);
         }
         public double Zoom
@@ -619,15 +635,21 @@ namespace PrintDialogX
             set => SetValue(ColorProperty, value);
         }
 
+        public (VisualBrush Brush, Rectangle Container, VisualBrush Visual)? Brush { get; set; } = null;
 
         private Rect viewport = new();
-        private (VisualBrush Brush, Rectangle Container, VisualBrush Visual)? brush = null;
         private (Enums.Color Color, DocumentEffect? Effect) effect = (Enums.Color.Color, null);
 
         public DocumentHostControl()
         {
             Loaded += (x, e) => CompositionTarget.Rendering += UpdateViewport;
-            Unloaded += (x, e) => CompositionTarget.Rendering -= UpdateViewport;
+            Unloaded += (x, e) =>
+            {
+                CompositionTarget.Rendering -= UpdateViewport;
+
+                Brush?.Visual.Visual = null;
+                Brush?.Container.Fill = null;
+            };
         }
 
         private void UpdateViewport(object? sender, EventArgs e)
@@ -658,12 +680,13 @@ namespace PrintDialogX
 
         protected override void OnRender(DrawingContext context)
         {
-            if (brush == null)
+            if (Brush == null)
             {
                 return;
             }
 
-            if (effect.Color != Color)
+            Rect clip = new(viewport.X / Zoom, viewport.Y / Zoom, viewport.Width / Zoom, viewport.Height / Zoom);
+            if (true || effect.Color != Color)
             {
                 effect = (Color, Color switch
                 {
@@ -672,8 +695,6 @@ namespace PrintDialogX
                     _ => null
                 });
             }
-
-            Rect clip = new(viewport.X / Zoom, viewport.Y / Zoom, viewport.Width / Zoom, viewport.Height / Zoom);
             if (effect.Effect != null)
             {
                 effect.Effect.ViewportLeft = (float)clip.X;
@@ -681,12 +702,13 @@ namespace PrintDialogX
                 effect.Effect.ViewportWidth = (float)clip.Width;
                 effect.Effect.ViewportHeight = (float)clip.Height;
             }
-            brush.Value.Visual.Viewbox = clip;
-            brush.Value.Container.Width = viewport.Width;
-            brush.Value.Container.Height = viewport.Height;
-            brush.Value.Container.Effect = effect.Effect;
+            Brush?.Visual.Viewbox = clip;
+            Brush?.Container.Width = viewport.Width;
+            Brush?.Container.Height = viewport.Height;
+            Brush?.Container.Effect = effect.Effect;
+
             context.DrawRectangle(Brushes.White, null, viewport);
-            context.DrawRectangle(brush.Value.Brush, null, viewport);
+            context.DrawRectangle(Brush?.Brush, null, viewport);
 
             base.OnRender(context);
         }
@@ -696,9 +718,10 @@ namespace PrintDialogX
     {
         public class Content(DocumentHostControl.Document document, Canvas page)
         {
-            public DocumentHostControl.Document Document { get; set; } = document;
+            public VirtualizingStackPanel? Viewer { get; set; } = document.Viewer;
             public Canvas Page { get; set; } = page;
             public Size Size { get; set; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
+            public double Zoom { get; set; } = document.ZoomValue;
         }
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
@@ -728,6 +751,8 @@ namespace PrintDialogX
 
     internal class DocumentToDescriptionConverter : IMultiValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
             if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document)
@@ -735,7 +760,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            return $"{InterfaceSettings.StringResources["StringResource_LabelPage"]} {Math.Floor(current + PrintDialogControl.EPSILON)} / {document.PageCount}";
+            return $"{Resources["StringResource_LabelPage"]} {Math.Floor(current + PrintDialogControl.EPSILON_INDEX)} / {document.PageCount}";
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)
