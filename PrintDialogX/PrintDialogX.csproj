@@ -5,7 +5,9 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <LangVersion>14.0</LangVersion>
+  </PropertyGroup>
 
+  <PropertyGroup>
     <Title>PrintDialogX</Title>
     <Version>3.1.0</Version>
     <Authors>FeiShengWu</Authors>
@@ -15,6 +17,17 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>C#;WPF;PrintDialog;PrinterDialog;Dialog;Printer;Document;Print;Printing;Preview;Previewer;DocumentPreview;DocumentPrinting</PackageTags>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ReachFramework" Condition="'$(TargetFramework)' == 'net472'" />
