@@ -1,0 +1,11 @@
+﻿<Window x:Class="PrintDialogX.Test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFF0F0F0"
+        Title="PrintDialogX Test Window" Height="350" Width="500">
+    <Grid>
+        <Button Content="Test PrintDialogX" Click="TestButtonClick" Width="120" Height="30"></Button>
+    </Grid>
+</Window>
