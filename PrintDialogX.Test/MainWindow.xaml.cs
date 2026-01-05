@@ -19,9 +19,9 @@ namespace PrintDialogX.Test
         private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
         private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, FrameworkElement> Callback, bool IsDynamic, bool IsSensitive)> templates = new()
         {
-            { "Debug Information Test", (GenerateContentDebugInformation, true, true) },
-            { "UI Library Test", (GenerateContentUILibrary, false, false) },
-            { "Mock Dataset Test", (GenerateContentMockDataset, true, false) },
+            ["Debug Information Test"] = (GenerateContentDebugInformation, true, true),
+            ["UI Library Test"] = (GenerateContentUILibrary, false, false),
+            ["Mock Dataset Test"] = (GenerateContentMockDataset, true, false)
         };
 
         #region Core Logic
@@ -459,16 +459,12 @@ namespace PrintDialogX.Test
 
         private async void HandlePrintSettingsChanged(object? sender, PrintSettingsEventArgs e)
         {
-            if (sender is not PrintDocument document)
+            if (sender is not PrintDocument document || (e.IsUpdating == false && !templates[optionTemplate.SelectedItem].IsSensitive))
             {
                 return;
             }
 
-            if (templates[optionTemplate.SelectedItem].IsSensitive)
-            {
-                e.IsUpdating = true;
-            }
-            e.IsBlocking = true;
+            e.IsUpdating = null;
 
             int index = 0;
             foreach (PrintPage page in document.Pages)
@@ -479,7 +475,7 @@ namespace PrintDialogX.Test
                 await Dispatcher.Yield();
             }
 
-            e.IsBlocking = false;
+            e.IsUpdating = true;
         }
 
         #endregion
@@ -609,7 +605,7 @@ namespace PrintDialogX.Test
 
             DockPanel combo = new() { Margin = new(0, 8, 0, 0) };
             combo.Children.Add(new CheckBox() { Width = 140, Foreground = brushPrimary, VerticalAlignment = VerticalAlignment.Center, IsChecked = null, Content = "ComboBox:" });
-            combo.Children.Add(new ComboBox() { Margin = new(8, 0, 0, 0), Padding = new(8), FontWeight = FontWeights.Bold, Foreground = brushPrimary, SelectedIndex = 0, ItemsSource = new string[] { "Lorem ipsum dolor sit amet consectetur adipiscing elit." } });
+            combo.Children.Add(new ComboBox() { Margin = new(8, 0, 0, 0), Padding = new(8), FontWeight = FontWeights.Bold, Foreground = brushPrimary, SelectedIndex = 0, ItemsSource = new[] { "Lorem ipsum dolor sit amet consectetur adipiscing elit." } });
             panel.Children.Add(combo);
 
             DockPanel slider = new() { Margin = new(0, 8, 0, 0) };
@@ -624,7 +620,7 @@ namespace PrintDialogX.Test
 
             DockPanel group = new() { Margin = new(4) };
             group.Children.Add(new GroupBox() { Margin = new(4), Header = "Calendar", Content = new Calendar() { Margin = new(4), Foreground = brushPrimary } });
-            group.Children.Add(new GroupBox() { Margin = new(4), Header = "ListBox", Content = new ListBox() { Margin = new(4), Foreground = brushPrimary, SelectedIndex = 1, ItemsSource = new string[] { "Lorem ipsum", "Dolor sit", "Amet consectetur", "Adipiscing elit", "Quisque faucibus", "Ex sapien", "Vitae pellentesque", "Sem placerat", "In id", "Cursus mi", "Pretium tellus", "Duis convallis" } } });
+            group.Children.Add(new GroupBox() { Margin = new(4), Header = "ListBox", Content = new ListBox() { Margin = new(4), Foreground = brushPrimary, SelectedIndex = 1, ItemsSource = new[] { "Lorem ipsum", "Dolor sit", "Amet consectetur", "Adipiscing elit", "Quisque faucibus", "Ex sapien", "Vitae pellentesque", "Sem placerat", "In id", "Cursus mi", "Pretium tellus", "Duis convallis" } } });
 
             StackPanel palette = new() { Margin = new(4), Orientation = Orientation.Vertical };
             palette.Children.Add(new TextBlock() { Padding = new(4), Background = Brushes.LightBlue, Foreground = brushPrimary, HorizontalAlignment = HorizontalAlignment.Left, Text = "Lorem ipsum dolor sit" });
@@ -716,7 +712,7 @@ namespace PrintDialogX.Test
                                 _ => Brushes.Black
                             },
                             VerticalAlignment = VerticalAlignment.Center,
-                            Text = $"{(j <= 0 ? (new string[] { "Index", "Label", "Calculation", "Hash", "Random" })[k] : k switch
+                            Text = $"{(j <= 0 ? (new[] { "Index", "Label", "Calculation", "Hash", "Random" })[k] : k switch
                             {
                                 0 => parameterMockDataset,
                                 1 => (char)('A' + (parameterMockDataset - 1) % 26),

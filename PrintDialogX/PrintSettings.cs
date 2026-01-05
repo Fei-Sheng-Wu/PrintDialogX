@@ -169,8 +169,9 @@ namespace PrintDialogX
     /// <summary>
     /// Initializes a new instance of the <see cref="PrintSettingsEventArgs"/> class.
     /// </summary>
-    /// <param name="printer"></param>
-    /// <param name="settings"></param>
+    /// <param name="printer">The current printer.</param>
+    /// <param name="settings">The current print settings.</param>
+    /// <param name="isUpdating">Whether the document preview should be updated.</param>
     public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings, bool isUpdating) : EventArgs
     {
         /// <summary>
@@ -184,14 +185,9 @@ namespace PrintDialogX
         public PrintSettings CurrentSettings { get; set; } = settings;
 
         /// <summary>
-        /// Gets or sets whether the preview is planned to be updated.
+        /// Gets or sets whether the document preview should be updated. If set to <see langword="null"/>, the operation is delayed until a value of <see langword="true"/> or <see langword="false"/> is assigned.
         /// </summary>
-        public bool IsUpdating { get; set; } = isUpdating;
-
-        /// <summary>
-        /// Gets or sets whether the preview update should be delayed until <see cref="IsBlocking"/> is set to <see langword="false"/>.
-        /// </summary>
-        public bool IsBlocking { get; set; } = false;
+        public bool? IsUpdating { get; set; } = isUpdating;
     }
 }
 
