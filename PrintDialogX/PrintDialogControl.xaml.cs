@@ -729,15 +729,12 @@ namespace PrintDialogX
             }, isUpdating);
             model.PrintDocument.OnPrintSettingsChanged(Dispatcher, settings);
 
-            if (settings.IsUpdating && settings.IsBlocking == true)
+            while (settings.IsUpdating == null)
             {
-                while (settings.IsBlocking)
-                {
-                    await Task.Delay(50);
-                }
+                await Task.Delay(50);
             }
 
-            return settings.IsUpdating;
+            return settings.IsUpdating.Value;
         }
 
         private void Print()
