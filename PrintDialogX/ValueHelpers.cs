@@ -440,10 +440,10 @@ namespace PrintDialogX
         public static (bool IsValid, List<int> Result) TryConvert(object value, int maximum)
         {
             List<int> result = [];
-            foreach (string entry in (value.ToString() ?? string.Empty).Split(',').Where(x => !string.IsNullOrWhiteSpace(x)))
+            foreach (string entry in (value.ToString() ?? string.Empty).Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
-                string[] range = entry.Split('-');
-                if (range.Length > 2 || !int.TryParse(range.First(), out int start) || !int.TryParse(range.Last(), out int end) || start < 1 || end < start || maximum < end)
+                string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
+                if (range.Length > 2 || !int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) || !int.TryParse(range.Last(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) || start < 1 || end < start || maximum < end)
                 {
                     return (false, []);
                 }
