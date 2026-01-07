@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Globalization;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Xps;
@@ -458,7 +459,7 @@ namespace PrintDialogX
                 token.ThrowIfCancellationRequested();
 
                 List<Enums.Size> sizes = [];
-                Enums.Size? sizeDefault = null;
+                Enums.Size? target = null;
                 try
                 {
                     using MemoryStream stream = await Dispatcher.InvokeAsync(() => model.Printer.Value.GetPrintCapabilitiesAsXml());
@@ -475,9 +476,7 @@ namespace PrintDialogX
                         {
                             token.ThrowIfCancellationRequested();
 
-                            string? widthText = node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText;
-                            string? heightText = node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText;
-                            if (widthText == null || heightText == null || !double.TryParse(widthText, out double widthValue) || !double.TryParse(heightText, out double heightValue))
+                            if (!int.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out int width) || !int.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out int height))
                             {
                                 continue;
                             }
@@ -486,20 +485,20 @@ namespace PrintDialogX
                             {
                                 DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last().ToLowerInvariant(), ValueMappings.XmlSizeNameMapping),
                                 FallbackName = node.SelectSingleNode(string.Format(search, "DisplayName"), namespaces)?.InnerText,
-                                Width = widthValue / 10000 / 2.54 * 96,
-                                Height = heightValue / 10000 / 2.54 * 96
+                                Width = width / 10000.0 / 2.54 * 96.0,
+                                Height = height / 10000.0 / 2.54 * 96.0
                             };
                             sizes.Add(size);
 
                             if (size.Equals(defaults?.PageMediaSize))
                             {
-                                sizeDefault = size;
+                                target = size;
                             }
                         }
                     }
                 }
                 catch { }
-                model.SizeEntries.Load(sizes, sizeDefault, x => x);
+                model.SizeEntries.Load(sizes, target, x => x);
                 token.ThrowIfCancellationRequested();
 
                 model.ColorEntries.Load(capabilities?.OutputColorCapability, defaults?.OutputColor, x => ValueMappings.Map(x, ValueMappings.ColorMapping));
