@@ -13,7 +13,7 @@
     <Version>3.2.0</Version>
     <Authors>FeiShengWu</Authors>
     <Description>A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.</Description>
-    <Copyright>Copyright © 2025 FeiShengWu</Copyright>
+    <Copyright>Copyright © 2026 FeiShengWu</Copyright>
     <PackageProjectUrl>https://github.com/Fei-Sheng-Wu/PrintDialogX</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>C#;WPF;PrintDialog;Print;Printer;Printing;Dialog;Document;Preview;Previewer</PackageTags>
@@ -23,6 +23,8 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
