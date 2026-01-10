@@ -1,4 +1,4 @@
-# PrintDialogX v3.2.0-dev
+# PrintDialogX v3.2.0
 
 [![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)](#)
 [![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
