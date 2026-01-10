@@ -90,6 +90,8 @@ namespace PrintDialogX
             {
                 Source = new($"/PrintDialogX;component/Resources/Languages/{language switch
                 {
+                    InterfaceSettings.Language.en_CA => "en-CA",
+                    InterfaceSettings.Language.en_GB => "en-GB",
                     InterfaceSettings.Language.zh_CN => "zh-CN",
                     _ => "en-US"
                 }}.xaml", UriKind.Relative)

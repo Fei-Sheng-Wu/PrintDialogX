@@ -102,6 +102,16 @@
         public enum Language
         {
             /// <summary>
+            /// English (Canada).
+            /// </summary>
+            en_CA,
+
+            /// <summary>
+            /// English (United Kingdom).
+            /// </summary>
+            en_GB,
+
+            /// <summary>
             /// English (United States).
             /// </summary>
             en_US,

@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-CA.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <system:String x:Key="StringResource_LabelInitializing">Initialising</system:String>
+
+    <system:String x:Key="StringResource_MessageFailedPrinterPreferences">Unable to open the printer preferences dialogue!</system:String>
+    <system:String x:Key="StringResource_MessageFailedAddPrinter">Unable to open the system printer installation dialogue!</system:String>
+</ResourceDictionary>
