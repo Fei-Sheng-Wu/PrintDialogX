@@ -1487,14 +1487,14 @@ namespace PrintDialogX.Enums
             Height = height;
         }
 
-        /// <summary>
-        /// Gets the size in rounded width and height.
-        /// </summary>
-        /// <param name="digits">The number of decimal places in the return value.</param>
-        /// <returns>The values of the rounded width and height.</returns>
-        public readonly (decimal Width, decimal Height) GetRoundedSize(int digits = 1)
+        public override readonly int GetHashCode()
         {
-            return (Math.Round((decimal)Width, digits), Math.Round((decimal)Height, digits));
+            return (DefinedName, GetRoundedSize()).GetHashCode();
+        }
+
+        public override readonly bool Equals(object? value)
+        {
+            return value is Size size && Equals(size.DefinedName, size.Width, size.Height);
         }
 
         /// <summary>
@@ -1507,7 +1507,7 @@ namespace PrintDialogX.Enums
         /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
         {
-            return (name != null && name == DefinedName) || (width != null && height != null && (Math.Round((decimal)width.Value, digits), Math.Round((decimal)height.Value, digits)) == GetRoundedSize(digits));
+            return (name != null && name == DefinedName) || (width != null && height != null && (GetRoundedSize(width.Value, height.Value, digits) == GetRoundedSize(digits)));
         }
 
         /// <summary>
@@ -1520,14 +1520,26 @@ namespace PrintDialogX.Enums
             return size != null && Equals(size.PageMediaSizeName != null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.SizeNameMapping) : null, size.Width, size.Height);
         }
 
-        public override readonly bool Equals(object? value)
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
+        public readonly (decimal Width, decimal Height) GetRoundedSize(int digits = 1)
         {
-            return value is Size size && Equals(size.DefinedName, size.Width, size.Height);
+            return GetRoundedSize(Width, Height, digits);
         }
 
-        public override readonly int GetHashCode()
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="width">The width of the size.</param>
+        /// <param name="height">The height of the size.</param>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
+        public static (decimal Width, decimal Height) GetRoundedSize(double width, double height, int digits = 1)
         {
-            return (DefinedName, GetRoundedSize()).GetHashCode();
+            return (Math.Round((decimal)width, digits), Math.Round((decimal)height, digits));
         }
 
         public static bool operator ==(Size? x, Size? y)

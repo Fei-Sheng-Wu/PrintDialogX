@@ -21,6 +21,14 @@ namespace PrintDialogX
             InitializeComponent();
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
+            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
+
+            base.OnClosing(e);
+        }
+
         private async void AttachControl(object sender, EventArgs e)
         {
             if (loader == null)
@@ -105,14 +113,6 @@ namespace PrintDialogX
             {
                 Wpf.Ui.Appearance.ApplicationThemeManager.Apply(element);
             }
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
-            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
-
-            base.OnClosing(e);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace PrintDialogX
         {
             return key != null && mapping.TryGetValue(key, out T2 value) ? value : null;
         }
+
         public static T1 Map<T1, T2>(T2? value, Dictionary<T1, T2> mapping) where T1 : notnull where T2 : struct
         {
             return mapping.First(x => Equals(x.Value, value ?? default)).Key;
