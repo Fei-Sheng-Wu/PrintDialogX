@@ -831,10 +831,11 @@ namespace PrintDialogX
                         return;
                     }
 
+                    int count = model.PreviewDocument.Value.PageCount * model.Copies.Value;
                     host.SetResult(new()
                     {
                         IsSuccess = true,
-                        PaperCount = (int)Math.Ceiling(model.PreviewDocument.Value.PageCount * model.Copies.Value * (model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? 1 : 0.5))
+                        PaperCount = model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? count : (int)Math.Ceiling(count * 0.5)
                     });
                 };
                 writer.WriteAsync(model.PreviewDocument.Value);

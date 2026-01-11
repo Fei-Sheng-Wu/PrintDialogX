@@ -469,7 +469,7 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = $"{Math.Round(size.Width * 2.54 / 96, 2)} × {Math.Round(size.Height * 2.54 / 96, 2)} cm";
+            string description = $"{Math.Round(size.Width * 2.54 / 96.0, 2)} × {Math.Round(size.Height * 2.54 / 96.0, 2)} cm";
 
             return System.Convert.ToBoolean(parameter) ? description : name ?? $"{Resources["StringResource_PrefixCustom"]}{description}";
         }
