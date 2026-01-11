@@ -492,6 +492,8 @@ namespace PrintDialogX.Test
             Brush brushGuidelineFill = Brushes.LightYellow;
             Brush brushCenterline = Brushes.LightBlue;
 
+            FontFamily fontInformation = new("Consolas");
+
             Border container = new()
             {
                 BorderBrush = Brushes.DarkGray,
@@ -506,10 +508,10 @@ namespace PrintDialogX.Test
 
             panel.Children.Add(new TextBlock() { Padding = new(8, 4, 8, 4), FontSize = 24, FontWeight = FontWeights.Bold, Background = brushPlaceholder, Text = $"Test Page #{index + 1}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 16, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Document Information" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Name:",-25} \"{document.DocumentName}\"" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Size:",-25} {(document.DocumentSize != null ? $"\"{document.DocumentSize.Value.DefinedName?.ToString() ?? document.DocumentSize.Value.FallbackName}\" ({document.DocumentSize.Value.Width} × {document.DocumentSize.Value.Height} px)" : "(Dynamic Size)")}" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Margin:",-25} {document.DocumentMargin}" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Document Page Count:",-25} {document.PageCount}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Name:",-25} \"{document.DocumentName}\"" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Size:",-25} {(document.DocumentSize != null ? $"\"{document.DocumentSize.Value.DefinedName?.ToString() ?? document.DocumentSize.Value.FallbackName}\" ({document.DocumentSize.Value.Width} × {document.DocumentSize.Value.Height} px)" : "(Dynamic Size)")}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Margin:",-25} {document.DocumentMargin}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Page Count:",-25} {document.PageCount}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Print Settings Information" });
 
             Grid columns = new();
@@ -519,31 +521,31 @@ namespace PrintDialogX.Test
 
             StackPanel left = new() { Orientation = Orientation.Vertical };
             Grid.SetColumn(left, 0);
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Copies:",-20} {settings.Copies}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Collation:",-20} {settings.Collation}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Pages:",-20} {settings.Pages}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Pages:",-20} {settings.CustomPages}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Layout:",-20} {settings.Layout}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Size:",-20} {(settings.Size != null ? settings.Size.Value.DefinedName?.ToString() ?? settings.Size.Value.FallbackName : string.Empty)}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Color:",-20} {settings.Color}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Quality:",-20} {settings.Quality}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Pages per Sheet:",-20} {settings.PagesPerSheet}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Copies:",-20} {settings.Copies}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Collation:",-20} {settings.Collation}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Pages:",-20} {settings.Pages}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Custom Pages:",-20} {settings.CustomPages}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Layout:",-20} {settings.Layout}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Size:",-20} {(settings.Size != null ? settings.Size.Value.DefinedName?.ToString() ?? settings.Size.Value.FallbackName : string.Empty)}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Color:",-20} {settings.Color}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Quality:",-20} {settings.Quality}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Pages per Sheet:",-20} {settings.PagesPerSheet}" });
             columns.Children.Add(left);
 
             StackPanel right = new() { Orientation = Orientation.Vertical };
             Grid.SetColumn(right, 1);
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Page Order:",-20} {settings.PageOrder}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Scale:",-20} {settings.Scale}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Scale:",-20} {settings.CustomScale}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Margin:",-20} {settings.Margin}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Custom Margin:",-20} {settings.CustomMargin}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Double-Sided:",-20} {settings.DoubleSided}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Type:",-20} {settings.Type}" });
-            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Source:",-20} {settings.Source}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Page Order:",-20} {settings.PageOrder}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Scale:",-20} {settings.Scale}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Custom Scale:",-20} {settings.CustomScale}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Margin:",-20} {settings.Margin}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Custom Margin:",-20} {settings.CustomMargin}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Double-Sided:",-20} {settings.DoubleSided}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Type:",-20} {settings.Type}" });
+            right.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Source:",-20} {settings.Source}" });
             columns.Children.Add(right);
 
             panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Miscellaneous" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = new("Consolas"), Text = $"{"Page Generation Time:",-25} {DateTime.Now:yyyy-MM-dd (UTCzzz) HH\\:mm\\:ss\\:fffffff}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Page Generation Time:",-25} {DateTime.Now:yyyy-MM-dd (UTCzzz) HH\\:mm\\:ss\\:fffffff}" });
 
             grid.Children.Add(new Rectangle() { Margin = new(sizeGuideline + 12), Height = sizeGuideline, VerticalAlignment = VerticalAlignment.Bottom, Fill = brushDeadzone });
             grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 0, 1, 1) });
@@ -589,9 +591,9 @@ namespace PrintDialogX.Test
                 for (int x = 0; x < 128; x++)
                 {
                     int i = y * 128 * 4 + x * 4;
-                    bitmapPixels[i + 0] = (byte)((Math.Sin(x * 0.15) * 0.5 + 0.5) * 255);
-                    bitmapPixels[i + 1] = (byte)((Math.Sin(y * 0.15) * 0.5 + 0.5) * 255);
-                    bitmapPixels[i + 2] = (byte)((Math.Sin((x + y) * 0.15) * 0.5 + 0.5) * 255);
+                    bitmapPixels[i + 0] = (byte)((Math.Sin(x * 0.15) * 0.5 + 0.5) * 255.0);
+                    bitmapPixels[i + 1] = (byte)((Math.Sin(y * 0.15) * 0.5 + 0.5) * 255.0);
+                    bitmapPixels[i + 2] = (byte)((Math.Sin((x + y) * 0.15) * 0.5 + 0.5) * 255.0);
                 }
             }
             bitmap.WritePixels(new(0, 0, 128, 32), bitmapPixels, 128 * 4, 0);
@@ -694,6 +696,16 @@ namespace PrintDialogX.Test
 
                 for (int k = 0; k < row.ColumnDefinitions.Count; k++)
                 {
+                    (Brush color, object content) = j <= 0 ? (Brushes.Black, (new object[] { "Index", "Label", "Calculation", "Hash", "Random" })[k]) : k switch
+                    {
+                        0 => (Brushes.Black, parameterMockDataset),
+                        1 => (new SolidColorBrush(Color.FromRgb((byte)((1 - (parameterMockDataset - 1) % 26 / 26.0) * 255.0), (byte)(Math.Sin((parameterMockDataset - 1) % 26 / 26.0 * Math.PI) * 255.0), (byte)((parameterMockDataset - 1) % 26 / 26.0 * 255.0))), (char)('A' + (parameterMockDataset - 1) % 26)),
+                        2 => (Brushes.Black, $"f({parameterMockDataset}) = {Math.Sin(parameterMockDataset * 12.34) * 4321.1234 % 1:0.000000000000}"),
+                        3 => ($"{parameterMockDataset}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green, $"{parameterMockDataset}".GetHashCode()),
+                        4 => (Brushes.DarkGray, Random.Shared.Next()),
+                        _ => (Brushes.Black, string.Empty)
+                    };
+
                     Border cell = new()
                     {
                         Background = j <= 0 ? brushHeader : Brushes.Transparent,
@@ -704,23 +716,9 @@ namespace PrintDialogX.Test
                             Margin = new(8, 0, 8, 0),
                             FontWeight = j <= 0 ? FontWeights.Bold : FontWeights.Normal,
                             TextTrimming = TextTrimming.CharacterEllipsis,
-                            Foreground = (j <= 0 ? -1 : k) switch
-                            {
-                                1 => new SolidColorBrush(Color.FromRgb((byte)((1 - (parameterMockDataset - 1) % 26 / 26.0) * 255), (byte)(Math.Sin((parameterMockDataset - 1) % 26 / 26.0 * Math.PI) * 255), (byte)((parameterMockDataset - 1) % 26 / 26.0 * 255))),
-                                3 => $"{parameterMockDataset}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green,
-                                4 => Brushes.DarkGray,
-                                _ => Brushes.Black
-                            },
+                            Foreground = color,
                             VerticalAlignment = VerticalAlignment.Center,
-                            Text = $"{(j <= 0 ? (new[] { "Index", "Label", "Calculation", "Hash", "Random" })[k] : k switch
-                            {
-                                0 => parameterMockDataset,
-                                1 => (char)('A' + (parameterMockDataset - 1) % 26),
-                                2 => $"f({parameterMockDataset}) = {Math.Sin(parameterMockDataset * 12.34) * 4321.1234 % 1:0.000000000000}",
-                                3 => $"{parameterMockDataset}".GetHashCode(),
-                                4 => Random.Shared.Next(),
-                                _ => string.Empty
-                            })}"
+                            Text = content.ToString()
                         }
                     };
                     Grid.SetColumn(cell, k);
