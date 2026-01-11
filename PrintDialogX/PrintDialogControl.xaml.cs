@@ -380,7 +380,7 @@ namespace PrintDialogX
 
             try
             {
-                Process.Start(new ProcessStartInfo()
+                using Process? process = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "ms-settings:printers",
                     UseShellExecute = true
@@ -403,12 +403,11 @@ namespace PrintDialogX
 
             try
             {
-                Process.Start(new ProcessStartInfo()
+                using Process? process = Process.Start(new ProcessStartInfo()
                 {
-                    FileName = "cmd.exe",
-                    Arguments = $"/C rundll32 printui.dll,PrintUIEntry /p /n \"{model.Printer.Value.FullName}\"",
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    CreateNoWindow = true
+                    FileName = "rundll32",
+                    Arguments = $"printui.dll,PrintUIEntry /p /n \"{model.Printer.Value.FullName}\"",
+                    UseShellExecute = true
                 });
             }
             catch
