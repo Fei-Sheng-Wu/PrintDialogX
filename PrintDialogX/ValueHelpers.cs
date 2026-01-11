@@ -510,20 +510,6 @@ namespace PrintDialogX
                 FitToPage
             }
 
-            public List<(int Index, Canvas Content)> Pages { get; set; } = [];
-            public object Lock { get; set; } = new();
-
-            public VirtualizingStackPanel? Viewer { get; set; } = null;
-
-            public double ZoomValue
-            {
-                get;
-                set => field = Math.Max(0.05, Math.Min(10000, value));
-            } = 1;
-            public Zoom ZoomMode { get; set; } = Zoom.FitToWidth;
-            public Point? ZoomTarget { get; set; } = null;
-            public int ColumnCount { get; set; } = 1;
-
             public override bool IsPageCountValid { get => true; }
             public override int PageCount { get => Pages.Count; }
             public override Size PageSize { get; set; } = new();
@@ -543,6 +529,20 @@ namespace PrintDialogX
                     return new(content, PageSize, new(PageSize), new(PageSize));
                 }
             }
+
+            public object Lock { get; set; } = new();
+            public List<(int Index, Canvas Content)> Pages { get; set; } = [];
+
+            public VirtualizingStackPanel? Viewer { get; set; } = null;
+
+            public double ZoomValue
+            {
+                get;
+                set => field = Math.Max(0.05, Math.Min(10000, value));
+            } = 1;
+            public Zoom ZoomMode { get; set; } = Zoom.FitToWidth;
+            public Point? ZoomTarget { get; set; } = null;
+            public int ColumnCount { get; set; } = 1;
         }
 
         public class DocumentEffect : ShaderEffect
