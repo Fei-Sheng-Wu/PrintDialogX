@@ -476,7 +476,7 @@ namespace PrintDialogX
                         {
                             token.ThrowIfCancellationRequested();
 
-                            if (!int.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out int width) || !int.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out int height))
+                            if (!double.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out double width) || !double.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out double height))
                             {
                                 continue;
                             }
@@ -485,8 +485,8 @@ namespace PrintDialogX
                             {
                                 DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last().ToLowerInvariant(), ValueMappings.XmlSizeNameMapping),
                                 FallbackName = node.SelectSingleNode(string.Format(search, "DisplayName"), namespaces)?.InnerText,
-                                Width = width / 10000.0 / 2.54 * 96.0,
-                                Height = height / 10000.0 / 2.54 * 96.0
+                                Width = width / 25400.0 * 96.0,
+                                Height = height / 25400.0 * 96.0
                             };
                             sizes.Add(size);
 
