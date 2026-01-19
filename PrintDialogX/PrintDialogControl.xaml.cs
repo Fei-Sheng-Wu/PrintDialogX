@@ -475,7 +475,7 @@ namespace PrintDialogX
                         {
                             token.ThrowIfCancellationRequested();
 
-                            if (!double.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out double width) || !double.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out double height))
+                            if (!long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long width) || !long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long height))
                             {
                                 continue;
                             }
