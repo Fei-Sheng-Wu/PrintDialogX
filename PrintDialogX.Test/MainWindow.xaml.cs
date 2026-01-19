@@ -16,12 +16,19 @@ namespace PrintDialogX.Test
 {
     public partial class MainWindow : Window
     {
-        private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
-        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, FrameworkElement> Callback, bool IsDynamic, bool IsSensitive)> templates = new()
+        private enum TemplateDynamism
         {
-            ["Debug Information Test"] = (GenerateContentDebugInformation, true, true),
-            ["UI Library Test"] = (GenerateContentUILibrary, false, false),
-            ["Mock Dataset Test"] = (GenerateContentMockDataset, true, false)
+            Static,
+            DynamicVisual,
+            DynamicAll
+        }
+
+        private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, Dictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> templates = new()
+        {
+            ["Debug Information Test"] = (GenerateContentDebugInformation, TemplateDynamism.DynamicAll),
+            ["UI Library Test"] = (GenerateContentUILibrary, TemplateDynamism.Static),
+            ["Mock Dataset Test"] = (GenerateContentMockDataset, TemplateDynamism.DynamicVisual)
         };
 
         #region Core Logic
@@ -192,7 +199,7 @@ namespace PrintDialogX.Test
                 GenerateCode("}");
             });
 
-            if (templates[optionTemplate.SelectedItem].IsDynamic)
+            if (templates[optionTemplate.SelectedItem].Dynamism != TemplateDynamism.Static)
             {
                 GenerateCode();
                 GenerateCode("// Add the event listener for updates to print settings");
@@ -423,43 +430,63 @@ namespace PrintDialogX.Test
             {
                 GenerateCode($"dialog.{(isDialog ? "ShowDialog" : "Show")}();");
             }
-            ((Action)(isDialog ? () => dialog.ShowDialog(callback) : () => dialog.Show(callback)))();
+
+            switch (isDialog, isAsynchronous)
+            {
+                case (true, true):
+                    dialog.ShowDialog(callback);
+                    break;
+                case (true, false):
+                    dialog.ShowDialog();
+                    break;
+                case (false, true):
+                    dialog.Show(callback);
+                    break;
+                case (false, false):
+                    dialog.Show();
+                    break;
+            }
         }
 
-        private void GenerateCode(string? code = null, int level = 0)
+        private void GenerateCode(string? code = null, int indent = 0)
         {
-            textCode.Text += $"{(string.IsNullOrEmpty(textCode.Text) ? string.Empty : Environment.NewLine)}{new string(' ', level * 4)}{code}";
+            textCode.Text += $"{(textCode.Text.Any() ? Environment.NewLine : string.Empty)}{new string(' ', indent * 4)}{code}";
         }
 
         private void GenerateDocument(PrintDocument document, PrintSettings settings)
         {
+            Dictionary<string, object> context = [];
             for (int i = 0; i < int.Parse(optionCount.Text); i++)
             {
-                document.Pages.Add(GeneratePage(i, document, settings));
+                document.Pages.Add(new()
+                {
+                    Content = templates[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                });
             }
         }
 
         private async Task GenerateDocumentAsync(PrintDocument document, PrintSettings settings)
         {
+            Dictionary<string, object> context = [];
             for (int i = 0; i < int.Parse(optionCount.Text); i++)
             {
-                document.Pages.Add(GeneratePage(i, document, settings));
+                document.Pages.Add(new()
+                {
+                    Content = templates[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                });
 
                 await Dispatcher.Yield();
             }
         }
 
-        private PrintPage GeneratePage(int index, PrintDocument document, PrintSettings settings)
-        {
-            return new PrintPage()
-            {
-                Content = templates[optionTemplate.SelectedItem].Callback(index, document, settings)
-            };
-        }
-
         private async void HandlePrintSettingsChanged(object? sender, PrintSettingsEventArgs e)
         {
-            if (sender is not PrintDocument document || (e.IsUpdating == false && !templates[optionTemplate.SelectedItem].IsSensitive))
+            if (sender is not PrintDocument document || !(templates[optionTemplate.SelectedItem].Dynamism switch
+            {
+                TemplateDynamism.Static => false,
+                TemplateDynamism.DynamicVisual => e.IsUpdating ?? false,
+                _ => true
+            }))
             {
                 return;
             }
@@ -467,9 +494,10 @@ namespace PrintDialogX.Test
             e.IsUpdating = null;
 
             int index = 0;
+            Dictionary<string, object> context = [];
             foreach (PrintPage page in document.Pages)
             {
-                page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings);
+                page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings, context);
                 index++;
 
                 await Dispatcher.Yield();
@@ -482,7 +510,7 @@ namespace PrintDialogX.Test
 
         #region Debug Information Test
 
-        private static FrameworkElement GenerateContentDebugInformation(int index, PrintDocument document, PrintSettings settings)
+        private static FrameworkElement GenerateContentDebugInformation(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
         {
             double sizeGuideline = 24;
 
@@ -563,7 +591,7 @@ namespace PrintDialogX.Test
 
         #region UI Library Test
 
-        private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings)
+        private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
         {
             Brush brushPrimary = Brushes.SlateGray;
             Brush brushContrast = Brushes.White;
@@ -646,9 +674,7 @@ namespace PrintDialogX.Test
 
         #region Mock Dataset Test
 
-        private static int parameterMockDataset = 0;
-
-        private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings)
+        private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
         {
             if (document.MeasuredSize == Size.Empty)
             {
@@ -669,7 +695,7 @@ namespace PrintDialogX.Test
             double height = document.MeasuredSize.Height - sizeFooter;
             if (index <= 0)
             {
-                parameterMockDataset = 0;
+                context["position"] = 0;
 
                 container.Children.Add(new TextBlock() { FontSize = 24, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Text = $"Mock Dataset" });
                 container.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 32), HorizontalAlignment = HorizontalAlignment.Center, Text = $"ID: #{Guid.NewGuid()}" });
@@ -681,9 +707,11 @@ namespace PrintDialogX.Test
             int count = (int)Math.Floor(height / sizeRow);
             for (int j = 0; j < count; j++)
             {
+                int position = context["position"] as int? ?? 0;
                 if (j > 0)
                 {
-                    parameterMockDataset++;
+                    position++;
+                    context["position"] = position;
                 }
 
                 Grid row = new();
@@ -698,10 +726,10 @@ namespace PrintDialogX.Test
                 {
                     (Brush color, object content) = j <= 0 ? (Brushes.Black, (new object[] { "Index", "Label", "Calculation", "Hash", "Random" })[k]) : k switch
                     {
-                        0 => (Brushes.Black, parameterMockDataset),
-                        1 => (new SolidColorBrush(Color.FromRgb((byte)((1 - (parameterMockDataset - 1) % 26 / 26.0) * 255.0), (byte)(Math.Sin((parameterMockDataset - 1) % 26 / 26.0 * Math.PI) * 255.0), (byte)((parameterMockDataset - 1) % 26 / 26.0 * 255.0))), (char)('A' + (parameterMockDataset - 1) % 26)),
-                        2 => (Brushes.Black, $"f({parameterMockDataset}) = {Math.Sin(parameterMockDataset * 12.34) * 4321.1234 % 1:0.000000000000}"),
-                        3 => ($"{parameterMockDataset}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green, $"{parameterMockDataset}".GetHashCode()),
+                        0 => (Brushes.Black, position),
+                        1 => (new SolidColorBrush(Color.FromRgb((byte)((1 - (position - 1) % 26 / 26.0) * 255.0), (byte)(Math.Sin((position - 1) % 26 / 26.0 * Math.PI) * 255.0), (byte)((position - 1) % 26 / 26.0 * 255.0))), (char)('A' + (position - 1) % 26)),
+                        2 => (Brushes.Black, $"f({position}) = {Math.Sin(position * 12.34) * 4321.1234 % 1:0.000000000000}"),
+                        3 => ($"{position}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green, $"{position}".GetHashCode()),
                         4 => (Brushes.DarkGray, Random.Shared.Next()),
                         _ => (Brushes.Black, string.Empty)
                     };
