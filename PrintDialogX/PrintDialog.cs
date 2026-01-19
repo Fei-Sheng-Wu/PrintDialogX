@@ -65,7 +65,7 @@ namespace PrintDialogX
         /// </summary>
         public void Show()
         {
-            Host.Start(this, false, GetCallback(null));
+            Host.Start(this, false, GetCallback());
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog()
         {
-            Host.Start(this, true, GetCallback(null));
+            Host.Start(this, true, GetCallback());
 
             return Host.GetResult().IsSuccess;
         }
@@ -100,7 +100,7 @@ namespace PrintDialogX
             return Host.GetResult().IsSuccess;
         }
 
-        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator)
+        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator = null)
         {
             return async () =>
             {

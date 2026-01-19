@@ -22,7 +22,7 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal class PrintDialogViewModel(Action<Action> dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action retriever, Action visualizer, Action updater)
+    internal class PrintDialogViewModel(Action<Action> dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action retriever, Action visualizer, Action informer)
     {
         public class ModelValue<T>(Action<Action> dispatcher, T initial, Action? callback = null) : INotifyPropertyChanged
         {
@@ -156,27 +156,27 @@ namespace PrintDialogX
 
         public ObservableCollection<PrintQueue> PrinterEntries { get; } = [];
         public ModelValue<PrintQueue?> Printer { get; } = new(dispatcher, null, retriever);
-        public ModelValue<int> Copies { get; } = new(dispatcher, settings.Copies, updater);
+        public ModelValue<int> Copies { get; } = new(dispatcher, settings.Copies, informer);
         public ModelValue<int> CopiesMaximum { get; } = new(dispatcher, settings.Fallbacks.FallbackMaximumCopies);
-        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated, updater);
+        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated, informer);
         public ModelValue<bool> IsCollationSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsCollationSupported);
         public ModelCollection<Enums.Pages> PagesEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Pages)).Cast<Enums.Pages>(), settings.Pages, Enums.Pages.AllPages, visualizer);
         public ModelValue<double> PagesCurrent { get; } = new(dispatcher, 1);
         public ModelValue<string> PagesCustom { get; } = new(dispatcher, settings.CustomPages, visualizer);
         public ModelCollection<Enums.Layout> LayoutEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Layout)).Cast<Enums.Layout>(), settings.Layout, Enums.Layout.Portrait, visualizer);
         public ModelCollection<Enums.Size> SizeEntries { get; } = new(dispatcher, [], settings.Size, settings.Fallbacks.FallbackSize, visualizer);
-        public ModelCollection<Enums.Color> ColorEntries { get; } = new(dispatcher, [], settings.Color, settings.Fallbacks.FallbackColor, updater);
-        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(dispatcher, [], settings.Quality, settings.Fallbacks.FallbackQuality, updater);
+        public ModelCollection<Enums.Color> ColorEntries { get; } = new(dispatcher, [], settings.Color, settings.Fallbacks.FallbackColor, informer);
+        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(dispatcher, [], settings.Quality, settings.Fallbacks.FallbackQuality, informer);
         public ModelCollection<Enums.PagesPerSheet> PagesPerSheetEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PagesPerSheet)).Cast<Enums.PagesPerSheet>(), settings.PagesPerSheet, Enums.PagesPerSheet.One, visualizer);
         public ModelCollection<Enums.PageOrder> PageOrderEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PageOrder)).Cast<Enums.PageOrder>(), settings.PageOrder, Enums.PageOrder.Horizontal, visualizer);
         public ModelCollection<Enums.Scale> ScaleEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Scale)).Cast<Enums.Scale>(), settings.Scale, Enums.Scale.AutoFit, visualizer);
         public ModelValue<int> ScaleCustom { get; } = new(dispatcher, settings.CustomScale, visualizer);
         public ModelCollection<Enums.Margin> MarginEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Margin)).Cast<Enums.Margin>(), settings.Margin, Enums.Margin.Default, visualizer);
         public ModelValue<int> MarginCustom { get; } = new(dispatcher, settings.CustomMargin, visualizer);
-        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided, updater);
+        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided, informer);
         public ModelValue<bool> IsDoubleSidedSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsDoubleSidedSupported);
-        public ModelCollection<Enums.Type> TypeEntries { get; } = new(dispatcher, [], settings.Type, settings.Fallbacks.FallbackType, updater);
-        public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource, updater);
+        public ModelCollection<Enums.Type> TypeEntries { get; } = new(dispatcher, [], settings.Type, settings.Fallbacks.FallbackType, informer);
+        public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource, informer);
     }
 
     internal partial class PrintDialogControl : UserControl
