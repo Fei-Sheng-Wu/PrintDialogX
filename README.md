@@ -57,10 +57,10 @@ An example project is included under the [PrintDialogX.Test](https://github.com/
 The usage of PrintDialogX is straightforward:
 
 ```c#
-// Create a new document
+// Create a new document.
 PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();
 
-// Create the pages of the document
+// Create the pages of the document.
 for (int i = 0; i < 100; i++)
 {
     PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
@@ -68,14 +68,14 @@ for (int i = 0; i < 100; i++)
     document.Pages.Add(page);
 }
 
-// Initialize the print dialog
+// Initialize the print dialog.
 PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog();
 dialog.Document = document;
 
-// Open the print dialog
+// Open the print dialog.
 dialog.ShowDialog();
 
-// Retrieve the result of the operation
+// Retrieve the result of the operation.
 bool isSuccess = dialog.Result.IsSuccess;
 int paperCount = dialog.Result.PaperCount;
 ```
@@ -85,23 +85,23 @@ int paperCount = dialog.Result.PaperCount;
 PrintDialogX supports the ability to delay the document generation until the dialog is loaded, so that a spinner is shown during the generation:
 
 ```c#
-// Initialize the print dialog
+// Initialize the print dialog.
 PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog();
 
-// Open the print dialog
+// Open the print dialog.
 dialog.ShowDialog(async () =>
 {
-    // Create a new document
+    // Create a new document.
     PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();
 
-    // Create the pages of the document asynchronously
+    // Create the pages of the document asynchronously.
     for (int i = 0; i < 100; i++)
     {
         PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();
         page.Content = await GenerateContentAsync(i);
         document.Pages.Add(page);
 
-        // Allow for other UI updates
+        // Allow for other UI updates.
         await Dispatcher.Yield();
     }
     dialog.Document = document;
@@ -133,21 +133,21 @@ private async void HandlePrintSettingsChanged(object? sender, PrintDialogX.Print
         return;
     }
 
-    // Delay the preview generation until the document is updated
+    // Delay the preview generation until the document is updated.
     e.IsUpdating = null;
 
     int index = 0;
     foreach (PrintDialogX.PrintPage page in document.Pages)
     {
-        // Update the content according to the print settings
+        // Update the content according to the print settings.
         page.Content = await UpdateContentAsync(index, e.CurrentSettings);
         index++;
 
-        // Allow for other UI updates
+        // Allow for other UI updates.
         await Dispatcher.Yield();
     }
 
-    // Signal the preview generation to update
+    // Signal the preview generation to update.
     e.IsUpdating = true;
 }
 ```
@@ -170,15 +170,15 @@ dialog.PrintSettings.Color = PrintDialogX.Enums.Color.Grayscale;
 PrintDialogX offers the ability to both customize the window of the print dialog and the exact interface to be used within the print dialog:
 
 ```c#
-// Initialize the print dialog
+// Initialize the print dialog.
 PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog(window =>
 {
-    // Customize the dialog window
+    // Customize the dialog window.
     window.Topmost = true;
     window.ShowInTaskbar = false;
 });
 
-// Customize the interface
+// Customize the interface.
 dialog.InterfaceSettings.Title = "Test Print";
 dialog.InterfaceSettings.BasicSettings = [PrintDialogX.InterfaceSettings.Option.Printer, PrintDialogX.InterfaceSettings.Option.Void, PrintDialogX.InterfaceSettings.Option.Pages, PrintDialogX.InterfaceSettings.Option.Layout, PrintDialogX.InterfaceSettings.Option.Size];
 dialog.InterfaceSettings.AdvancedSettings = [PrintDialogX.InterfaceSettings.Option.Color, PrintDialogX.InterfaceSettings.Option.Quality, PrintDialogX.InterfaceSettings.Option.Scale, PrintDialogX.InterfaceSettings.Option.Margin, PrintDialogX.InterfaceSettings.Option.DoubleSided, PrintDialogX.InterfaceSettings.Option.Type, PrintDialogX.InterfaceSettings.Option.Source];

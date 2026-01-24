@@ -162,7 +162,7 @@ namespace PrintDialogX.Test
             textCode.Text = string.Empty;
 
             GenerateCode();
-            GenerateCode("// Create a new document");
+            GenerateCode("// Create a new document.");
 
             PrintDocument document = new();
             GenerateCode("PrintDialogX.PrintDocument document = new PrintDialogX.PrintDocument();");
@@ -189,7 +189,7 @@ namespace PrintDialogX.Test
                 isAsynchronous = false;
 
                 GenerateCode();
-                GenerateCode("// Create the pages of the document");
+                GenerateCode("// Create the pages of the document.");
 
                 GenerateCode($"for (int i = 0; i < {optionCount.Text}; i++)");
                 GenerateCode("{");
@@ -202,21 +202,21 @@ namespace PrintDialogX.Test
             if (templates[optionTemplate.SelectedItem].Dynamism != TemplateDynamism.Static)
             {
                 GenerateCode();
-                GenerateCode("// Add the event listener for updates to print settings");
+                GenerateCode("// Add the event listener for updates to print settings.");
 
                 document.PrintSettingsChanged += HandlePrintSettingsChanged;
                 GenerateCode("document.PrintSettingsChanged += HandlePrintSettingsChanged;");
             }
 
             GenerateCode();
-            GenerateCode("// Initialize the print dialog");
+            GenerateCode("// Initialize the print dialog.");
 
             PrintDialog dialog = new();
             if (CheckConfiguration("windowTopmost") || CheckConfiguration("windowResizable") || CheckConfiguration("windowTaskbar") || CheckConfiguration("windowWidth") || CheckConfiguration("windowHeight"))
             {
                 GenerateCode("PrintDialogX.PrintDialog dialog = new PrintDialogX.PrintDialog(window =>");
                 GenerateCode("{");
-                GenerateCode("// Customize the dialog window", 1);
+                GenerateCode("// Customize the dialog window.", 1);
 
                 HandleConfiguration<bool>("windowTopmost", x =>
                 {
@@ -257,7 +257,7 @@ namespace PrintDialogX.Test
             }
 
             GenerateCode();
-            GenerateCode("// Customize the interface");
+            GenerateCode("// Customize the interface.");
 
             HandleConfiguration<string>("interfaceTitle", x =>
             {
@@ -294,12 +294,12 @@ namespace PrintDialogX.Test
             if (CheckConfiguration("printerServer") || CheckConfiguration("printerDefault"))
             {
                 GenerateCode();
-                GenerateCode("// Configure the printers to use");
+                GenerateCode("// Configure the printers to use.");
 
                 HandleConfiguration<string>("printerServer", x =>
                 {
                     dialog.PrintServer = new(x);
-                    GenerateCode($"dialog.PrintServer = new PrintServer(\"{x}\"); // Remember to dispose the PrintServer instance when appropriate");
+                    GenerateCode($"dialog.PrintServer = new PrintServer(\"{x}\"); // Remember to dispose the PrintServer instance when appropriate.");
                 });
                 HandleConfiguration<string>("printerDefault", x =>
                 {
@@ -309,7 +309,7 @@ namespace PrintDialogX.Test
             }
 
             GenerateCode();
-            GenerateCode("// Customize the default settings");
+            GenerateCode("// Customize the default settings.");
 
             HandleConfiguration<string>("defaultCopies", x =>
             {
@@ -402,7 +402,7 @@ namespace PrintDialogX.Test
             }
 
             GenerateCode();
-            GenerateCode("// Open the print dialog");
+            GenerateCode("// Open the print dialog.");
 
             bool isDialog = true;
             HandleConfiguration<bool>("windowDialog", x => isDialog = false);
@@ -416,7 +416,7 @@ namespace PrintDialogX.Test
                 };
                 GenerateCode($"dialog.{(isDialog ? "ShowDialog" : "Show")}(async () =>");
                 GenerateCode("{");
-                GenerateCode("// Create the pages of the document asynchronously", 1);
+                GenerateCode("// Create the pages of the document asynchronously.", 1);
                 GenerateCode($"for (int i = 0; i < {optionCount.Text}; i++)", 1);
                 GenerateCode("{", 1);
                 GenerateCode("PrintDialogX.PrintPage page = new PrintDialogX.PrintPage();", 2);

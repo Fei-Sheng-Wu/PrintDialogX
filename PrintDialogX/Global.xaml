@@ -6,6 +6,12 @@
                     mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
         <ui:ControlsDictionary />
-        <d:ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
+        
+        <d:ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemesDictionary />
+                <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </d:ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
