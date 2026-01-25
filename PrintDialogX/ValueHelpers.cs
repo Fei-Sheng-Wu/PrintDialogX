@@ -267,17 +267,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), ((Func<bool>)(() =>
-            {
-                try
-                {
-                    return FilterFile.Any(x => printer.QueuePort.Name.StartsWith(x, StringComparison.OrdinalIgnoreCase));
-                }
-                catch
-                {
-                    return false;
-                }
-            }))()) switch
+            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), CheckFilter(printer, FilterFile)) switch
             {
                 (true, false, _) => PrinterType.Fax,
                 (true, true, _) => PrinterType.FaxNetwork,
@@ -325,6 +315,18 @@ namespace PrintDialogX
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
         {
             return Binding.DoNothing;
+        }
+
+        public static bool CheckFilter(PrintQueue printer, string[] filter)
+        {
+            try
+            {
+                return filter.Any(x => printer.QueuePort.Name.StartsWith(x, StringComparison.OrdinalIgnoreCase));
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 

@@ -222,7 +222,7 @@ namespace PrintDialogX
 
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
 
-            LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : dialog.DefaultPrinter ?? ((Func<PrintQueue?>)(() =>
+            LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
                 try
                 {
@@ -232,7 +232,7 @@ namespace PrintDialogX
                 {
                     return null;
                 }
-            }))());
+            })());
         }
 
         private void Exit(object sender, RoutedEventArgs e)
@@ -566,7 +566,7 @@ namespace PrintDialogX
                 double margin = model.MarginEntries.Selection switch
                 {
                     Enums.Margin.None => 0,
-                    Enums.Margin.Minimum => await ((Func<Task<double>>)(async () =>
+                    Enums.Margin.Minimum => await new Func<Task<double>>(async () =>
                     {
                         try
                         {
@@ -581,7 +581,7 @@ namespace PrintDialogX
                         {
                             return 0;
                         }
-                    }))(),
+                    })(),
                     Enums.Margin.Custom => model.MarginCustom.Value,
                     _ => model.PrintDocument.DocumentMargin
                 };
@@ -589,13 +589,13 @@ namespace PrintDialogX
 
                 List<int> pages = model.PagesEntries.Selection switch
                 {
-                    Enums.Pages.CurrentPage => model.PreviewDocument.Value.PageCount > 0 ? ((Func<List<int>>)(() =>
+                    Enums.Pages.CurrentPage => model.PreviewDocument.Value.PageCount > 0 ? new Func<List<int>>(() =>
                     {
                         lock (model.PreviewDocument.Value.Lock)
                         {
                             return [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index];
                         }
-                    }))() : [],
+                    })() : [],
                     Enums.Pages.CustomPages => CustomPagesValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
                     _ => []
                 };

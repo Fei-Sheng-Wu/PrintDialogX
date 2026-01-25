@@ -1753,7 +1753,6 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Output prints on only one side of each sheet.
         /// </summary>
-        [Description("StringResource_EntryOneSided")]
         OneSided,
 
         /// <summary>

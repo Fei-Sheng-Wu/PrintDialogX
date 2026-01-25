@@ -244,7 +244,6 @@
     <system:String x:Key="StringResource_EntryDefault">Default</system:String>
     <system:String x:Key="StringResource_EntryNone">None</system:String>
     <system:String x:Key="StringResource_EntryMinimum">Minimum</system:String>
-    <system:String x:Key="StringResource_EntryOneSided">One-Sided</system:String>
     <system:String x:Key="StringResource_EntryDoubleSidedShortEdge">Flip on Short Edge</system:String>
     <system:String x:Key="StringResource_EntryDoubleSidedLongEdge">Flip on Long Edge</system:String>
     <system:String x:Key="StringResource_EntryAutoSelect">Auto Select</system:String>

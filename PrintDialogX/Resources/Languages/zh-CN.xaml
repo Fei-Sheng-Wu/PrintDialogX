@@ -244,7 +244,6 @@
     <system:String x:Key="StringResource_EntryDefault">默认</system:String>
     <system:String x:Key="StringResource_EntryNone">无</system:String>
     <system:String x:Key="StringResource_EntryMinimum">最小</system:String>
-    <system:String x:Key="StringResource_EntryOneSided">单面</system:String>
     <system:String x:Key="StringResource_EntryDoubleSidedShortEdge">短边翻转</system:String>
     <system:String x:Key="StringResource_EntryDoubleSidedLongEdge">长边翻转</system:String>
     <system:String x:Key="StringResource_EntryAutoSelect">自动选择</system:String>
