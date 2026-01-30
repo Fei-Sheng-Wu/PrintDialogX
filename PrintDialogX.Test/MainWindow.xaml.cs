@@ -99,7 +99,11 @@ namespace PrintDialogX.Test
         private static ComboBox CreateCombo(IEnumerable collection, object? initial = null)
         {
             ComboBox combo = new();
-            foreach (object entry in initial != null ? (IEnumerable<object>)[initial, .. collection] : collection)
+            if (initial != null)
+            {
+                combo.Items.Add(initial);
+            }
+            foreach (object entry in collection)
             {
                 combo.Items.Add(entry);
             }

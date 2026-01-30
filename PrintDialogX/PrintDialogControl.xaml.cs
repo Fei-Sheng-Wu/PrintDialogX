@@ -777,19 +777,7 @@ namespace PrintDialogX
                     }
                     catch
                     {
-                        model.ErrorContent.Value = Resources["StringResource_MessagePrintJobCancelled"];
-                        model.ErrorCallback = () => host.SetProgress(new()
-                        {
-                            State = IPrintDialogHost.PrintDialogProgressState.None,
-                            Value = 0
-                        });
-                        model.IsError.Value = true;
-                        model.IsPrinting.Value = false;
-                        host.SetProgress(new()
-                        {
-                            State = IPrintDialogHost.PrintDialogProgressState.Error,
-                            Value = 0
-                        });
+                        Cancel("StringResource_MessagePrintJobCancelled");
                     }
                 };
                 model.IsPrinting.Value = true;
@@ -810,24 +798,20 @@ namespace PrintDialogX
                         Value = progress
                     });
                 };
+                writer.WritingCancelled += (x, e) =>
+                {
+                    Cancel("StringResource_MessagePrintJobCancelled");
+                };
                 writer.WritingCompleted += (x, e) =>
                 {
-                    if (e.Cancelled || e.Error != null)
+                    if (e.Cancelled)
                     {
-                        model.ErrorContent.Value = Resources[e.Error != null ? "StringResource_MessagePrintJobError" : "StringResource_MessagePrintJobCancelled"];
-                        model.ErrorCallback = () => host.SetProgress(new()
-                        {
-                            State = IPrintDialogHost.PrintDialogProgressState.None,
-                            Value = 0
-                        });
-                        model.IsError.Value = true;
-                        model.IsPrinting.Value = false;
-                        host.SetProgress(new()
-                        {
-                            State = IPrintDialogHost.PrintDialogProgressState.Error,
-                            Value = 0
-                        });
-
+                        Cancel("StringResource_MessagePrintJobCancelled");
+                        return;
+                    }
+                    else if (e.Error != null)
+                    {
+                        Cancel("StringResource_MessagePrintJobError");
                         return;
                     }
 
@@ -842,25 +826,30 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = Resources["StringResource_MessageFailedPrintJob"];
-                model.ErrorCallback = () => host.SetProgress(new()
-                {
-                    State = IPrintDialogHost.PrintDialogProgressState.None,
-                    Value = 0
-                });
-                model.IsError.Value = true;
-                model.IsPrinting.Value = false;
-                host.SetProgress(new()
-                {
-                    State = IPrintDialogHost.PrintDialogProgressState.Error,
-                    Value = 0
-                });
+                Cancel("StringResource_MessageFailedPrintJob");
             }
         }
 
         private void Print(object sender, RoutedEventArgs e)
         {
             Print();
+        }
+
+        private void Cancel(string message)
+        {
+            model.ErrorContent.Value = Resources[message];
+            model.ErrorCallback = () => host.SetProgress(new()
+            {
+                State = IPrintDialogHost.PrintDialogProgressState.None,
+                Value = 0
+            });
+            model.IsError.Value = true;
+            model.IsPrinting.Value = false;
+            host.SetProgress(new()
+            {
+                State = IPrintDialogHost.PrintDialogProgressState.Error,
+                Value = 0
+            });
         }
 
         private void Cancel(object sender, RoutedEventArgs e)
