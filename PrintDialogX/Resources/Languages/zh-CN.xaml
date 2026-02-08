@@ -118,10 +118,10 @@
     <system:String x:Key="StringResource_EntryJapanKaku3Envelope">K3信封</system:String>
     <system:String x:Key="StringResource_EntryJapanKaku3EnvelopeRotated">K3信封（横向）</system:String>
     <system:String x:Key="StringResource_EntryJapanYou4Envelope">Y4信封</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x11">10&#x00D7;11英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x14">10&#x00D7;14英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica11x17">11&#x00D7;17英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica9x11">9&#x00D7;11英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x11">10×11英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x14">10×14英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica11x17">11×17英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica9x11">9×11英寸</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureASheet">建筑图纸A</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureBSheet">建筑图纸B</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureCSheet">建筑图纸C</system:String>
@@ -205,12 +205,12 @@
     <system:String x:Key="StringResource_EntryJapanYou4EnvelopeRotated">Y4信封（横向）</system:String>
     <system:String x:Key="StringResource_EntryJapanYou6Envelope">Y6信封</system:String>
     <system:String x:Key="StringResource_EntryJapanYou6EnvelopeRotated">Y6信封（横向）</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica4x6">4&#x00D7;6英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica4x8">4&#x00D7;8英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica5x7">5&#x00D7;7英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica8x10">8&#x00D7;10英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x12">10&#x00D7;12英寸</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica14x17">14&#x00D7;17英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica4x6">4×6英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica4x8">4×8英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica5x7">5×7英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica8x10">8×10英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x12">10×12英寸</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica14x17">14×17英寸</system:String>
     <system:String x:Key="StringResource_EntryBusinessCard">名片</system:String>
     <system:String x:Key="StringResource_EntryCreditCard">信用卡</system:String>
     <system:String x:Key="StringResource_EntryColor">彩色</system:String>
@@ -313,6 +313,7 @@
     <system:String x:Key="StringResource_ConstructionLocation">位置：{0}</system:String>
     <system:String x:Key="StringResource_ConstructionComment">备注：{0}</system:String>
     <system:String x:Key="StringResource_ConstructionCustom">自定义：{0}</system:String>
+    <system:String x:Key="StringResource_ConstructionSize">{0:0.00} × {1:0.00} cm</system:String>
     <system:String x:Key="StringResource_ConstructionProgress">进度：{0}%（{1} / {2}）</system:String>
     <system:String x:Key="StringResource_ConstructionPage">第 {0} / {1} 页</system:String>
 

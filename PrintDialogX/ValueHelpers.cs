@@ -476,7 +476,7 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = $"{(size.Width * 2.54 / 96.0).ToString("F2", CultureInfo.InvariantCulture)} × {(size.Height * 2.54 / 96.0).ToString("F2", CultureInfo.InvariantCulture)} cm";
+            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionSize"], size.Width * 2.54 / 96.0, size.Height * 2.54 / 96.0);
 
             return System.Convert.ToBoolean(parameter) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionCustom"], description));
         }

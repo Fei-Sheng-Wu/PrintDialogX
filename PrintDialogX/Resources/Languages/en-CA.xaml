@@ -118,10 +118,10 @@
     <system:String x:Key="StringResource_EntryJapanKaku3Envelope">K3 Envelope</system:String>
     <system:String x:Key="StringResource_EntryJapanKaku3EnvelopeRotated">K3 Envelope Rotated</system:String>
     <system:String x:Key="StringResource_EntryJapanYou4Envelope">Y4 Envelope</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x11">10" &#x00D7; 11"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x14">10" &#x00D7; 14"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica11x17">11" &#x00D7; 17"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica9x11">9" &#x00D7; 11"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x11">10" × 11"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x14">10" × 14"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica11x17">11" × 17"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica9x11">9" × 11"</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureASheet">Architecture A Sheet</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureBSheet">Architecture B Sheet</system:String>
     <system:String x:Key="StringResource_EntryNorthAmericaArchitectureCSheet">Architecture C Sheet</system:String>
@@ -205,12 +205,12 @@
     <system:String x:Key="StringResource_EntryJapanYou4EnvelopeRotated">Y4 Envelope Rotated</system:String>
     <system:String x:Key="StringResource_EntryJapanYou6Envelope">Y6 Envelope</system:String>
     <system:String x:Key="StringResource_EntryJapanYou6EnvelopeRotated">Y6 Envelope Rotated</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica4x6">4" &#x00D7; 6"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica4x8">4" &#x00D7; 8"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica5x7">5" &#x00D7; 7"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica8x10">8" &#x00D7; 10"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica10x12">10" &#x00D7; 12"</system:String>
-    <system:String x:Key="StringResource_EntryNorthAmerica14x17">14" &#x00D7; 17"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica4x6">4" × 6"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica4x8">4" × 8"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica5x7">5" × 7"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica8x10">8" × 10"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica10x12">10" × 12"</system:String>
+    <system:String x:Key="StringResource_EntryNorthAmerica14x17">14" × 17"</system:String>
     <system:String x:Key="StringResource_EntryBusinessCard">Business Card</system:String>
     <system:String x:Key="StringResource_EntryCreditCard">Credit Card</system:String>
     <system:String x:Key="StringResource_EntryColor">Colour</system:String>
@@ -313,6 +313,7 @@
     <system:String x:Key="StringResource_ConstructionLocation">Location: {0}</system:String>
     <system:String x:Key="StringResource_ConstructionComment">Comment: {0}</system:String>
     <system:String x:Key="StringResource_ConstructionCustom">Custom: {0}</system:String>
+    <system:String x:Key="StringResource_ConstructionSize">{0:0.00} × {1:0.00} cm</system:String>
     <system:String x:Key="StringResource_ConstructionProgress">Progress: {0}% ({1} / {2})</system:String>
     <system:String x:Key="StringResource_ConstructionPage">Page {0} / {1}</system:String>
 
