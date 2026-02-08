@@ -441,18 +441,23 @@ namespace PrintDialogX
             return TryConvert(value, Maximum).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<int> Result) TryConvert(object value, int maximum)
+        public static (bool IsValid, List<object>? Result) TryConvert(object value, int maximum)
         {
-            List<int> result = [];
+            List<object> result = [];
             foreach (string entry in (value.ToString() ?? string.Empty).Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
-                if (range.Length > 2 || !int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) || !int.TryParse(range.Last(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) || start < 1 || end < start || maximum < end)
+                switch (range.Length)
                 {
-                    return (false, []);
+                    case 1 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
+                        result.Add(single);
+                        break;
+                    case 2 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range.Last(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
+                        result.Add((start, end));
+                        break;
+                    default:
+                        return (false, null);
                 }
-
-                result.AddRange(Enumerable.Range(start, end - start + 1));
             }
 
             return (true, result);

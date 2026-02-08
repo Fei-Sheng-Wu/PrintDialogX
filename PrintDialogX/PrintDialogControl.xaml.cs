@@ -337,7 +337,7 @@ namespace PrintDialogX
                 }
             }
 
-            if (model.PrinterEntries.Count <= 0)
+            if (!model.PrinterEntries.Any())
             {
                 model.ErrorContent.Value = Resources["StringResource_MessageNoPrinter"];
                 model.ErrorCallback = () => host.SetResult(new()
@@ -425,7 +425,7 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskRun(async token =>
+            TaskRun(async x =>
             {
                 model.IsSettingsReady.Value = false;
                 model.IsDocumentReady.Value = false;
@@ -436,7 +436,7 @@ namespace PrintDialogX
                     defaults = await Dispatcher.InvokeAsync(() => model.Printer.Value.DefaultPrintTicket);
                 }
                 catch { }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 PrintCapabilities? capabilities = null;
                 try
@@ -444,18 +444,18 @@ namespace PrintDialogX
                     capabilities = await Dispatcher.InvokeAsync(() => model.Printer.Value.GetPrintCapabilities());
                 }
                 catch { }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 model.CopiesMaximum.Value = Math.Min(model.PrintSettings.Fallbacks.FallbackMaximumCopies, capabilities?.MaxCopyCount ?? int.MaxValue);
                 model.Copies.Value = Math.Min(model.CopiesMaximum.Value, model.Copies.Value);
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
-                model.IsCollationSupported.Value = capabilities?.CollationCapability.Any(x => x == Collation.Collated) ?? model.PrintSettings.Fallbacks.FallbackIsCollationSupported;
+                model.IsCollationSupported.Value = capabilities?.CollationCapability.Any(y => y == Collation.Collated) ?? model.PrintSettings.Fallbacks.FallbackIsCollationSupported;
                 if (!model.IsCollationSupported.Value)
                 {
                     model.CollationEntries.SilentSelect(Enums.Collation.Uncollated);
                 }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 List<Enums.Size> sizes = [];
                 Enums.Size? target = null;
@@ -473,7 +473,7 @@ namespace PrintDialogX
                         string search = "psf:Property[@name='psk:{0}']/psf:Value | psf:ScoredProperty[@name='psk:{0}']/psf:Value";
                         foreach (XmlNode node in nodes)
                         {
-                            token.ThrowIfCancellationRequested();
+                            x.ThrowIfCancellationRequested();
 
                             if (!long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long width) || !long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long height))
                             {
@@ -497,23 +497,23 @@ namespace PrintDialogX
                     }
                 }
                 catch { }
-                model.SizeEntries.Load(sizes, target, x => x);
-                token.ThrowIfCancellationRequested();
+                model.SizeEntries.Load(sizes, target, y => y);
+                x.ThrowIfCancellationRequested();
 
-                model.ColorEntries.Load(capabilities?.OutputColorCapability, defaults?.OutputColor, x => ValueMappings.Map(x, ValueMappings.ColorMapping));
-                model.QualityEntries.Load(capabilities?.OutputQualityCapability, defaults?.OutputQuality, x => ValueMappings.Map(x, ValueMappings.QualityMapping));
-                token.ThrowIfCancellationRequested();
+                model.ColorEntries.Load(capabilities?.OutputColorCapability, defaults?.OutputColor, y => ValueMappings.Map(y, ValueMappings.ColorMapping));
+                model.QualityEntries.Load(capabilities?.OutputQualityCapability, defaults?.OutputQuality, y => ValueMappings.Map(y, ValueMappings.QualityMapping));
+                x.ThrowIfCancellationRequested();
 
-                model.IsDoubleSidedSupported.Value = capabilities?.DuplexingCapability.Any(x => x == Duplexing.TwoSidedShortEdge || x == Duplexing.TwoSidedLongEdge) ?? model.PrintSettings.Fallbacks.FallbackIsDoubleSidedSupported;
+                model.IsDoubleSidedSupported.Value = capabilities?.DuplexingCapability.Any(y => y == Duplexing.TwoSidedShortEdge || y == Duplexing.TwoSidedLongEdge) ?? model.PrintSettings.Fallbacks.FallbackIsDoubleSidedSupported;
                 if (!model.IsDoubleSidedSupported.Value)
                 {
                     model.DoubleSidedEntries.SilentSelect(Enums.DoubleSided.OneSided);
                 }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
-                model.TypeEntries.Load(capabilities?.PageMediaTypeCapability, defaults?.PageMediaType, x => ValueMappings.Map(x, ValueMappings.TypeMapping));
-                model.SourceEntries.Load(capabilities?.InputBinCapability, defaults?.InputBin, x => ValueMappings.Map(x, ValueMappings.SourceMapping));
-                token.ThrowIfCancellationRequested();
+                model.TypeEntries.Load(capabilities?.PageMediaTypeCapability, defaults?.PageMediaType, y => ValueMappings.Map(y, ValueMappings.TypeMapping));
+                model.SourceEntries.Load(capabilities?.InputBinCapability, defaults?.InputBin, y => ValueMappings.Map(y, ValueMappings.SourceMapping));
+                x.ThrowIfCancellationRequested();
 
                 //TODO: support for stapling
 
@@ -529,13 +529,13 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskRun(async token =>
+            TaskRun(async x =>
             {
                 model.IsDocumentReady.Value = false;
 
                 bool isLandscape = model.LayoutEntries.Selection == Enums.Layout.Landscape;
                 model.PreviewDocument.Value.PageSize = isLandscape ? new(model.SizeEntries.Selection.Height, model.SizeEntries.Selection.Width) : new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height);
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 (int Count, int Columns, int Rows) arrangement = model.PagesPerSheetEntries.Selection switch
                 {
@@ -550,7 +550,7 @@ namespace PrintDialogX
                 {
                     arrangement = (arrangement.Count, arrangement.Rows, arrangement.Columns);
                 }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 double? scale = model.ScaleEntries.Selection switch
                 {
@@ -585,11 +585,11 @@ namespace PrintDialogX
                     Enums.Margin.Custom => model.MarginCustom.Value,
                     _ => model.PrintDocument.DocumentMargin
                 };
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
-                List<int> pages = model.PagesEntries.Selection switch
+                List<object>? pages = model.PagesEntries.Selection switch
                 {
-                    Enums.Pages.CurrentPage => model.PreviewDocument.Value.PageCount > 0 ? new Func<List<int>>(() =>
+                    Enums.Pages.CurrentPage => model.PreviewDocument.Value.PageCount > 0 ? new Func<List<object>>(() =>
                     {
                         lock (model.PreviewDocument.Value.Lock)
                         {
@@ -597,9 +597,9 @@ namespace PrintDialogX
                         }
                     })() : [],
                     Enums.Pages.CustomPages => CustomPagesValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
-                    _ => []
+                    _ => null
                 };
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 lock (model.PreviewDocument.Value.Lock)
                 {
@@ -607,14 +607,19 @@ namespace PrintDialogX
                 }
                 model.PrintDocument.MeasuredSize = new(Math.Max(0, model.PreviewDocument.Value.PageSize.Width - margin * 2), Math.Max(0, model.PreviewDocument.Value.PageSize.Height - margin * 2));
                 await UpdateDocument(true);
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 int index = 0;
                 List<(int Start, List<PrintPage> Chunk)> document = [];
                 foreach (PrintPage content in model.PrintDocument.Pages)
                 {
                     index++;
-                    if (pages.Count > 0 && !pages.Contains(index))
+                    if (pages != null && pages.Any() && !pages.Any(y => y switch
+                    {
+                        int single => single == index,
+                        (int start, int end) => start <= index && end >= index,
+                        _ => false
+                    }))
                     {
                         continue;
                     }
@@ -625,7 +630,7 @@ namespace PrintDialogX
                     }
                     document.Last().Chunk.Add(content);
                 }
-                token.ThrowIfCancellationRequested();
+                x.ThrowIfCancellationRequested();
 
                 Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
                 Size area = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
@@ -637,7 +642,7 @@ namespace PrintDialogX
                 clip.Freeze();
                 foreach ((int start, List<PrintPage> chunk) in document)
                 {
-                    token.ThrowIfCancellationRequested();
+                    x.ThrowIfCancellationRequested();
 
                     await Dispatcher.InvokeAsync(async () =>
                     {
