@@ -222,7 +222,7 @@ namespace PrintDialogX
 
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
 
-            LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
+            LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
                 try
                 {
@@ -232,7 +232,7 @@ namespace PrintDialogX
                 {
                     return null;
                 }
-            })());
+            })()));
         }
 
         private void Exit(object sender, RoutedEventArgs e)
@@ -795,7 +795,7 @@ namespace PrintDialogX
                     }
 
                     double progress = 100.0 * e.Number / model.PreviewDocument.Value.PageCount;
-                    model.PrintingContent.Value = $"{Resources["StringResource_PrefixProgress"]}{Math.Round(progress)}% ({e.Number} / {model.PreviewDocument.Value.PageCount})";
+                    model.PrintingContent.Value = string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionProgress"], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.PageCount);
                     model.PrintingProgress.Value = progress;
                     host.SetProgress(new()
                     {

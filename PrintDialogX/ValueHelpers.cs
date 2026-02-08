@@ -406,19 +406,19 @@ namespace PrintDialogX
 
             try
             {
-                info.Add($"{Resources["StringResource_PrefixDocuments"]}{printer.NumberOfJobs}");
+                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionDocuments"], printer.NumberOfJobs));
             }
             catch { }
             try
             {
-                info.Add($"{Resources["StringResource_PrefixLocation"]}{(string.IsNullOrWhiteSpace(printer.Location) ? Resources["StringResource_LabelUnknown"] : printer.Location)}");
+                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionLocation"], string.IsNullOrWhiteSpace(printer.Location) ? Resources["StringResource_LabelUnknown"] : printer.Location));
             }
             catch { }
             try
             {
                 if (!string.IsNullOrWhiteSpace(printer.Comment))
                 {
-                    info.Add($"{Resources["StringResource_PrefixComment"]}{printer.Comment}");
+                    info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionComment"], printer.Comment));
                 }
             }
             catch { }
@@ -476,9 +476,9 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = $"{Math.Round(size.Width * 2.54 / 96.0, 2)} × {Math.Round(size.Height * 2.54 / 96.0, 2)} cm";
+            string description = $"{(size.Width * 2.54 / 96.0).ToString("F2", CultureInfo.InvariantCulture)} × {(size.Height * 2.54 / 96.0).ToString("F2", CultureInfo.InvariantCulture)} cm";
 
-            return System.Convert.ToBoolean(parameter) ? description : name ?? $"{Resources["StringResource_PrefixCustom"]}{description}";
+            return System.Convert.ToBoolean(parameter) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionCustom"], description));
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -769,7 +769,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            return $"{Resources["StringResource_LabelPage"]} {Math.Floor(current + PrintDialogControl.EPSILON_INDEX)} / {document.PageCount}";
+            return string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionPage"], (int)Math.Floor(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)
