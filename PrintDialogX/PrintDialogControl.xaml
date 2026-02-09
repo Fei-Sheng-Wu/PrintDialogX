@@ -315,7 +315,7 @@
                                     <sys:Double x:Key="SizeOption">190</sys:Double>
                                 </StackPanel.Resources>
                                 <StackPanel Name="PART_Basic" Orientation="Vertical" />
-                                <Expander Margin="0,16" Padding="0,0,12,0" IsExpanded="False">
+                                <Expander Name="PART_Expander" Margin="0,16" Padding="0,0,12,0">
                                     <Expander.Resources>
                                         <sys:Double x:Key="SizeOption">160</sys:Double>
                                     </Expander.Resources>

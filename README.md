@@ -1,4 +1,4 @@
-# PrintDialogX v3.3.1
+# PrintDialogX v3.4.0-dev
 
 [![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)](#)
 [![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
@@ -24,7 +24,7 @@ For versions ≥ 3.0.0, the versioning of PrintDialogX conforms to the following
 
 | Generation | | Major | | Minor |
 | :--- | :---: | :--- | :---: | :--- |
-| **3** | . | **3** | . | **1** |
+| **3** | . | **4** | . | **0** |
 | _(backward-incompatible)_ | | _(backward-incompatible)_ | | _(backward-compatible)_ |
 | Significant codebase refactors. | | Severe bug fixes and core improvements. | | Mild changes. |
 

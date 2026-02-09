@@ -44,6 +44,14 @@ namespace PrintDialogX
             {
                 ApplyInterface(advanced, settings.AdvancedSettings, Resources);
             }
+            if (template.FindName("PART_Expander", content) is Expander expander)
+            {
+                expander.IsExpanded = settings.IsSettingsExpanded;
+                if (!settings.AdvancedSettings.Any())
+                {
+                    expander.Visibility = Visibility.Collapsed;
+                }
+            }
 
             return content;
         }

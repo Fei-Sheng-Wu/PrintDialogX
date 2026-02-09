@@ -60,6 +60,7 @@ namespace PrintDialogX.Test
             AddOption(containerInterface, "interfaceLanguage", "Display Language", CreateCombo<InterfaceSettings.Language>(), InterfaceSettings.Language.en_US);
             AddOption(containerInterface, "interfaceSettingsBasic", "Basic Settings", new TextBox(), "Printer, PrinterPreferences, Void, Copies, Collation, Pages, Layout, Size");
             AddOption(containerInterface, "interfaceSettingsAdvanced", "Advanced Settings", new TextBox(), "Color, Quality, PagesPerSheet, PageOrder, Scale, Margin, DoubleSided, Type, Source");
+            AddOption(containerInterface, "interfaceSettingsExpanded", null, CreateCheck("Expand Settings"), false);
 
             AddOption(containerPrinter, "printerServer", "Print Server", new TextBox(), string.Empty);
             AddOption(containerPrinter, "printerDefault", "Default Printer", CreateCombo(new PrintServer().GetPrintQueues().Select(x => x.FullName), "(System Default)"), "(System Default)");
@@ -293,6 +294,11 @@ namespace PrintDialogX.Test
             {
                 dialog.InterfaceSettings.AdvancedSettings = [.. x.Split(',').Select(x => Enum.Parse<InterfaceSettings.Option>(x))];
                 GenerateCode($"dialog.InterfaceSettings.AdvancedSettings = [{string.Join(", ", x.Split(',').Select(x => $"PrintDialogX.InterfaceSettings.Option.{x.Trim()}"))}];");
+            });
+            HandleConfiguration<bool>("interfaceSettingsExpanded", x =>
+            {
+                dialog.InterfaceSettings.IsSettingsExpanded = true;
+                GenerateCode("dialog.InterfaceSettings.IsSettingsExpanded = true;");
             });
 
             if (CheckConfiguration("printerServer") || CheckConfiguration("printerDefault"))
