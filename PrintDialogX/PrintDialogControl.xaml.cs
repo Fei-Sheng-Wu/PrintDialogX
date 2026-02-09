@@ -181,6 +181,7 @@ namespace PrintDialogX
 
     internal partial class PrintDialogControl : UserControl
     {
+        public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
 
         private readonly IPrintDialogHost host;
@@ -235,9 +236,9 @@ namespace PrintDialogX
             })()));
         }
 
-        private void Exit(object sender, RoutedEventArgs e)
+        private async void Exit(object sender, RoutedEventArgs e)
         {
-            TaskStop(false);
+            await TaskStop(false);
 
             if (!server.IsProvided)
             {
@@ -247,27 +248,9 @@ namespace PrintDialogX
             DataContext = null;
         }
 
-        private async void TaskStop(bool isWaiting = true)
+        private async void TaskStart(Func<CancellationToken, Task> callback)
         {
-            if (task == null || task.Value.Task.IsCompleted)
-            {
-                return;
-            }
-
-            try
-            {
-                task.Value.Cancellation.Cancel();
-            }
-            catch { }
-            if (isWaiting)
-            {
-                await task.Value.Task;
-            }
-        }
-
-        private async void TaskRun(Func<CancellationToken, Task> callback)
-        {
-            TaskStop();
+            await TaskStop();
 
             CancellationTokenSource cancellation = new();
             task = (Task.Run(async () =>
@@ -284,6 +267,24 @@ namespace PrintDialogX
                 }
             }), cancellation);
             await task.Value.Task;
+        }
+
+        private async Task TaskStop(bool isWaiting = true)
+        {
+            if (task == null || task.Value.Task.IsCompleted)
+            {
+                return;
+            }
+
+            try
+            {
+                task.Value.Cancellation.Cancel();
+            }
+            catch { }
+            if (isWaiting)
+            {
+                await task.Value.Task;
+            }
         }
 
         private void CloseDialogError(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
@@ -425,7 +426,7 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskRun(async x =>
+            TaskStart(async x =>
             {
                 model.IsSettingsReady.Value = false;
                 model.IsDocumentReady.Value = false;
@@ -529,7 +530,7 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskRun(async x =>
+            TaskStart(async x =>
             {
                 model.IsDocumentReady.Value = false;
 
@@ -734,7 +735,7 @@ namespace PrintDialogX
 
             while (settings.IsUpdating == null)
             {
-                await Task.Delay(50);
+                await Task.Delay(DURATION_SLEEP);
             }
 
             return settings.IsUpdating.Value;

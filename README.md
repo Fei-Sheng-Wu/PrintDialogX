@@ -1,4 +1,4 @@
-# PrintDialogX v3.3.0
+# PrintDialogX v3.3.1
 
 [![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)](#)
 [![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
@@ -24,7 +24,7 @@ For versions ≥ 3.0.0, the versioning of PrintDialogX conforms to the following
 
 | Generation | | Major | | Minor |
 | :--- | :---: | :--- | :---: | :--- |
-| **3** | . | **3** | . | **0** |
+| **3** | . | **3** | . | **1** |
 | _(backward-incompatible)_ | | _(backward-incompatible)_ | | _(backward-compatible)_ |
 | Significant codebase refactors. | | Severe bug fixes and core improvements. | | Mild changes. |
 
@@ -183,6 +183,10 @@ dialog.InterfaceSettings.Title = "Test Print";
 dialog.InterfaceSettings.BasicSettings = [PrintDialogX.InterfaceSettings.Option.Printer, PrintDialogX.InterfaceSettings.Option.Void, PrintDialogX.InterfaceSettings.Option.Pages, PrintDialogX.InterfaceSettings.Option.Layout, PrintDialogX.InterfaceSettings.Option.Size];
 dialog.InterfaceSettings.AdvancedSettings = [PrintDialogX.InterfaceSettings.Option.Color, PrintDialogX.InterfaceSettings.Option.Quality, PrintDialogX.InterfaceSettings.Option.Scale, PrintDialogX.InterfaceSettings.Option.Margin, PrintDialogX.InterfaceSettings.Option.DoubleSided, PrintDialogX.InterfaceSettings.Option.Type, PrintDialogX.InterfaceSettings.Option.Source];
 ```
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=Fei-Sheng-Wu/PrintDialogX)](https://github.com/Fei-Sheng-Wu/PrintDialogX/graphs/contributors)
 
 ## License
 

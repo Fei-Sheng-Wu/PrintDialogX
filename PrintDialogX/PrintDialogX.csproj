@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <Title>PrintDialogX</Title>
-    <Version>3.3.0</Version>
+    <Version>3.3.1</Version>
     <Authors>FeiShengWu</Authors>
     <Description>A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.</Description>
     <Copyright>Copyright © 2026 FeiShengWu</Copyright>
