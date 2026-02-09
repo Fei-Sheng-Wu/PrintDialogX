@@ -738,6 +738,8 @@ namespace PrintDialogX
                 await Task.Delay(DURATION_SLEEP);
             }
 
+            ((CustomPagesValidationRule)Resources["CustomPagesValidationRule"]).Maximum = model.PrintDocument.PageCount;
+
             return settings.IsUpdating.Value;
         }
 
