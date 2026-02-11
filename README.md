@@ -4,9 +4,10 @@
 [![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
 [![.NET](https://img.shields.io/badge/.NET-%E2%89%A56.0-orange.svg?style=flat-square)](#)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-%E2%89%A54.7.2-orange.svg?style=flat-square)](#)
-[![NuGet](https://img.shields.io/nuget/v/PrintDialogX?label=NuGet&style=flat-square&logo=nuget)](https://www.nuget.org/packages/PrintDialogX)
+[![NuGet](https://img.shields.io/nuget/v/PrintDialogX?label=NuGet&style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/PrintDialogX)
 [![Commits Since](https://img.shields.io/github/commits-since/Fei-Sheng-Wu/PrintDialogX/latest?label=Commits%20Since&style=flat-square)](#)
 [![License](https://img.shields.io/github/license/Fei-Sheng-Wu/PrintDialogX?label=License&style=flat-square)](LICENSE.txt)
+[![Sponsor](https://img.shields.io/badge/GitHub%20Sponsors-red.svg?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/Fei-Sheng-Wu)
 
 > A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.
 
@@ -190,4 +191,4 @@ dialog.InterfaceSettings.AdvancedSettings = [PrintDialogX.InterfaceSettings.Opti
 
 ## License
 
-This project is under the [MIT License](LICENSE.txt).
+PrintDialogX is licensed under the [MIT License](LICENSE.txt).
