@@ -5,7 +5,7 @@
 [![.NET](https://img.shields.io/badge/.NET-%E2%89%A56.0-orange.svg?style=flat-square)](#)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-%E2%89%A54.7.2-orange.svg?style=flat-square)](#)
 [![NuGet](https://img.shields.io/nuget/v/PrintDialogX?label=NuGet&style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/PrintDialogX)
-[![Commits Since](https://img.shields.io/github/commits-since/Fei-Sheng-Wu/PrintDialogX/latest?label=Commits%20Since&style=flat-square)](#)
+[![Commits Since](https://img.shields.io/github/commits-since/Fei-Sheng-Wu/PrintDialogX/latest?label=Commits%20Since&style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/commits/master)
 [![License](https://img.shields.io/github/license/Fei-Sheng-Wu/PrintDialogX?label=License&style=flat-square)](LICENSE.txt)
 [![Sponsor](https://img.shields.io/badge/GitHub%20Sponsors-red.svg?style=flat-square&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/Fei-Sheng-Wu)
 
