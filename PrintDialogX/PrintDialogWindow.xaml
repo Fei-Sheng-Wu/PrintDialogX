@@ -5,10 +5,11 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                 xmlns:local="clr-namespace:PrintDialogX"
                  mc:Ignorable="d"
                  Width="740" Height="520"
                  MinWidth="640" MinHeight="360"
-                 Title="{DynamicResource ResourceKey=StringResource_TitlePrint}"
+                 Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.TitlePrint}}"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica"
                  ContentRendered="AttachControl"
@@ -31,4 +32,3 @@
         </Decorator>
     </DockPanel>
 </ui:FluentWindow>
-

@@ -1,15 +1,16 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib">
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-CA.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <system:String x:Key="StringResource_OptionColor">Color</system:String>
-    <system:String x:Key="StringResource_EntryGrayscale">Grayscale</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.OptionColor}">Color</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryGrayscale}">Grayscale</system:String>
 
-    <system:String x:Key="StringResource_EntryColor">Color</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryColor}">Color</system:String>
 
-    <system:String x:Key="StringResource_MessagePrintJobCancelled">The print job was canceled!</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.MessagePrintJobCancelled}">The print job was canceled!</system:String>
 </ResourceDictionary>

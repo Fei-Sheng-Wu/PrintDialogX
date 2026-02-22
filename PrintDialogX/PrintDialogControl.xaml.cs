@@ -212,14 +212,14 @@ namespace PrintDialogX
 
             DataContext = model;
             InterfaceToContentConverter.ApplyLanguage(Resources, dialog.InterfaceSettings.DisplayLanguage);
-            ((ValueToDescriptionConverter)Resources["ValueToDescriptionConverter"]).Resources = Resources;
-            ((PrinterToIconConverter)Resources["PrinterToIconConverter"]).CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
-            ((PrinterToIconConverter)Resources["PrinterToIconConverter"]).CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
-            ((PrinterToStatusConverter)Resources["PrinterToStatusConverter"]).Resources = Resources;
-            ((PrinterToDescriptionConverter)Resources["PrinterToDescriptionConverter"]).Resources = Resources;
-            ((SizeToDescriptionConverter)Resources["SizeToDescriptionConverter"]).Resources = Resources;
-            ((DocumentToDescriptionConverter)Resources["DocumentToDescriptionConverter"]).Resources = Resources;
-            ((CustomPagesValidationRule)Resources["CustomPagesValidationRule"]).Maximum = dialog.Document.PageCount;
+            ((ValueToDescriptionConverter)Resources[ConverterResource.ValueToDescription]).Resources = Resources;
+            ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
+            ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
+            ((PrinterToStatusConverter)Resources[ConverterResource.PrinterToStatus]).Resources = Resources;
+            ((PrinterToDescriptionConverter)Resources[ConverterResource.PrinterToDescription]).Resources = Resources;
+            ((SizeToDescriptionConverter)Resources[ConverterResource.SizeToDescription]).Resources = Resources;
+            ((DocumentToDescriptionConverter)Resources[ConverterResource.DocumentToDescription]).Resources = Resources;
+            ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
 
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
 
@@ -340,7 +340,7 @@ namespace PrintDialogX
 
             if (!model.PrinterEntries.Any())
             {
-                model.ErrorContent.Value = Resources["StringResource_MessageNoPrinter"];
+                model.ErrorContent.Value = Resources[StringResource.MessageNoPrinter];
                 model.ErrorCallback = () => host.SetResult(new()
                 {
                     IsSuccess = false,
@@ -389,7 +389,7 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = Resources["StringResource_MessageFailedAddPrinter"];
+                model.ErrorContent.Value = Resources[StringResource.MessageFailedAddPrinter];
                 model.ErrorCallback = null;
                 model.IsError.Value = true;
             }
@@ -413,7 +413,7 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = Resources["StringResource_MessageFailedPrinterPreferences"];
+                model.ErrorContent.Value = Resources[StringResource.MessageFailedPrinterPreferences];
                 model.ErrorCallback = null;
                 model.IsError.Value = true;
             }
@@ -597,7 +597,7 @@ namespace PrintDialogX
                             return [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index];
                         }
                     })() : [],
-                    Enums.Pages.CustomPages => CustomPagesValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
+                    Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
                     _ => null
                 };
                 x.ThrowIfCancellationRequested();
@@ -738,7 +738,7 @@ namespace PrintDialogX
                 await Task.Delay(DURATION_SLEEP);
             }
 
-            ((CustomPagesValidationRule)Resources["CustomPagesValidationRule"]).Maximum = model.PrintDocument.PageCount;
+            ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
 
             return settings.IsUpdating.Value;
         }
@@ -775,7 +775,7 @@ namespace PrintDialogX
                     State = IPrintDialogHost.PrintDialogProgressState.Indeterminate,
                     Value = 0
                 });
-                model.PrintingContent.Value = Resources["StringResource_LabelInitializing"];
+                model.PrintingContent.Value = Resources[StringResource.LabelInitializing];
                 model.PrintingProgress.Value = 0;
                 model.PrintingCallback = () =>
                 {
@@ -785,7 +785,7 @@ namespace PrintDialogX
                     }
                     catch
                     {
-                        Cancel("StringResource_MessagePrintJobCancelled");
+                        Cancel(StringResource.MessagePrintJobCancelled);
                     }
                 };
                 model.IsPrinting.Value = true;
@@ -798,7 +798,7 @@ namespace PrintDialogX
                     }
 
                     double progress = 100.0 * e.Number / model.PreviewDocument.Value.PageCount;
-                    model.PrintingContent.Value = string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionProgress"], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.PageCount);
+                    model.PrintingContent.Value = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionProgress], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.PageCount);
                     model.PrintingProgress.Value = progress;
                     host.SetProgress(new()
                     {
@@ -808,18 +808,18 @@ namespace PrintDialogX
                 };
                 writer.WritingCancelled += (x, e) =>
                 {
-                    Cancel("StringResource_MessagePrintJobCancelled");
+                    Cancel(StringResource.MessagePrintJobCancelled);
                 };
                 writer.WritingCompleted += (x, e) =>
                 {
                     if (e.Cancelled)
                     {
-                        Cancel("StringResource_MessagePrintJobCancelled");
+                        Cancel(StringResource.MessagePrintJobCancelled);
                         return;
                     }
                     else if (e.Error != null)
                     {
-                        Cancel("StringResource_MessagePrintJobError");
+                        Cancel(StringResource.MessagePrintJobError);
                         return;
                     }
 
@@ -834,7 +834,7 @@ namespace PrintDialogX
             }
             catch
             {
-                Cancel("StringResource_MessageFailedPrintJob");
+                Cancel(StringResource.MessageFailedPrintJob);
             }
         }
 
@@ -843,7 +843,7 @@ namespace PrintDialogX
             Print();
         }
 
-        private void Cancel(string message)
+        private void Cancel(StringResource message)
         {
             model.ErrorContent.Value = Resources[message];
             model.ErrorCallback = () => host.SetProgress(new()

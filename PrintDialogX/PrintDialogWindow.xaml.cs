@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -55,11 +55,15 @@ namespace PrintDialogX
             loader = callback;
 
             InterfaceToContentConverter.ApplyLanguage(Resources, dialog.InterfaceSettings.DisplayLanguage);
+            if (dialog.InterfaceSettings.Title != null)
+            {
+                Title = dialog.InterfaceSettings.Title;
+            }
             title.Header = new TextBlock()
             {
                 Margin = new(dialog.InterfaceSettings.Icon == null ? 16 : 0, 10, 0, 10),
                 FontSize = title.FontSize,
-                Text = dialog.InterfaceSettings.Title ?? Title
+                Text = Title
             };
             title.Icon = dialog.InterfaceSettings.Icon;
 

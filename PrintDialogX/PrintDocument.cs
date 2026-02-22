@@ -89,4 +89,3 @@ namespace PrintDialogX
         public FrameworkElement Content { get; set; } = content;
     }
 }
-

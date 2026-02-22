@@ -67,26 +67,7 @@ namespace PrintDialogX
             {
                 container.Children.Add(new ContentControl()
                 {
-                    Template = (ControlTemplate)resources[option switch
-                    {
-                        InterfaceSettings.Option.Printer => "OptionPrinter",
-                        InterfaceSettings.Option.PrinterPreferences => "OptionPrinterPreferences",
-                        InterfaceSettings.Option.Copies => "OptionCopies",
-                        InterfaceSettings.Option.Collation => "OptionCollation",
-                        InterfaceSettings.Option.Pages => "OptionPages",
-                        InterfaceSettings.Option.Layout => "OptionLayout",
-                        InterfaceSettings.Option.Size => "OptionSize",
-                        InterfaceSettings.Option.Color => "OptionColor",
-                        InterfaceSettings.Option.Quality => "OptionQuality",
-                        InterfaceSettings.Option.PagesPerSheet => "OptionPagesPerSheet",
-                        InterfaceSettings.Option.PageOrder => "OptionPageOrder",
-                        InterfaceSettings.Option.Scale => "OptionScale",
-                        InterfaceSettings.Option.Margin => "OptionMargin",
-                        InterfaceSettings.Option.DoubleSided => "OptionDoubleSided",
-                        InterfaceSettings.Option.Type => "OptionType",
-                        InterfaceSettings.Option.Source => "OptionSource",
-                        _ => "OptionVoid"
-                    }],
+                    Template = (ControlTemplate)resources[option],
                     Focusable = false
                 });
             }
@@ -123,11 +104,11 @@ namespace PrintDialogX
 
         public static object GetDescription(object value, ResourceDictionary resources)
         {
-            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(DescriptionAttribute)) is DescriptionAttribute description ? resources[description.Description] : value;
+            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(StringResourceAttribute)) is StringResourceAttribute resource ? resources[resource.Resource] : value;
         }
     }
 
-    internal class ComparisonToStateConverter : IValueConverter
+    internal class ComparisonToStateConverter : IValueConverter, IMultiValueConverter
     {
         public enum Comparison
         {
@@ -143,10 +124,15 @@ namespace PrintDialogX
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
+            return Convert([value], type, parameter, culture);
+        }
+
+        public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
+        {
             bool comparison = Mode switch
             {
-                Comparison.Threshold => System.Convert.ToInt32(value) >= System.Convert.ToInt32(parameter),
-                _ => Equals(value, parameter)
+                Comparison.Threshold => values.All(x => System.Convert.ToInt32(x) >= System.Convert.ToInt32(parameter)),
+                _ => values.All(x => Equals(x, parameter))
             };
             return IsInverted ^ comparison ? StateTrue : StateFalse;
         }
@@ -154,6 +140,11 @@ namespace PrintDialogX
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
         {
             return IsInverted ^ Equals(value, StateTrue) ? parameter : Fallback;
+        }
+
+        public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)
+        {
+            return [.. types.Select(x => ConvertBack(value, x, parameter, culture))];
         }
     }
 
@@ -176,31 +167,6 @@ namespace PrintDialogX
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
         {
             return Binding.DoNothing;
-        }
-    }
-
-    internal class MultiBooleanConverter : IMultiValueConverter
-    {
-        public enum Condition
-        {
-            All,
-            Any
-        }
-
-        public Condition Mode { get; set; } = Condition.All;
-
-        public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
-        {
-            return Mode switch
-            {
-                Condition.Any => values.Any(x => x is bool value && value),
-                _ => values.All(x => x is bool value && value)
-            };
-        }
-
-        public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)
-        {
-            return [.. Enumerable.Repeat(Binding.DoNothing, types.Length)];
         }
     }
 
@@ -354,37 +320,37 @@ namespace PrintDialogX
                 printer.Refresh();
                 return Resources[printer.QueueStatus switch
                 {
-                    PrintQueueStatus.None => "StringResource_LabelReady",
-                    PrintQueueStatus.Busy => "StringResource_LabelBusy",
-                    PrintQueueStatus.DoorOpen => "StringResource_LabelDoorOpen",
-                    PrintQueueStatus.Initializing => "StringResource_LabelInitializing",
-                    PrintQueueStatus.IOActive => "StringResource_LabelIOActive",
-                    PrintQueueStatus.ManualFeed => "StringResource_LabelManualFeed",
-                    PrintQueueStatus.NoToner => "StringResource_LabelNoToner",
-                    PrintQueueStatus.NotAvailable => "StringResource_LabelNotAvailable",
-                    PrintQueueStatus.Offline => "StringResource_LabelOffline",
-                    PrintQueueStatus.OutOfMemory => "StringResource_LabelOutOfMemory",
-                    PrintQueueStatus.OutputBinFull => "StringResource_LabelOutputBinFull",
-                    PrintQueueStatus.PagePunt => "StringResource_LabelPagePunt",
-                    PrintQueueStatus.PaperJam => "StringResource_LabelPaperJam",
-                    PrintQueueStatus.PaperOut => "StringResource_LabelPaperOut",
-                    PrintQueueStatus.PaperProblem => "StringResource_LabelPaperProblem",
-                    PrintQueueStatus.Paused => "StringResource_LabelPaused",
-                    PrintQueueStatus.PendingDeletion => "StringResource_LabelPendingDeletion",
-                    PrintQueueStatus.PowerSave => "StringResource_LabelPowerSave",
-                    PrintQueueStatus.Printing => "StringResource_LabelPrinting",
-                    PrintQueueStatus.Processing => "StringResource_LabelProcessing",
-                    PrintQueueStatus.ServerUnknown => "StringResource_LabelServerUnknown",
-                    PrintQueueStatus.TonerLow => "StringResource_LabelTonerLow",
-                    PrintQueueStatus.UserIntervention => "StringResource_LabelUserIntervention",
-                    PrintQueueStatus.Waiting => "StringResource_LabelWaiting",
-                    PrintQueueStatus.WarmingUp => "StringResource_LabelWarmingUp",
-                    _ => "StringResource_LabelError"
+                    PrintQueueStatus.None => StringResource.LabelReady,
+                    PrintQueueStatus.Busy => StringResource.LabelBusy,
+                    PrintQueueStatus.DoorOpen => StringResource.LabelDoorOpen,
+                    PrintQueueStatus.Initializing => StringResource.LabelInitializing,
+                    PrintQueueStatus.IOActive => StringResource.LabelIOActive,
+                    PrintQueueStatus.ManualFeed => StringResource.LabelManualFeed,
+                    PrintQueueStatus.NoToner => StringResource.LabelNoToner,
+                    PrintQueueStatus.NotAvailable => StringResource.LabelNotAvailable,
+                    PrintQueueStatus.Offline => StringResource.LabelOffline,
+                    PrintQueueStatus.OutOfMemory => StringResource.LabelOutOfMemory,
+                    PrintQueueStatus.OutputBinFull => StringResource.LabelOutputBinFull,
+                    PrintQueueStatus.PagePunt => StringResource.LabelPagePunt,
+                    PrintQueueStatus.PaperJam => StringResource.LabelPaperJam,
+                    PrintQueueStatus.PaperOut => StringResource.LabelPaperOut,
+                    PrintQueueStatus.PaperProblem => StringResource.LabelPaperProblem,
+                    PrintQueueStatus.Paused => StringResource.LabelPaused,
+                    PrintQueueStatus.PendingDeletion => StringResource.LabelPendingDeletion,
+                    PrintQueueStatus.PowerSave => StringResource.LabelPowerSave,
+                    PrintQueueStatus.Printing => StringResource.LabelPrinting,
+                    PrintQueueStatus.Processing => StringResource.LabelProcessing,
+                    PrintQueueStatus.ServerUnknown => StringResource.LabelServerUnknown,
+                    PrintQueueStatus.TonerLow => StringResource.LabelTonerLow,
+                    PrintQueueStatus.UserIntervention => StringResource.LabelUserIntervention,
+                    PrintQueueStatus.Waiting => StringResource.LabelWaiting,
+                    PrintQueueStatus.WarmingUp => StringResource.LabelWarmingUp,
+                    _ => StringResource.LabelError
                 }];
             }
             catch
             {
-                return Resources["StringResource_LabelError"];
+                return Resources[StringResource.LabelError];
             }
         }
 
@@ -414,19 +380,19 @@ namespace PrintDialogX
 
             try
             {
-                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionDocuments"], printer.NumberOfJobs));
+                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionDocuments], printer.NumberOfJobs));
             }
             catch { }
             try
             {
-                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionLocation"], string.IsNullOrWhiteSpace(printer.Location) ? Resources["StringResource_LabelUnknown"] : printer.Location));
+                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionLocation], string.IsNullOrWhiteSpace(printer.Location) ? Resources[StringResource.LabelUnknown] : printer.Location));
             }
             catch { }
             try
             {
                 if (!string.IsNullOrWhiteSpace(printer.Comment))
                 {
-                    info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionComment"], printer.Comment));
+                    info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionComment], printer.Comment));
                 }
             }
             catch { }
@@ -440,7 +406,7 @@ namespace PrintDialogX
         }
     }
 
-    internal class CustomPagesValidationRule : ValidationRule
+    internal class PagesCustomValidationRule : ValidationRule
     {
         public int Maximum { get; set; } = int.MaxValue;
 
@@ -484,9 +450,9 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionSize"], size.Width * 2.54 / 96.0, size.Height * 2.54 / 96.0);
+            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionSize], size.Width * 2.54 / 96.0, size.Height * 2.54 / 96.0);
 
-            return System.Convert.ToBoolean(parameter) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionCustom"], description));
+            return System.Convert.ToBoolean(parameter) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionCustom], description));
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -777,7 +743,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            return string.Format(CultureInfo.InvariantCulture, (string)Resources["StringResource_ConstructionPage"], (int)Math.Floor(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
+            return string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)Math.Floor(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)
