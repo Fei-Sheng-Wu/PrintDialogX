@@ -1,11 +1,24 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Printing;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace PrintDialogX
 {
     internal class ValueMappings
     {
+        public static T? Attribute<T>(object value) where T : Attribute
+        {
+            Type type = value.GetType();
+            if (Enum.GetName(type, value) is not string name)
+            {
+                return null;
+            }
+
+            return type.GetField(name)?.GetCustomAttribute<T>();
+        }
+
         public static T2? Map<T1, T2>(T1? key, Dictionary<T1, T2> mapping) where T1 : notnull where T2 : struct
         {
             return key != null && mapping.TryGetValue(key, out T2 value) ? value : null;

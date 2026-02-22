@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Printing;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
@@ -21,6 +19,12 @@ namespace PrintDialogX
 {
     internal class InterfaceToContentConverter : IValueConverter
     {
+        [AttributeUsage(AttributeTargets.All)]
+        internal class LanguageSourceAttribute(string source) : Attribute
+        {
+            public string Source { get; set; } = source;
+        }
+
         public ResourceDictionary Resources { get; set; } = [];
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
@@ -75,15 +79,13 @@ namespace PrintDialogX
 
         public static void ApplyLanguage(ResourceDictionary resources, InterfaceSettings.Language language)
         {
+            if (language == InterfaceSettings.Language.System)
+            {
+                //TODO: retrieve the system language
+            }
             resources.MergedDictionaries.Add(new()
             {
-                Source = new($"/PrintDialogX;component/Resources/Languages/{language switch
-                {
-                    InterfaceSettings.Language.en_CA => "en-CA",
-                    InterfaceSettings.Language.en_GB => "en-GB",
-                    InterfaceSettings.Language.zh_CN => "zh-CN",
-                    _ => "en-US"
-                }}.xaml", UriKind.Relative)
+                Source = new($"/PrintDialogX;component/Resources/Languages/{ValueMappings.Attribute<LanguageSourceAttribute>(language)?.Source ?? "en-US"}.xaml", UriKind.Relative)
             });
         }
     }
@@ -104,7 +106,7 @@ namespace PrintDialogX
 
         public static object GetDescription(object value, ResourceDictionary resources)
         {
-            return value.GetType().GetField(value.ToString() ?? string.Empty)?.GetCustomAttribute(typeof(StringResourceAttribute)) is StringResourceAttribute resource ? resources[resource.Resource] : value;
+            return ValueMappings.Attribute<StringResourceAttribute>(value)?.Resource is StringResource resource ? resources[resource] : value;
         }
     }
 

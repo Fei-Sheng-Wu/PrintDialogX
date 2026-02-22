@@ -102,23 +102,32 @@
         public enum Language
         {
             /// <summary>
+            /// System language, or English (United States) if it is not supported.
+            /// </summary>
+            System,
+
+            /// <summary>
             /// English (Canada).
             /// </summary>
+            [InterfaceToContentConverter.LanguageSource("en-CA")]
             en_CA,
 
             /// <summary>
             /// English (United Kingdom).
             /// </summary>
+            [InterfaceToContentConverter.LanguageSource("en-GB")]
             en_GB,
 
             /// <summary>
             /// English (United States).
             /// </summary>
+            [InterfaceToContentConverter.LanguageSource("en-US")]
             en_US,
 
             /// <summary>
             /// Chinese (China).
             /// </summary>
+            [InterfaceToContentConverter.LanguageSource("zh-CN")]
             zh_CN
         }
 
