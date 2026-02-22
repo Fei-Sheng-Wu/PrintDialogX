@@ -414,13 +414,18 @@ namespace PrintDialogX
 
         public override System.Windows.Controls.ValidationResult Validate(object value, CultureInfo culture)
         {
-            return TryConvert(value, Maximum).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
+            if (value is not string pages)
+            {
+                return new(false, string.Empty);
+            }
+
+            return TryConvert(pages, Maximum).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<object>? Result) TryConvert(object value, int maximum)
+        public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum)
         {
             List<object> result = [];
-            foreach (string entry in (value.ToString() ?? string.Empty).Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
+            foreach (string entry in value.Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
                 switch (range.Length)
