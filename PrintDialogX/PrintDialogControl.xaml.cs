@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Xps;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Markup;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
@@ -179,7 +180,7 @@ namespace PrintDialogX
         public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource, informer);
     }
 
-    internal partial class PrintDialogControl : UserControl
+    internal partial class PrintDialogControl : UserControl, ILanguageHost
     {
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
@@ -211,17 +212,12 @@ namespace PrintDialogX
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
 
             DataContext = model;
-            InterfaceToContentConverter.ApplyLanguage(Resources, dialog.InterfaceSettings.DisplayLanguage);
-            ((ValueToDescriptionConverter)Resources[ConverterResource.ValueToDescription]).Resources = Resources;
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+            InterfaceToContentConverter.ApplyLanguage(this, dialog.InterfaceSettings.DisplayLanguage);
+
             ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
             ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
-            ((PrinterToStatusConverter)Resources[ConverterResource.PrinterToStatus]).Resources = Resources;
-            ((PrinterToDescriptionConverter)Resources[ConverterResource.PrinterToDescription]).Resources = Resources;
-            ((SizeToDescriptionConverter)Resources[ConverterResource.SizeToDescription]).Resources = Resources;
-            ((DocumentToDescriptionConverter)Resources[ConverterResource.DocumentToDescription]).Resources = Resources;
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
-
-            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
 
             LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
@@ -931,12 +927,12 @@ namespace PrintDialogX
             }
         }
 
-        public Size GetPageSize(double? scale = null)
+        private Size GetPageSize(double? scale = null)
         {
             return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + DocumentHostControl.SPACING * 2, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + DocumentHostControl.SPACING * 2);
         }
 
-        public double GetPageOffset(double index, double? unit = null)
+        private double GetPageOffset(double index, double? unit = null)
         {
             return (unit ?? GetPageSize().Height) * Math.Floor((Math.Max(1, Math.Min(model.PreviewDocument.Value.PageCount, index)) - 1) / model.PreviewDocument.Value.ColumnCount);
         }
@@ -1140,6 +1136,17 @@ namespace PrintDialogX
                 action();
                 e.Handled = true;
             }
+        }
+
+        public void SetLanguage(ResourceDictionary resources, string language)
+        {
+            Resources.MergedDictionaries.Add(resources);
+            foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToDescription })
+            {
+                ((ILanguageHost)Resources[key]).SetLanguage(resources, language);
+            }
+
+            Language = XmlLanguage.GetLanguage(language);
         }
     }
 }

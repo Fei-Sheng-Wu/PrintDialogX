@@ -104,30 +104,30 @@
             /// <summary>
             /// System language, or English (United States) if it is not supported.
             /// </summary>
-            System,
+            System = -1,
 
             /// <summary>
             /// English (Canada).
             /// </summary>
-            [InterfaceToContentConverter.LanguageSource("en-CA")]
+            [ILanguageHost.Language("en-CA")]
             en_CA,
 
             /// <summary>
             /// English (United Kingdom).
             /// </summary>
-            [InterfaceToContentConverter.LanguageSource("en-GB")]
+            [ILanguageHost.Language("en-GB")]
             en_GB,
 
             /// <summary>
             /// English (United States).
             /// </summary>
-            [InterfaceToContentConverter.LanguageSource("en-US")]
+            [ILanguageHost.Language("en-US")]
             en_US,
 
             /// <summary>
             /// Chinese (China).
             /// </summary>
-            [InterfaceToContentConverter.LanguageSource("zh-CN")]
+            [ILanguageHost.Language("zh-CN")]
             zh_CN
         }
 

@@ -5,11 +5,12 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
+using System.Windows.Markup;
 using System.Windows.Controls;
 
 namespace PrintDialogX
 {
-    internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
+    internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost, ILanguageHost
     {
         private bool isAvailable = true;
         private Func<Task<FrameworkElement>>? loader = null;
@@ -44,6 +45,16 @@ namespace PrintDialogX
             handler?.Invoke(sender, e);
         }
 
+        private void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+
+            if (content.Child is FrameworkElement element)
+            {
+                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(element);
+            }
+        }
+
         public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> callback)
         {
             if (!isAvailable)
@@ -54,7 +65,7 @@ namespace PrintDialogX
             isAvailable = false;
             loader = callback;
 
-            InterfaceToContentConverter.ApplyLanguage(Resources, dialog.InterfaceSettings.DisplayLanguage);
+            InterfaceToContentConverter.ApplyLanguage(this, dialog.InterfaceSettings.DisplayLanguage);
             if (dialog.InterfaceSettings.Title != null)
             {
                 Title = dialog.InterfaceSettings.Title;
@@ -109,14 +120,10 @@ namespace PrintDialogX
             handler = value;
         }
 
-        public void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
+        public void SetLanguage(ResourceDictionary resources, string language)
         {
-            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
-
-            if (content.Child is FrameworkElement element)
-            {
-                Wpf.Ui.Appearance.ApplicationThemeManager.Apply(element);
-            }
+            Resources.MergedDictionaries.Add(resources);
+            Language = XmlLanguage.GetLanguage(language);
         }
     }
 }

@@ -17,16 +17,29 @@ using System.Windows.Documents;
 
 namespace PrintDialogX
 {
-    internal class InterfaceToContentConverter : IValueConverter
+    internal interface ILanguageHost
     {
         [AttributeUsage(AttributeTargets.All)]
-        internal class LanguageSourceAttribute(string source) : Attribute
+        internal class LanguageAttribute(string language) : Attribute
         {
-            public string Source { get; set; } = source;
+            public string Language { get; set; } = language;
         }
 
+        public void SetLanguage(ResourceDictionary resources, string language);
+    }
+
+    internal abstract class LanguageHostConverter : ILanguageHost
+    {
         public ResourceDictionary Resources { get; set; } = [];
 
+        public void SetLanguage(ResourceDictionary resources, string language)
+        {
+            Resources = resources;
+        }
+    }
+
+    internal class InterfaceToContentConverter : LanguageHostConverter, IValueConverter
+    {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not InterfaceSettings settings || parameter is not ControlTemplate template)
@@ -77,23 +90,23 @@ namespace PrintDialogX
             }
         }
 
-        public static void ApplyLanguage(ResourceDictionary resources, InterfaceSettings.Language language)
+        public static void ApplyLanguage(ILanguageHost host, InterfaceSettings.Language language)
         {
             if (language == InterfaceSettings.Language.System)
             {
                 //TODO: retrieve the system language
             }
-            resources.MergedDictionaries.Add(new()
+
+            string code = ValueMappings.Attribute<ILanguageHost.LanguageAttribute>(language)?.Language ?? "en-US";
+            host.SetLanguage(new()
             {
-                Source = new($"/PrintDialogX;component/Resources/Languages/{ValueMappings.Attribute<LanguageSourceAttribute>(language)?.Source ?? "en-US"}.xaml", UriKind.Relative)
-            });
+                Source = new($"/PrintDialogX;component/Resources/Languages/{code}.xaml", UriKind.Relative)
+            }, code);
         }
     }
 
-    internal class ValueToDescriptionConverter : IValueConverter
+    internal class ValueToDescriptionConverter : LanguageHostConverter, IValueConverter
     {
-        public ResourceDictionary Resources { get; set; } = [];
-
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             return value != null ? GetDescription(value, Resources) : Binding.DoNothing;
@@ -306,10 +319,8 @@ namespace PrintDialogX
         }
     }
 
-    internal class PrinterToStatusConverter : IValueConverter
+    internal class PrinterToStatusConverter : LanguageHostConverter, IValueConverter
     {
-        public ResourceDictionary Resources { get; set; } = [];
-
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not PrintQueue printer)
@@ -362,10 +373,8 @@ namespace PrintDialogX
         }
     }
 
-    internal class PrinterToDescriptionConverter : IValueConverter
+    internal class PrinterToDescriptionConverter : LanguageHostConverter, IValueConverter
     {
-        public ResourceDictionary Resources { get; set; } = [];
-
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not PrintQueue printer)
@@ -445,10 +454,8 @@ namespace PrintDialogX
         }
     }
 
-    internal class SizeToDescriptionConverter : IValueConverter
+    internal class SizeToDescriptionConverter : LanguageHostConverter, IValueConverter
     {
-        public ResourceDictionary Resources { get; set; } = [];
-
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not Enums.Size size)
@@ -739,10 +746,8 @@ namespace PrintDialogX
         }
     }
 
-    internal class DocumentToDescriptionConverter : IMultiValueConverter
+    internal class DocumentToDescriptionConverter : LanguageHostConverter, IMultiValueConverter
     {
-        public ResourceDictionary Resources { get; set; } = [];
-
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
             if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document)
