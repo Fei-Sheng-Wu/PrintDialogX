@@ -5,7 +5,7 @@ namespace PrintDialogX
 {
     internal interface ILanguageHost
     {
-        public void SetLanguage(ResourceDictionary resources, string language);
+        public void UpdateLanguage(ResourceDictionary resources, string language);
     }
 
     [AttributeUsage(AttributeTargets.All)]

@@ -1138,12 +1138,12 @@ namespace PrintDialogX
             }
         }
 
-        public void SetLanguage(ResourceDictionary resources, string language)
+        public void UpdateLanguage(ResourceDictionary resources, string language)
         {
             Resources.MergedDictionaries.Add(resources);
             foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToDescription })
             {
-                ((ILanguageHost)Resources[key]).SetLanguage(resources, language);
+                ((ILanguageHost)Resources[key]).UpdateLanguage(resources, language);
             }
 
             Language = XmlLanguage.GetLanguage(language);

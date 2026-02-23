@@ -120,7 +120,7 @@ namespace PrintDialogX
             handler = value;
         }
 
-        public void SetLanguage(ResourceDictionary resources, string language)
+        public void UpdateLanguage(ResourceDictionary resources, string language)
         {
             Resources.MergedDictionaries.Add(resources);
             Language = XmlLanguage.GetLanguage(language);

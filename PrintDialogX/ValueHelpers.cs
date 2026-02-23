@@ -21,7 +21,7 @@ namespace PrintDialogX
     {
         public ResourceDictionary Resources { get; set; } = [];
 
-        public void SetLanguage(ResourceDictionary resources, string language)
+        public void UpdateLanguage(ResourceDictionary resources, string language)
         {
             Resources = resources;
         }
@@ -81,14 +81,19 @@ namespace PrintDialogX
 
         public static void ApplyLanguage(ILanguageHost host, InterfaceSettings.Language language)
         {
-            string code = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : CultureInfo.CurrentUICulture.IetfLanguageTag switch
+            string code = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : new Func<InterfaceSettings.Language>(() =>
             {
-                "en-CA" => InterfaceSettings.Language.en_CA,
-                "en-GB" => InterfaceSettings.Language.en_GB,
-                "zh-CN" => InterfaceSettings.Language.zh_CN,
-                _ => InterfaceSettings.Language.en_US
-            })?.Language ?? "en-US";
-            host.SetLanguage(new()
+                string[] current = CultureInfo.CurrentUICulture.IetfLanguageTag.Split('-');
+                return (current.First(), current.Last()) switch
+                {
+                    ("en", "CA") => InterfaceSettings.Language.en_CA,
+                    ("en", "GB") => InterfaceSettings.Language.en_GB,
+                    ("en", _) => InterfaceSettings.Language.en_US,
+                    ("zh", _) => InterfaceSettings.Language.zh_CN,
+                    _ => InterfaceSettings.Language.en_US
+                };
+            })())?.Language ?? "en-US";
+            host.UpdateLanguage(new()
             {
                 Source = new($"/PrintDialogX;component/Resources/Languages/{code}.xaml", UriKind.Relative)
             }, code);

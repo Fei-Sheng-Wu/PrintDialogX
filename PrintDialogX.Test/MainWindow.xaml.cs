@@ -57,7 +57,7 @@ namespace PrintDialogX.Test
 
             AddOption(containerInterface, "interfaceTitle", "Title", new TextBox(), string.Empty);
             AddOption(containerInterface, "interfaceIcon", "Icon", new TextBox(), string.Empty);
-            AddOption(containerInterface, "interfaceLanguage", "Display Language", CreateCombo<InterfaceSettings.Language>(), InterfaceSettings.Language.en_US);
+            AddOption(containerInterface, "interfaceLanguage", "Display Language", CreateCombo<InterfaceSettings.Language>(), InterfaceSettings.Language.System);
             AddOption(containerInterface, "interfaceSettingsBasic", "Basic Settings", new TextBox(), "Printer, PrinterPreferences, Void, Copies, Collation, Pages, Layout, Size");
             AddOption(containerInterface, "interfaceSettingsAdvanced", "Advanced Settings", new TextBox(), "Color, Quality, PagesPerSheet, PageOrder, Scale, Margin, DoubleSided, Type, Source");
             AddOption(containerInterface, "interfaceSettingsExpanded", null, CreateCheck("Expand Settings"), false);
