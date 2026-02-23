@@ -92,12 +92,13 @@ namespace PrintDialogX
 
         public static void ApplyLanguage(ILanguageHost host, InterfaceSettings.Language language)
         {
-            if (language == InterfaceSettings.Language.System)
+            string code = ValueMappings.Attribute<ILanguageHost.LanguageAttribute>(language != InterfaceSettings.Language.System ? language : CultureInfo.CurrentUICulture.IetfLanguageTag switch
             {
-                //TODO: retrieve the system language
-            }
-
-            string code = ValueMappings.Attribute<ILanguageHost.LanguageAttribute>(language)?.Language ?? "en-US";
+                "en-CA" => InterfaceSettings.Language.en_CA,
+                "en-GB" => InterfaceSettings.Language.en_GB,
+                "zh-CN" => InterfaceSettings.Language.zh_CN,
+                _ => InterfaceSettings.Language.en_US
+            })?.Language ?? "en-US";
             host.SetLanguage(new()
             {
                 Source = new($"/PrintDialogX;component/Resources/Languages/{code}.xaml", UriKind.Relative)
