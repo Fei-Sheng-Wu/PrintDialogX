@@ -1,5 +1,19 @@
-﻿namespace PrintDialogX
+﻿using System;
+using System.Windows;
+
+namespace PrintDialogX
 {
+    internal interface ILanguageHost
+    {
+        public void SetLanguage(ResourceDictionary resources, string language);
+    }
+
+    [AttributeUsage(AttributeTargets.All)]
+    internal class LanguageAttribute(string language) : Attribute
+    {
+        public string Language { get; set; } = language;
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="InterfaceSettings"/> class.
     /// </summary>
@@ -109,25 +123,25 @@
             /// <summary>
             /// English (Canada).
             /// </summary>
-            [ILanguageHost.Language("en-CA")]
+            [Language("en-CA")]
             en_CA,
 
             /// <summary>
             /// English (United Kingdom).
             /// </summary>
-            [ILanguageHost.Language("en-GB")]
+            [Language("en-GB")]
             en_GB,
 
             /// <summary>
             /// English (United States).
             /// </summary>
-            [ILanguageHost.Language("en-US")]
+            [Language("en-US")]
             en_US,
 
             /// <summary>
             /// Chinese (China).
             /// </summary>
-            [ILanguageHost.Language("zh-CN")]
+            [Language("zh-CN")]
             zh_CN
         }
 
@@ -148,7 +162,7 @@
         /// <summary>
         /// Gets or sets the display language of the interface.
         /// </summary>
-        public Language DisplayLanguage { get; set; } = Language.en_US;
+        public Language DisplayLanguage { get; set; } = Language.System;
 
         /// <summary>
         /// Gets or sets the collection of basic interface controls to be placed outside the print settings expander.

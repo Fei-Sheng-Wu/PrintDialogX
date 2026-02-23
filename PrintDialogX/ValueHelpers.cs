@@ -17,17 +17,6 @@ using System.Windows.Documents;
 
 namespace PrintDialogX
 {
-    internal interface ILanguageHost
-    {
-        [AttributeUsage(AttributeTargets.All)]
-        internal class LanguageAttribute(string language) : Attribute
-        {
-            public string Language { get; set; } = language;
-        }
-
-        public void SetLanguage(ResourceDictionary resources, string language);
-    }
-
     internal abstract class LanguageHostConverter : ILanguageHost
     {
         public ResourceDictionary Resources { get; set; } = [];
@@ -92,7 +81,7 @@ namespace PrintDialogX
 
         public static void ApplyLanguage(ILanguageHost host, InterfaceSettings.Language language)
         {
-            string code = ValueMappings.Attribute<ILanguageHost.LanguageAttribute>(language != InterfaceSettings.Language.System ? language : CultureInfo.CurrentUICulture.IetfLanguageTag switch
+            string code = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : CultureInfo.CurrentUICulture.IetfLanguageTag switch
             {
                 "en-CA" => InterfaceSettings.Language.en_CA,
                 "en-GB" => InterfaceSettings.Language.en_GB,
