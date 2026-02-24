@@ -1,4 +1,4 @@
-﻿<ui:FluentWindow x:Class="PrintDialogX.PrintDialogWindow"
+<ui:FluentWindow x:Class="PrintDialogX.PrintDialogWindow"
                  x:ClassModifier="internal"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,7 +24,7 @@
     <ui:FluentWindow.TaskbarItemInfo>
         <TaskbarItemInfo />
     </ui:FluentWindow.TaskbarItemInfo>
-    
+
     <DockPanel>
         <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Height="Auto" VerticalContentAlignment="Top" />
         <Decorator x:Name="content" DockPanel.Dock="Bottom">
