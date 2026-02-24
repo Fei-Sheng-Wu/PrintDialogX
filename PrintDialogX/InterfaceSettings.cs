@@ -142,7 +142,19 @@ namespace PrintDialogX
             /// Chinese (China).
             /// </summary>
             [Language("zh-CN")]
-            zh_CN
+            zh_CN,
+
+            /// <summary>
+            /// Chinese (Hong Kong).
+            /// </summary>
+            [Language("zh-HK")]
+            zh_HK,
+
+            /// <summary>
+            /// Chinese (Taiwan).
+            /// </summary>
+            [Language("zh-TW")]
+            zh_TW
         }
 
         /// <summary>

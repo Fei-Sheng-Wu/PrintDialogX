@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
-
     <system:String x:Key="{x:Static Member=local:StringResource.TitlePrint}">Print</system:String>
 
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonOK}">OK</system:String>
@@ -109,17 +108,17 @@
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB7}">JB7</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB8}">JB8</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB9}">JB9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3Envelope}">C3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3EnvelopeRotated}">C3 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4Envelope}">C4 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4EnvelopeRotated}">C4 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3Envelope}">Chou 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3EnvelopeRotated}">Chou 3 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4Envelope}">Chou 4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4EnvelopeRotated}">Chou 4 Envelope Rotated</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcard}">Hagaki Postcard</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcardRotated}">Hagaki Postcard Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2Envelope}">K2 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2EnvelopeRotated}">K2 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3Envelope}">K3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3EnvelopeRotated}">K3 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4Envelope}">Y4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2Envelope}">Kaku 2 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2EnvelopeRotated}">Kaku 2 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3Envelope}">Kaku 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3EnvelopeRotated}">Kaku 3 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4Envelope}">You 4 Envelope</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x11}">10" × 11"</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x14}">10" × 14"</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica11x17}">11" × 17"</system:String>
@@ -201,12 +200,12 @@
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanDoubleHagakiPostcardRotated}">Double Hagaki Postcard Rotated</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanLPhoto}">L Photo</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapan2LPhoto}">2L Photo</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou1Envelope}">Y1 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou2Envelope}">Y2 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou3Envelope}">Y3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4EnvelopeRotated}">Y4 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6Envelope}">Y6 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6EnvelopeRotated}">Y6 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou1Envelope}">You 1 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou2Envelope}">You 2 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou3Envelope}">You 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4EnvelopeRotated}">You 4 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6Envelope}">You 6 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6EnvelopeRotated}">You 6 Envelope Rotated</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x6}">4" × 6"</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x8}">4" × 8"</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica5x7}">5" × 7"</system:String>

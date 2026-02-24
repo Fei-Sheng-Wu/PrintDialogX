@@ -1,0 +1,22 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/zh-HK.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <system:String x:Key="{x:Static Member=local:StringResource.ButtonPrinterPreferences}">印表機內容</system:String>
+
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryCurrentPage}">目前頁</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryHorizontal}">從左到右</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryHorizontalReverse}">從右到左</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryVertical}">從上到下</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryVerticalReverse}">從下到上</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryMultiLayerForm}">連體多聯表單</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryMultiPartForm}">單體多聯表單</system:String>
+
+    <system:String x:Key="{x:Static Member=local:StringResource.LabelPagePunt}">目前頁列印失敗</system:String>
+
+    <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedPrinterPreferences}">無法打開印表機內容視窗！</system:String>
+</ResourceDictionary>

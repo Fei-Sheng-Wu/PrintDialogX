@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
-
     <system:String x:Key="{x:Static Member=local:StringResource.TitlePrint}">打印</system:String>
 
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonOK}">确认</system:String>
@@ -15,12 +14,12 @@
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonZoomOut}">缩小</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonActualSize}">实际尺寸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonFitToWidth}">适应宽度</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonWholePage}">整页</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonTwoPages}">双页</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonFirstPage}">第一页</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.ButtonWholePage}">整页视图</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.ButtonTwoPages}">双页视图</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.ButtonFirstPage}">首页</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonPreviousPage}">上一页</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.ButtonNextPage}">下一页</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonLastPage}">最后一页</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.ButtonLastPage}">末页</system:String>
 
     <system:String x:Key="{x:Static Member=local:StringResource.OptionPrinter}">打印机</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.OptionCopies}">份数</system:String>
@@ -109,17 +108,17 @@
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB7}">JB7</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB8}">JB8</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB9}">JB9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3Envelope}">C3信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3EnvelopeRotated}">C3信封（横向）</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4Envelope}">C4信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4EnvelopeRotated}">C4信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3Envelope}">长形3号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3EnvelopeRotated}">长形3号信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4Envelope}">长形4号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4EnvelopeRotated}">长形4号信封（横向）</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcard}">明信片</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcardRotated}">明信片（横向）</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2Envelope}">K2信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2EnvelopeRotated}">K2信封（横向）</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3Envelope}">K3信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3EnvelopeRotated}">K3信封（横向）</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4Envelope}">Y4信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2Envelope}">角形2号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2EnvelopeRotated}">角形2号信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3Envelope}">角形3号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3EnvelopeRotated}">角形3号信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4Envelope}">洋形4号信封</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x11}">10×11英寸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x14}">10×14英寸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica11x17}">11×17英寸</system:String>
@@ -201,12 +200,12 @@
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanDoubleHagakiPostcardRotated}">双倍明信片（横向）</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanLPhoto}">L照片</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryJapan2LPhoto}">2L照片</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou1Envelope}">Y1信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou2Envelope}">Y2信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou3Envelope}">Y3信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4EnvelopeRotated}">Y4信封（横向）</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6Envelope}">Y6信封</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6EnvelopeRotated}">Y6信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou1Envelope}">洋形1号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou2Envelope}">洋形2号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou3Envelope}">洋形3号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4EnvelopeRotated}">洋形4号信封（横向）</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6Envelope}">洋形6号信封</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6EnvelopeRotated}">洋形6号信封（横向）</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x6}">4×6英寸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x8}">4×8英寸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica5x7}">5×7英寸</system:String>
@@ -296,9 +295,9 @@
     <system:String x:Key="{x:Static Member=local:StringResource.LabelOffline}">离线</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.LabelOutOfMemory}">内存不足</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.LabelOutputBinFull}">输出盒已满</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPagePunt}">当前页面打印失败</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperJam}">纸张卡住</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperOut}">缺字</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.LabelPagePunt}">当前页打印失败</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperJam}">卡纸</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperOut}">缺纸</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperProblem}">纸张错误</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.LabelPaused}">已暂停</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.LabelPendingDeletion}">任务删除中</system:String>
