@@ -22,14 +22,6 @@ namespace PrintDialogX
             InitializeComponent();
         }
 
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
-            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
-
-            base.OnClosing(e);
-        }
-
         private async void AttachControl(object sender, EventArgs e)
         {
             if (loader == null)
@@ -124,6 +116,14 @@ namespace PrintDialogX
         {
             Resources.MergedDictionaries.Add(resources);
             Language = XmlLanguage.GetLanguage(language);
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
+            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
+
+            base.OnClosing(e);
         }
     }
 }

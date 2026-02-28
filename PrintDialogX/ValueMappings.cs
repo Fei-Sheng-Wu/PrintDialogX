@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace PrintDialogX
 {
-    internal class ValueMappings
+    internal static class ValueMappings
     {
         public static T? Attribute<T>(object value) where T : Attribute
         {
@@ -215,7 +215,7 @@ namespace PrintDialogX
             [PageMediaSizeName.CreditCard] = Enums.Size.DefinedSize.CreditCard
         };
 
-        public static readonly Dictionary<string, Enums.Size.DefinedSize> XmlSizeNameMapping = new()
+        public static readonly Dictionary<string, Enums.Size.DefinedSize> XmlSizeNameMapping = new(StringComparer.OrdinalIgnoreCase)
         {
             ["isoa0"] = Enums.Size.DefinedSize.ISOA0,
             ["isoa1"] = Enums.Size.DefinedSize.ISOA1,

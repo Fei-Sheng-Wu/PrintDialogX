@@ -9,7 +9,7 @@ namespace PrintDialogX
     }
 
     [AttributeUsage(AttributeTargets.All)]
-    internal class LanguageAttribute(string language) : Attribute
+    internal sealed class LanguageAttribute(string language) : Attribute
     {
         public string Language { get; set; } = language;
     }

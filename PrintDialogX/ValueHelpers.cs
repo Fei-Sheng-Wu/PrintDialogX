@@ -17,9 +17,9 @@ using System.Windows.Documents;
 
 namespace PrintDialogX
 {
-    internal abstract class LanguageHostConverter : ILanguageHost
+    internal abstract class LanguageHostConverter() : ILanguageHost
     {
-        public ResourceDictionary Resources { get; set; } = [];
+        public ResourceDictionary? Resources { get; set; } = null;
 
         public void UpdateLanguage(ResourceDictionary resources, string language)
         {
@@ -27,8 +27,10 @@ namespace PrintDialogX
         }
     }
 
-    internal class InterfaceToContentConverter : LanguageHostConverter, IValueConverter
+    internal sealed class InterfaceToContentConverter() : IValueConverter
     {
+        public ResourceDictionary Resources { get; set; } = [];
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not InterfaceSettings settings || parameter is not ControlTemplate template)
@@ -104,11 +106,11 @@ namespace PrintDialogX
         }
     }
 
-    internal class ValueToDescriptionConverter : LanguageHostConverter, IValueConverter
+    internal sealed class ValueToDescriptionConverter() : LanguageHostConverter, IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            return value != null ? GetDescription(value, Resources) : Binding.DoNothing;
+            return value != null && Resources != null ? GetDescription(value, Resources) : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -122,9 +124,9 @@ namespace PrintDialogX
         }
     }
 
-    internal class ComparisonToStateConverter : IValueConverter, IMultiValueConverter
+    internal sealed class ComparisonToStateConverter() : IValueConverter, IMultiValueConverter
     {
-        public enum Comparison
+        internal enum Comparison
         {
             Equality,
             Threshold
@@ -143,12 +145,11 @@ namespace PrintDialogX
 
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            bool comparison = Mode switch
+            return IsInverted ^ (Mode switch
             {
                 Comparison.Threshold => values.All(x => System.Convert.ToInt32(x) >= System.Convert.ToInt32(parameter)),
                 _ => values.All(x => Equals(x, parameter))
-            };
-            return IsInverted ^ comparison ? StateTrue : StateFalse;
+            }) ? StateTrue : StateFalse;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -162,7 +163,7 @@ namespace PrintDialogX
         }
     }
 
-    internal class CollectionToRangeConverter : IValueConverter
+    internal sealed class CollectionToRangeConverter() : IValueConverter
     {
         public int TrimStart { get; set; } = 0;
         public int TrimEnd { get; set; } = 0;
@@ -184,7 +185,7 @@ namespace PrintDialogX
         }
     }
 
-    internal class PrinterComparer : IEqualityComparer<PrintQueue>
+    internal sealed class PrinterComparer() : IEqualityComparer<PrintQueue>
     {
         public static readonly PrinterComparer Instance = new();
 
@@ -192,7 +193,7 @@ namespace PrintDialogX
         {
             try
             {
-                return x != null && y != null && x.FullName == y.FullName;
+                return x != null && y != null && (ReferenceEquals(x, y) || StringComparer.Ordinal.Equals(x.FullName, y.FullName));
             }
             catch
             {
@@ -202,11 +203,18 @@ namespace PrintDialogX
 
         public int GetHashCode(PrintQueue value)
         {
-            return value.GetHashCode();
+            try
+            {
+                return StringComparer.Ordinal.GetHashCode(value.FullName);
+            }
+            catch
+            {
+                return value.GetHashCode();
+            }
         }
     }
 
-    internal class PrinterToIconConverter : IValueConverter
+    internal sealed class PrinterToIconConverter() : IValueConverter
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct SHSTOCKICONINFO
@@ -226,20 +234,20 @@ namespace PrintDialogX
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
-        public class PrinterIcon(ImageSource? icon, double opacity, double size)
-        {
-            public ImageSource? Icon { get; set; } = icon;
-            public double Opacity { get; set; } = opacity;
-            public double Size { get; set; } = size;
-        }
-
-        public enum PrinterType
+        internal enum PrinterType
         {
             Printer = 16,
             PrinterNetwork = 50,
             PrinterFile = 54,
             Fax = 52,
             FaxNetwork = 53
+        }
+
+        internal sealed class PrinterIcon(ImageSource? icon, double opacity, double size)
+        {
+            public ImageSource? Icon { get; } = icon;
+            public double Opacity { get; } = opacity;
+            public double Size { get; } = size;
         }
 
         public static readonly Dictionary<(PrinterType, bool), ImageSource> Cache = [];
@@ -318,11 +326,11 @@ namespace PrintDialogX
         }
     }
 
-    internal class PrinterToStatusConverter : LanguageHostConverter, IValueConverter
+    internal sealed class PrinterToStatusConverter() : LanguageHostConverter, IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not PrintQueue printer)
+            if (value is not PrintQueue printer || Resources == null)
             {
                 return Binding.DoNothing;
             }
@@ -372,11 +380,11 @@ namespace PrintDialogX
         }
     }
 
-    internal class PrinterToDescriptionConverter : LanguageHostConverter, IValueConverter
+    internal sealed class PrinterToDescriptionConverter() : LanguageHostConverter, IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not PrintQueue printer)
+            if (value is not PrintQueue printer || Resources == null)
             {
                 return Binding.DoNothing;
             }
@@ -416,7 +424,7 @@ namespace PrintDialogX
         }
     }
 
-    internal class PagesCustomValidationRule : ValidationRule
+    internal sealed class PagesCustomValidationRule() : ValidationRule
     {
         public int Maximum { get; set; } = int.MaxValue;
 
@@ -427,22 +435,22 @@ namespace PrintDialogX
                 return new(false, string.Empty);
             }
 
-            return TryConvert(pages, Maximum).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
+            return TryConvert(pages, Maximum, true).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum)
+        public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum, bool isValidation = false)
         {
-            List<object> result = [];
+            List<object>? result = isValidation ? null : [];
             foreach (string entry in value.Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
                 switch (range.Length)
                 {
                     case 1 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
-                        result.Add(single);
+                        result?.Add(single);
                         break;
                     case 2 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range.Last(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
-                        result.Add((start, end));
+                        result?.Add((start, end));
                         break;
                     default:
                         return (false, null);
@@ -453,11 +461,11 @@ namespace PrintDialogX
         }
     }
 
-    internal class SizeToDescriptionConverter : LanguageHostConverter, IValueConverter
+    internal sealed class SizeToDescriptionConverter() : LanguageHostConverter, IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not Enums.Size size)
+            if (value is not Enums.Size size || Resources == null)
             {
                 return Binding.DoNothing;
             }
@@ -474,7 +482,7 @@ namespace PrintDialogX
         }
     }
 
-    internal class SizeToMarginMaximumConverter : IValueConverter
+    internal sealed class SizeToMarginMaximumConverter() : IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -492,18 +500,18 @@ namespace PrintDialogX
         }
     }
 
-    internal class DocumentHostControl : Border
+    internal sealed class DocumentHostControl : Border
     {
-        public class Document : DocumentPaginator
+        internal enum DocumentZoom
         {
-            public enum Zoom
-            {
-                Custom,
-                FitToWidth,
-                FitToHeight,
-                FitToPage
-            }
+            Custom,
+            FitToWidth,
+            FitToHeight,
+            FitToPage
+        }
 
+        internal sealed class Document() : DocumentPaginator
+        {
             public override bool IsPageCountValid { get => true; }
             public override int PageCount { get => Pages.Count; }
             public override Size PageSize { get; set; } = new();
@@ -520,12 +528,13 @@ namespace PrintDialogX
                     Canvas content = Pages[index].Content;
                     content.Measure(PageSize);
                     content.Arrange(new(PageSize));
+
                     return new(content, PageSize, new(PageSize), new(PageSize));
                 }
             }
 
-            public object Lock { get; set; } = new();
-            public List<(int Index, Canvas Content)> Pages { get; set; } = [];
+            public object Lock { get; } = new();
+            public List<(int Index, Canvas Content)> Pages { get; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
 
@@ -534,12 +543,12 @@ namespace PrintDialogX
                 get;
                 set => field = Math.Max(0.05, Math.Min(10000, value));
             } = 1;
-            public Zoom ZoomMode { get; set; } = Zoom.FitToWidth;
+            public DocumentZoom ZoomMode { get; set; } = DocumentZoom.FitToWidth;
             public Point? ZoomTarget { get; set; } = null;
             public int ColumnCount { get; set; } = 1;
         }
 
-        public class DocumentEffect : ShaderEffect
+        internal sealed class DocumentEffect() : ShaderEffect
         {
             public static readonly DependencyProperty InputProperty = RegisterPixelShaderSamplerProperty(nameof(Input), typeof(DocumentEffect), 0);
             public static readonly DependencyProperty ViewportLeftProperty = DependencyProperty.Register(nameof(ViewportLeft), typeof(float), typeof(DocumentEffect), new(0.0f, PixelShaderConstantCallback(0)));
@@ -573,7 +582,7 @@ namespace PrintDialogX
                 set => SetValue(ViewportHeightProperty, value);
             }
 
-            public DocumentEffect(string name)
+            public DocumentEffect(string name) : this()
             {
                 PixelShader = new()
                 {
@@ -587,7 +596,7 @@ namespace PrintDialogX
             }
         }
 
-        public const double SPACING = 8;
+        public const double LENGTH_SPACING = 8;
 
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(Canvas), typeof(DocumentHostControl), new(null, (x, e) =>
@@ -710,14 +719,14 @@ namespace PrintDialogX
         }
     }
 
-    internal class DocumentToContentConverter : IValueConverter
+    internal sealed class DocumentToContentConverter() : IValueConverter
     {
-        public class Content(DocumentHostControl.Document document, Canvas page)
+        internal sealed class Content(DocumentHostControl.Document document, Canvas page)
         {
-            public VirtualizingStackPanel? Viewer { get; set; } = document.Viewer;
-            public Canvas Page { get; set; } = page;
-            public Size Size { get; set; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
-            public double Zoom { get; set; } = document.ZoomValue;
+            public VirtualizingStackPanel? Viewer { get; } = document.Viewer;
+            public Canvas Page { get; } = page;
+            public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
+            public double Zoom { get; } = document.ZoomValue;
         }
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
@@ -745,16 +754,16 @@ namespace PrintDialogX
         }
     }
 
-    internal class DocumentToDescriptionConverter : LanguageHostConverter, IMultiValueConverter
+    internal sealed class DocumentToDescriptionConverter() : LanguageHostConverter, IMultiValueConverter
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document)
+            if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document || Resources == null)
             {
                 return Binding.DoNothing;
             }
 
-            return string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)Math.Floor(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
+            return string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)

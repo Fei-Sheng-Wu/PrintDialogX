@@ -12,20 +12,6 @@ namespace PrintDialogX
     public class PrintDialog(IPrintDialogHost host)
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
-        /// </summary>
-        public PrintDialog() : this(new PrintDialogWindow()) { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
-        /// </summary>
-        /// <param name="callback">The callback function that is invoked to customize the default <see cref="IPrintDialogHost"/> instance, which derives from <see cref="Window"/>.</param>
-        public PrintDialog(Action<Window> callback) : this()
-        {
-            callback((Window)Host);
-        }
-
-        /// <summary>
         /// Gets or sets the <see cref="IPrintDialogHost"/> instance to host the actual control for the print operation.
         /// </summary>
         public IPrintDialogHost Host { get; set; } = host;
@@ -59,6 +45,33 @@ namespace PrintDialogX
         /// Gets the result of the print operation.
         /// </summary>
         public PrintDialogResult Result { get => Host.GetResult(); }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
+        /// </summary>
+        public PrintDialog() : this(new PrintDialogWindow()) { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PrintDialog"/> class.
+        /// </summary>
+        /// <param name="callback">The callback function that is invoked to customize the default <see cref="IPrintDialogHost"/> instance, which derives from <see cref="Window"/>.</param>
+        public PrintDialog(Action<Window> callback) : this()
+        {
+            callback((Window)Host);
+        }
+
+        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator = null)
+        {
+            return async () =>
+            {
+                if (generator != null)
+                {
+                    await generator();
+                }
+
+                return new PrintDialogControl(this, Host);
+            };
+        }
 
         /// <summary>
         /// Opens the dialog.
@@ -98,19 +111,6 @@ namespace PrintDialogX
             Host.Start(this, true, GetCallback(generator));
 
             return Host.GetResult().IsSuccess;
-        }
-
-        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator = null)
-        {
-            return async () =>
-            {
-                if (generator != null)
-                {
-                    await generator();
-                }
-
-                return new PrintDialogControl(this, Host);
-            };
         }
     }
 }

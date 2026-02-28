@@ -1,6 +1,5 @@
 using System;
 using System.Printing;
-using System.ComponentModel;
 
 namespace PrintDialogX
 {
@@ -89,7 +88,7 @@ namespace PrintDialogX
         public string CustomPages
         {
             get;
-            set => field = PagesCustomValidationRule.TryConvert(value, int.MaxValue).IsValid ? value : throw new ArgumentOutOfRangeException(nameof(CustomPages), "The value is invalid.");
+            set => field = PagesCustomValidationRule.TryConvert(value, int.MaxValue, true).IsValid ? value : throw new ArgumentOutOfRangeException(nameof(CustomPages), "The value is invalid.");
         } = string.Empty;
 
         /// <summary>
@@ -1308,6 +1307,8 @@ namespace PrintDialogX.Enums
         /// <param name="name">The defined size to set to.</param>
         public Size(DefinedSize name) : this()
         {
+            DefinedName = name;
+
             (double width, double height) = name switch
             {
                 DefinedSize.ISOA0 => (3178.5826772, 4493.8582677),
@@ -1482,19 +1483,18 @@ namespace PrintDialogX.Enums
                 DefinedSize.CreditCard => (324, 204),
                 _ => (0, 0)
             };
-            DefinedName = name;
             Width = width;
             Height = height;
-        }
-
-        public override readonly int GetHashCode()
-        {
-            return (DefinedName, GetRoundedSize()).GetHashCode();
         }
 
         public override readonly bool Equals(object? value)
         {
             return value is Size size && Equals(size.DefinedName, size.Width, size.Height);
+        }
+
+        public override readonly int GetHashCode()
+        {
+            return (DefinedName, GetRoundedSize()).GetHashCode();
         }
 
         /// <summary>
@@ -1507,7 +1507,7 @@ namespace PrintDialogX.Enums
         /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
         {
-            return (name != null && name == DefinedName) || (width != null && height != null && (GetRoundedSize(width.Value, height.Value, digits) == GetRoundedSize(digits)));
+            return (name != null && name == DefinedName) || (width != null && height != null && GetRoundedSize(width.Value, height.Value, digits) == GetRoundedSize(digits));
         }
 
         /// <summary>

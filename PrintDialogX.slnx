@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PrintDialogX.Test/PrintDialogX.Test.csproj" />
+  <Project Path="PrintDialogX/PrintDialogX.csproj" />
+</Solution>

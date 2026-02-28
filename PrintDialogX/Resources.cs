@@ -4,7 +4,7 @@ namespace PrintDialogX
 {
     internal enum ValueResource
     {
-        WidthOption,
+        LengthOption,
         CollectionPrinter,
     }
 
@@ -37,12 +37,6 @@ namespace PrintDialogX
     internal enum ValidationResource
     {
         PagesCustom,
-    }
-
-    [AttributeUsage(AttributeTargets.All)]
-    internal class StringResourceAttribute(StringResource resource) : Attribute
-    {
-        public StringResource Resource { get; set; } = resource;
     }
 
     internal enum StringResource
@@ -364,5 +358,11 @@ namespace PrintDialogX
         MessageFailedPrintJob,
         MessagePrintJobCancelled,
         MessagePrintJobError
+    }
+
+    [AttributeUsage(AttributeTargets.All)]
+    internal sealed class StringResourceAttribute(StringResource resource) : Attribute
+    {
+        public StringResource Resource { get; set; } = resource;
     }
 }
