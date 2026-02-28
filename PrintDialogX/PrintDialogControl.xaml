@@ -56,7 +56,7 @@
             <local:InterfaceToContentConverter x:Key="{x:Static Member=local:ConverterResource.InterfaceToContent}">
                 <local:InterfaceToContentConverter.Resources>
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Void}" TargetType="{x:Type TypeName=ContentControl}">
-                        <Decorator Height="20" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
+                        <Decorator Height="20" />
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Printer}" TargetType="{x:Type TypeName=ContentControl}">
@@ -373,7 +373,7 @@
                         <ItemsControl HorizontalAlignment="Center" ItemsSource="{Binding}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=Viewer.DataContext.ColorEntries.Selection}" />
+                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=DataContext.ColorEntries.Selection}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>

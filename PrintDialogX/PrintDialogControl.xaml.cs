@@ -215,8 +215,9 @@ namespace PrintDialogX
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             InterfaceToContentConverter.ApplyLanguage(this, dialog.InterfaceSettings.DisplayLanguage);
 
-            ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
-            ((PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon]).CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
+            PrinterToIconConverter iconizer = (PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon];
+            iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
+            iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
 
             LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
@@ -297,11 +298,12 @@ namespace PrintDialogX
 
         private void UpdateDialog(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (sender is not Wpf.Ui.Controls.ContentDialog dialog || DataContext == null)
+            if (DataContext == null)
             {
                 return;
             }
 
+            Wpf.Ui.Controls.ContentDialog dialog = (Wpf.Ui.Controls.ContentDialog)sender;
             if (dialog.Visibility == Visibility.Visible)
             {
                 Keyboard.Focus(dialog);
@@ -368,12 +370,13 @@ namespace PrintDialogX
 
         private void AddPrinter(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is not Selector container || container.SelectedItem is PrintQueue || DataContext == null)
+            Selector selector = (Selector)sender;
+            if (selector.SelectedItem is PrintQueue || DataContext == null)
             {
                 return;
             }
 
-            container.GetBindingExpression(Selector.SelectedItemProperty).UpdateTarget();
+            selector.GetBindingExpression(Selector.SelectedItemProperty).UpdateTarget();
 
             try
             {
@@ -871,12 +874,7 @@ namespace PrintDialogX
 
         private void InitializeViewer(object sender, EventArgs e)
         {
-            if (sender is not VirtualizingStackPanel viewer)
-            {
-                return;
-            }
-
-            model.PreviewDocument.Value.Viewer = viewer;
+            model.PreviewDocument.Value.Viewer = (VirtualizingStackPanel)sender;
         }
 
         private void UpdateViewerDescription(object sender, ScrollChangedEventArgs e)

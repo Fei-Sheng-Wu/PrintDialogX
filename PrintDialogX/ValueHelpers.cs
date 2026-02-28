@@ -33,32 +33,27 @@ namespace PrintDialogX
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not InterfaceSettings settings || parameter is not ControlTemplate template)
+            if (value is not InterfaceSettings settings)
             {
                 return Binding.DoNothing;
             }
 
+            ControlTemplate template = (ControlTemplate)parameter;
             ContentControl content = new()
             {
                 Template = template,
                 Focusable = false
             };
             content.ApplyTemplate();
-            if (template.FindName("PART_Basic", content) is Panel basic)
+
+            ApplyInterface((Panel)template.FindName("PART_Basic", content), settings.BasicSettings, Resources);
+            ApplyInterface((Panel)template.FindName("PART_Advanced", content), settings.AdvancedSettings, Resources);
+
+            Expander expander = (Expander)template.FindName("PART_Expander", content);
+            expander.IsExpanded = settings.IsSettingsExpanded;
+            if (!settings.AdvancedSettings.Any())
             {
-                ApplyInterface(basic, settings.BasicSettings, Resources);
-            }
-            if (template.FindName("PART_Advanced", content) is Panel advanced)
-            {
-                ApplyInterface(advanced, settings.AdvancedSettings, Resources);
-            }
-            if (template.FindName("PART_Expander", content) is Expander expander)
-            {
-                expander.IsExpanded = settings.IsSettingsExpanded;
-                if (!settings.AdvancedSettings.Any())
-                {
-                    expander.Visibility = Visibility.Collapsed;
-                }
+                expander.Visibility = Visibility.Collapsed;
             }
 
             return content;
@@ -150,7 +145,7 @@ namespace PrintDialogX
         {
             return IsInverted ^ (Mode switch
             {
-                Comparison.Threshold => values.All(x => System.Convert.ToInt32(x) >= System.Convert.ToInt32(parameter)),
+                Comparison.Threshold => values.All(x => System.Convert.ToInt32(x, CultureInfo.InvariantCulture) >= System.Convert.ToInt32(parameter, CultureInfo.InvariantCulture)),
                 _ => values.All(x => Equals(x, parameter))
             }) ? StateTrue : StateFalse;
         }
@@ -173,13 +168,14 @@ namespace PrintDialogX
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not IEnumerable collection)
+            if (value is not IEnumerable enumerable)
             {
                 return Binding.DoNothing;
             }
 
-            List<object> list = [.. collection];
-            return list.GetRange(TrimStart, list.Count - TrimStart - TrimEnd);
+            List<object> collection = [.. enumerable];
+
+            return collection.GetRange(TrimStart, collection.Count - TrimStart - TrimEnd);
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -274,7 +270,7 @@ namespace PrintDialogX
                 (_, true, _) => PrinterType.PrinterNetwork,
                 _ => PrinterType.Printer,
             };
-            bool isSmall = System.Convert.ToBoolean(parameter);
+            bool isSmall = System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture);
 
             double opacity = 0.5;
             try
@@ -433,12 +429,7 @@ namespace PrintDialogX
 
         public override System.Windows.Controls.ValidationResult Validate(object value, CultureInfo culture)
         {
-            if (value is not string pages)
-            {
-                return new(false, string.Empty);
-            }
-
-            return TryConvert(pages, Maximum, true).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
+            return value is string pages && TryConvert(pages, Maximum, true).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
         public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum, bool isValidation = false)
@@ -476,7 +467,7 @@ namespace PrintDialogX
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
             string description = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionSize], size.Width * 2.54 / 96.0, size.Height * 2.54 / 96.0);
 
-            return System.Convert.ToBoolean(parameter) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionCustom], description));
+            return System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionCustom], description));
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -489,12 +480,7 @@ namespace PrintDialogX
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not Enums.Size size)
-            {
-                return Binding.DoNothing;
-            }
-
-            return (int)Math.Min(size.Width / 2, size.Height / 2);
+            return value is Enums.Size size ? (int)Math.Min(size.Width / 2, size.Height / 2) : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -604,12 +590,7 @@ namespace PrintDialogX
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(Canvas), typeof(DocumentHostControl), new(null, (x, e) =>
         {
-            if (x is not DocumentHostControl host || e.NewValue is not Canvas content)
-            {
-                return;
-            }
-
-            VisualBrush visual = new(content)
+            VisualBrush visual = new((Visual)e.NewValue)
             {
                 ViewboxUnits = BrushMappingMode.Absolute
             };
@@ -617,7 +598,7 @@ namespace PrintDialogX
             {
                 Fill = visual
             };
-            host.Brush = (new(container), container, visual);
+            ((DocumentHostControl)x).Brush = (new(container), container, visual);
         }));
         public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(nameof(Zoom), typeof(double), typeof(DocumentHostControl), new(1.0));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Enums.Color), typeof(DocumentHostControl), new FrameworkPropertyMetadata(Enums.Color.Color, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -724,9 +705,10 @@ namespace PrintDialogX
 
     internal sealed class DocumentToContentConverter() : IValueConverter
     {
-        internal sealed class Content(DocumentHostControl.Document document, Canvas page)
+        internal sealed class Content(DocumentHostControl.Document document, VirtualizingStackPanel viewer, Canvas page)
         {
-            public VirtualizingStackPanel? Viewer { get; } = document.Viewer;
+            public VirtualizingStackPanel? Viewer { get; } = viewer;
+            public object DataContext { get; } = viewer.DataContext;
             public Canvas Page { get; } = page;
             public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
             public double Zoom { get; } = document.ZoomValue;
@@ -734,7 +716,7 @@ namespace PrintDialogX
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not DocumentHostControl.Document document)
+            if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer)
             {
                 return Binding.DoNothing;
             }
@@ -744,7 +726,7 @@ namespace PrintDialogX
             {
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, x.Content)));
+                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, viewer, x.Content)));
                 }
             }
 
@@ -761,7 +743,7 @@ namespace PrintDialogX
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2 || values[0] is not double current || values[1] is not DocumentHostControl.Document document || Resources == null)
+            if (values[0] is not double current || values[1] is not DocumentHostControl.Document document || Resources == null)
             {
                 return Binding.DoNothing;
             }
