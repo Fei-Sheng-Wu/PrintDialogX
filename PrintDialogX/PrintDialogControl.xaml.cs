@@ -607,6 +607,7 @@ namespace PrintDialogX
                 x.ThrowIfCancellationRequested();
 
                 int index = 0;
+                List<PrintPage>? current = null;
                 List<(int Start, List<PrintPage> Chunk)> document = [];
                 foreach (PrintPage content in model.PrintDocument.Pages)
                 {
@@ -621,11 +622,12 @@ namespace PrintDialogX
                         continue;
                     }
 
-                    if (!document.Any() || document.Last().Chunk.Count >= arrangement.Count)
+                    if (current == null || current.Count >= arrangement.Count)
                     {
-                        document.Add((index, []));
+                        current = [];
+                        document.Add((index, current));
                     }
-                    document.Last().Chunk.Add(content);
+                    current.Add(content);
                 }
                 x.ThrowIfCancellationRequested();
 
@@ -633,10 +635,12 @@ namespace PrintDialogX
                 Size area = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
                 double factor = scale ?? Math.Min(cell.Width / area.Width, cell.Height / area.Height);
                 factor = double.IsNaN(factor) ? 0 : factor;
+
                 ScaleTransform transform = new(factor, factor, 0, 0);
                 transform.Freeze();
                 RectangleGeometry clip = new(new(0, 0, cell.Width / factor, cell.Height / factor));
                 clip.Freeze();
+
                 foreach ((int start, List<PrintPage> chunk) in document)
                 {
                     x.ThrowIfCancellationRequested();

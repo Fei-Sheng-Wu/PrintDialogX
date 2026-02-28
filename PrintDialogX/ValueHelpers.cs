@@ -86,7 +86,7 @@ namespace PrintDialogX
             string code = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : new Func<InterfaceSettings.Language>(() =>
             {
                 string[] current = CultureInfo.CurrentUICulture.IetfLanguageTag.Split('-');
-                return (current.First(), current.Last()) switch
+                return (current[0], current.Length > 1 ? current[1] : null) switch
                 {
                     ("en", "CA") => InterfaceSettings.Language.en_CA,
                     ("en", "GB") => InterfaceSettings.Language.en_GB,
@@ -96,6 +96,9 @@ namespace PrintDialogX
                     ("zh", "Hans") => InterfaceSettings.Language.zh_CN,
                     ("zh", "Hant") => InterfaceSettings.Language.zh_HK,
                     ("zh", _) => InterfaceSettings.Language.zh_CN,
+                    ("yue", "HK") => InterfaceSettings.Language.zh_HK,
+                    ("yue", "TW") => InterfaceSettings.Language.zh_TW,
+                    ("yue", _) => InterfaceSettings.Language.zh_HK,
                     _ => InterfaceSettings.Language.en_US
                 };
             })())?.Language ?? "en-US";
@@ -446,10 +449,10 @@ namespace PrintDialogX
                 string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
                 switch (range.Length)
                 {
-                    case 1 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
+                    case 1 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
                         result?.Add(single);
                         break;
-                    case 2 when int.TryParse(range.First(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range.Last(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
+                    case 2 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
                         result?.Add((start, end));
                         break;
                     default:
@@ -758,7 +761,7 @@ namespace PrintDialogX
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            if (values.Length < 2 || values.First() is not double current || values.Last() is not DocumentHostControl.Document document || Resources == null)
+            if (values.Length < 2 || values[0] is not double current || values[1] is not DocumentHostControl.Document document || Resources == null)
             {
                 return Binding.DoNothing;
             }
