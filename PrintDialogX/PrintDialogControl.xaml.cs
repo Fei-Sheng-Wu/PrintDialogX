@@ -23,7 +23,7 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, SemaphoreSlim scheduler, Action retriever, Action visualizer, Action informer)
     {
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? callback = null) : INotifyPropertyChanged
         {
@@ -140,7 +140,7 @@ namespace PrintDialogX
         public PrintSettings PrintSettings { get; } = settings;
         public PrintDocument PrintDocument { get; } = document;
 
-        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new());
+        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(scheduler));
 
         public ModelValue<bool> IsPrinting { get; } = new(invoker, false);
         public ModelValue<object> PrintingContent { get; } = new(invoker, string.Empty);
@@ -185,7 +185,7 @@ namespace PrintDialogX
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
 
-        public object Lock { get; } = new();
+        public (SemaphoreSlim Task, SemaphoreSlim Document, SemaphoreSlim Preview) Lock { get; } = (new(1, 1), new(1, 1), new(1, 1));
 
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
@@ -204,10 +204,8 @@ namespace PrintDialogX
 
             host = window;
             host.SetShortcutHandler(HandleShortcuts);
-            model = new(Dispatcher.Invoke, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, LoadSettings, LoadDocument, async () =>
+            model = new(Dispatcher.Invoke, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, Lock.Preview, LoadSettings, LoadDocument, async () =>
             {
-                await TaskStop();
-
                 if (await UpdateDocument())
                 {
                     LoadDocument();
@@ -239,7 +237,7 @@ namespace PrintDialogX
 
         private async void Exit(object sender, RoutedEventArgs e)
         {
-            await TaskStop(false);
+            await TaskStop();
 
             if (!server.IsCustomized)
             {
@@ -247,13 +245,18 @@ namespace PrintDialogX
             }
 
             DataContext = null;
+
+            Lock.Task.Dispose();
+            Lock.Document.Dispose();
+            Lock.Preview.Dispose();
         }
 
         private async void TaskStart(Func<CancellationToken, Task> callback)
         {
             await TaskStop();
 
-            lock (Lock)
+            await Lock.Task.WaitAsync();
+            try
             {
                 CancellationTokenSource cancellation = new();
                 task = (Task.Run(async () =>
@@ -270,27 +273,32 @@ namespace PrintDialogX
                     }
                 }), cancellation);
             }
+            finally
+            {
+                Lock.Task.Release();
+            }
         }
 
-        private async Task TaskStop(bool isBlocking = true)
+        private async Task TaskStop()
         {
-            lock (Lock)
+            await Lock.Task.WaitAsync();
+            try
             {
-                if (task?.Task.IsCompleted ?? true)
+                if (task == null || task.Value.Task.IsCompleted)
                 {
                     return;
                 }
 
                 try
                 {
-                    task?.Cancellation.Cancel();
+                    task.Value.Cancellation.Cancel();
                 }
                 catch { }
+                await task.Value.Task;
             }
-
-            if (isBlocking)
+            finally
             {
-                await (task?.Task ?? Task.CompletedTask);
+                Lock.Task.Release();
             }
         }
 
@@ -600,11 +608,16 @@ namespace PrintDialogX
 
                 List<object>? pages = model.PagesEntries.Selection switch
                 {
-                    Enums.Pages.CurrentPage => new Func<List<object>>(() =>
+                    Enums.Pages.CurrentPage => await new Func<Task<List<object>?>>(async () =>
                     {
-                        lock (model.PreviewDocument.Value.Lock)
+                        await Lock.Preview.WaitAsync(x);
+                        try
                         {
-                            return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : [];
+                            return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
+                        }
+                        finally
+                        {
+                            Lock.Preview.Release();
                         }
                     })(),
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
@@ -623,7 +636,10 @@ namespace PrintDialogX
                 Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
                 Size container = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
                 double factor = scale ?? Math.Min(cell.Width / container.Width, cell.Height / container.Height);
-                factor = double.IsNaN(factor) ? 0 : factor;
+                if (double.IsNaN(factor))
+                {
+                    factor = 0;
+                }
                 x.ThrowIfCancellationRequested();
 
                 DocumentHostControl.DocumentSettings settings = new(arrangement.Columns, arrangement.Rows, model.PageOrderEntries.Selection, margin, cell, container, new ScaleTransform(factor, factor, 0, 0), new RectangleGeometry(new(0, 0, cell.Width / factor, cell.Height / factor)));
@@ -631,9 +647,19 @@ namespace PrintDialogX
                 settings.Clip.Freeze();
                 x.ThrowIfCancellationRequested();
 
+                model.PreviewDocument.Value.PageSize = size;
+                await Lock.Preview.WaitAsync(x);
+                try
+                {
+                    model.PreviewDocument.Value.Pages.Clear();
+                }
+                finally
+                {
+                    Lock.Preview.Release();
+                }
+
                 int index = 0;
                 (int Start, List<PrintPage> Chunk)? current = null;
-                List<(int Index, DocumentHostControl.DocumentPage Page)> document = [];
                 foreach (PrintPage content in model.PrintDocument.Pages)
                 {
                     x.ThrowIfCancellationRequested();
@@ -649,25 +675,29 @@ namespace PrintDialogX
                         continue;
                     }
 
-                    current ??= (index, []);
-                    current.Value.Chunk.Add(content);
+                    if (current == null)
+                    {
+                        List<PrintPage> chunk = [];
+                        current = (index, chunk);
 
+                        await Lock.Preview.WaitAsync(x);
+                        try
+                        {
+                            model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
+                        }
+                        finally
+                        {
+                            Lock.Preview.Release();
+                        }
+                    }
+
+                    current.Value.Chunk.Add(content);
                     if (current.Value.Chunk.Count >= arrangement.Count)
                     {
-                        document.Add((current.Value.Start, new(current.Value.Chunk, settings)));
                         current = null;
                     }
                 }
-                if (current != null)
-                {
-                    document.Add((current.Value.Start, new(current.Value.Chunk, settings)));
-                }
 
-                lock (model.PreviewDocument.Value.Lock)
-                {
-                    model.PreviewDocument.Value.Pages = document;
-                }
-                model.PreviewDocument.Value.PageSize = size;
                 model.PreviewDocument.Value.ZoomValue = ZoomCurrent();
                 model.PreviewDocument.OnPropertyChanged();
                 model.IsDocumentReady.Value = true;
@@ -681,37 +711,45 @@ namespace PrintDialogX
                 return isUpdating;
             }
 
-            PrintSettingsEventArgs settings = new(model.Printer.Value, new()
+            await Lock.Document.WaitAsync();
+            try
             {
-                Fallbacks = model.PrintSettings.Fallbacks,
-                Copies = Math.Max(1, model.Copies.Value),
-                Collation = model.CollationEntries.Selection,
-                Pages = model.PagesEntries.Selection,
-                CustomPages = model.PagesCustom.Value,
-                Layout = model.LayoutEntries.Selection,
-                Size = model.SizeEntries.Selection,
-                Color = model.ColorEntries.Selection,
-                Quality = model.QualityEntries.Selection,
-                PagesPerSheet = model.PagesPerSheetEntries.Selection,
-                PageOrder = model.PageOrderEntries.Selection,
-                Scale = model.ScaleEntries.Selection,
-                CustomScale = Math.Max(0, model.ScaleCustom.Value),
-                Margin = model.MarginEntries.Selection,
-                CustomMargin = Math.Max(0, model.MarginCustom.Value),
-                DoubleSided = model.DoubleSidedEntries.Selection,
-                Type = model.TypeEntries.Selection,
-                Source = model.SourceEntries.Selection
-            }, isUpdating);
-            model.PrintDocument.OnPrintSettingsChanged(Dispatcher, settings);
+                PrintSettingsEventArgs settings = new(model.Printer.Value, new()
+                {
+                    Fallbacks = model.PrintSettings.Fallbacks,
+                    Copies = Math.Max(1, model.Copies.Value),
+                    Collation = model.CollationEntries.Selection,
+                    Pages = model.PagesEntries.Selection,
+                    CustomPages = model.PagesCustom.Value,
+                    Layout = model.LayoutEntries.Selection,
+                    Size = model.SizeEntries.Selection,
+                    Color = model.ColorEntries.Selection,
+                    Quality = model.QualityEntries.Selection,
+                    PagesPerSheet = model.PagesPerSheetEntries.Selection,
+                    PageOrder = model.PageOrderEntries.Selection,
+                    Scale = model.ScaleEntries.Selection,
+                    CustomScale = Math.Max(0, model.ScaleCustom.Value),
+                    Margin = model.MarginEntries.Selection,
+                    CustomMargin = Math.Max(0, model.MarginCustom.Value),
+                    DoubleSided = model.DoubleSidedEntries.Selection,
+                    Type = model.TypeEntries.Selection,
+                    Source = model.SourceEntries.Selection
+                }, isUpdating);
+                model.PrintDocument.OnPrintSettingsChanged(Dispatcher, settings);
 
-            while (settings.IsUpdating == null)
-            {
-                await Task.Delay(DURATION_SLEEP);
+                while (settings.IsUpdating == null)
+                {
+                    await Task.Delay(DURATION_SLEEP);
+                }
+
+                ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
+
+                return settings.IsUpdating.Value;
             }
-
-            ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
-
-            return settings.IsUpdating.Value;
+            finally
+            {
+                Lock.Document.Release();
+            }
         }
 
         private void Print()
