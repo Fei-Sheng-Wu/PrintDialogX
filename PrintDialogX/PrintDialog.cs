@@ -6,6 +6,22 @@ using System.Windows;
 namespace PrintDialogX
 {
     /// <summary>
+    /// Specifies the performance strategy.
+    /// </summary>
+    public enum PerformanceStrategy
+    {
+        /// <summary>
+        /// Favors the preview generation.
+        /// </summary>
+        FavorsPreview,
+
+        /// <summary>
+        /// Favors the document printing.
+        /// </summary>
+        FavorsPrinting
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PrintDialog"/> class.
     /// </summary>
     /// <param name="host">The custom <see cref="IPrintDialogHost"/> instance to be used to host the actual control for the print operation.</param>
@@ -40,6 +56,11 @@ namespace PrintDialogX
         /// Gets or sets the interface settings.
         /// </summary>
         public InterfaceSettings InterfaceSettings { get; set; } = new();
+
+        /// <summary>
+        /// Gets or sets the performance strategy.
+        /// </summary>
+        public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
 
         /// <summary>
         /// Gets the result of the print operation.

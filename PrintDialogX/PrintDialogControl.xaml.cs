@@ -23,7 +23,7 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, SemaphoreSlim scheduler, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, SemaphoreSlim scheduler, Action retriever, Action visualizer, Action informer)
     {
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? callback = null) : INotifyPropertyChanged
         {
@@ -136,9 +136,10 @@ namespace PrintDialogX
             }
         }
 
-        public InterfaceSettings InterfaceSettings { get; } = appearance;
-        public PrintSettings PrintSettings { get; } = settings;
         public PrintDocument PrintDocument { get; } = document;
+        public PrintSettings PrintSettings { get; } = settings;
+        public InterfaceSettings InterfaceSettings { get; } = appearance;
+        public PerformanceStrategy PerformanceStrategy { get; } = strategy;
 
         public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(scheduler));
 
@@ -204,7 +205,7 @@ namespace PrintDialogX
 
             host = window;
             host.SetShortcutHandler(HandleShortcuts);
-            model = new(Dispatcher.Invoke, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, Lock.Preview, LoadSettings, LoadDocument, async () =>
+            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, Lock.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (await UpdateDocument())
                 {
@@ -620,7 +621,7 @@ namespace PrintDialogX
                             Lock.Preview.Release();
                         }
                     })(),
-                    Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
+                    Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum).Result,
                     _ => null
                 };
                 if (!(pages?.Any() ?? true))
@@ -633,69 +634,77 @@ namespace PrintDialogX
                 await UpdateDocument(true);
                 x.ThrowIfCancellationRequested();
 
+                Size extent = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
                 Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
-                Size container = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
-                double factor = scale ?? Math.Min(cell.Width / container.Width, cell.Height / container.Height);
+                double factor = scale ?? Math.Min(cell.Width / extent.Width, cell.Height / extent.Height);
                 if (double.IsNaN(factor))
                 {
                     factor = 0;
                 }
                 x.ThrowIfCancellationRequested();
 
-                DocumentHostControl.DocumentSettings settings = new(arrangement.Columns, arrangement.Rows, model.PageOrderEntries.Selection, margin, cell, container, new ScaleTransform(factor, factor, 0, 0), new RectangleGeometry(new(0, 0, cell.Width / factor, cell.Height / factor)));
+                DocumentHostControl.DocumentSettings settings = new(extent, cell, margin, arrangement.Columns, arrangement.Rows, model.PageOrderEntries.Selection, new ScaleTransform(factor, factor, 0, 0), new RectangleGeometry(new(0, 0, cell.Width / factor, cell.Height / factor)));
                 settings.Transform.Freeze();
                 settings.Clip.Freeze();
                 x.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.PageSize = size;
+                await Lock.Document.WaitAsync(x);
                 await Lock.Preview.WaitAsync(x);
                 try
                 {
                     model.PreviewDocument.Value.Pages.Clear();
+
+                    int index = 0;
+                    (int Start, List<PrintPage> Chunk)? current = null;
+                    foreach (PrintPage content in model.PrintDocument.Pages)
+                    {
+                        x.ThrowIfCancellationRequested();
+
+                        index++;
+                        if (!(pages?.Any(y => y switch
+                        {
+                            int single => single == index,
+                            (int start, int end) => start <= index && end >= index,
+                            _ => false
+                        }) ?? true))
+                        {
+                            continue;
+                        }
+
+                        if (current == null)
+                        {
+                            List<PrintPage> chunk = [];
+                            current = (index, chunk);
+                            model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
+                        }
+
+                        current.Value.Chunk.Add(content);
+                        if (current.Value.Chunk.Count >= arrangement.Count)
+                        {
+                            current = null;
+                        }
+                    }
+
+                    if (model.PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
+                    {
+                        foreach ((int start, DocumentHostControl.DocumentPage page) in model.PreviewDocument.Value.Pages)
+                        {
+                            x.ThrowIfCancellationRequested();
+
+                            await Dispatcher.InvokeAsync(async () =>
+                            {
+                                page.GetContent();
+
+                                await Dispatcher.Yield();
+                            });
+                        }
+                    }
                 }
                 finally
                 {
+                    Lock.Document.Release();
                     Lock.Preview.Release();
-                }
-
-                int index = 0;
-                (int Start, List<PrintPage> Chunk)? current = null;
-                foreach (PrintPage content in model.PrintDocument.Pages)
-                {
-                    x.ThrowIfCancellationRequested();
-
-                    index++;
-                    if (!(pages?.Any(y => y switch
-                    {
-                        int single => single == index,
-                        (int start, int end) => start <= index && end >= index,
-                        _ => false
-                    }) ?? true))
-                    {
-                        continue;
-                    }
-
-                    if (current == null)
-                    {
-                        List<PrintPage> chunk = [];
-                        current = (index, chunk);
-
-                        await Lock.Preview.WaitAsync(x);
-                        try
-                        {
-                            model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
-                        }
-                        finally
-                        {
-                            Lock.Preview.Release();
-                        }
-                    }
-
-                    current.Value.Chunk.Add(content);
-                    if (current.Value.Chunk.Count >= arrangement.Count)
-                    {
-                        current = null;
-                    }
                 }
 
                 model.PreviewDocument.Value.ZoomValue = ZoomCurrent();

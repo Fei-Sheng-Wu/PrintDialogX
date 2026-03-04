@@ -47,6 +47,7 @@ namespace PrintDialogX.Test
             AddOption(containerDocument, "documentName", "Name", new TextBox(), string.Empty);
             AddOption(containerDocument, "documentSize", "Size", CreateCombo<Enums.Size.DefinedSize>("(Dynamic Size)"), "(Dynamic Size)");
             AddOption(containerDocument, "documentMargin", "Margin", new TextBox(), "60.0");
+            AddOption(containerDocument, "documentPerformance", "Performance Strategy", CreateCombo<PerformanceStrategy>(), null);
 
             AddOption(containerWindow, "windowDialog", "Window", CreateCheck("Show as Dialog"), true);
             AddOption(containerWindow, "windowTopmost", null, CreateCheck("Topmost"), false);
@@ -260,6 +261,11 @@ namespace PrintDialogX.Test
                 dialog.Document = document;
                 GenerateCode("dialog.Document = document;");
             }
+            HandleConfiguration<PerformanceStrategy>("documentPerformance", x =>
+            {
+                dialog.PerformanceStrategy = x;
+                GenerateCode($"dialog.PerformanceStrategy = PrintDialogX.PerformanceStrategy.{x};");
+            });
 
             GenerateCode();
             GenerateCode("// Customize the interface.");
@@ -717,7 +723,7 @@ namespace PrintDialogX.Test
             int count = (int)Math.Floor(height / sizeRow);
             for (int j = 0; j < count; j++)
             {
-                int position = context["position"] as int? ?? 0;
+                int position = context.ContainsKey("position") ? (int)context["position"] : 0;
                 if (j > 0)
                 {
                     position++;

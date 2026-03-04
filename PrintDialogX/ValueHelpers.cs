@@ -584,8 +584,8 @@ namespace PrintDialogX
                     Decorator container = new()
                     {
                         Child = page.Content,
-                        Width = settings.Size.Container.Width,
-                        Height = settings.Size.Container.Height,
+                        Width = settings.Size.Extent.Width,
+                        Height = settings.Size.Extent.Height,
                         RenderTransform = settings.Transform,
                         Clip = settings.Clip
                     };
@@ -599,12 +599,12 @@ namespace PrintDialogX
             }
         }
 
-        internal sealed class DocumentSettings(int columns, int rows, Enums.PageOrder order, double margin, Size cell, Size container, Transform transform, Geometry clip)
+        internal sealed class DocumentSettings(Size extent, Size cell, double margin, int columns, int rows, Enums.PageOrder order, Transform transform, Geometry clip)
         {
+            public (Size Extent, Size Cell) Size { get; } = (extent, cell);
+            public double Margin { get; } = margin;
             public (int Columns, int Rows) Arrangement { get; } = (columns, rows);
             public Enums.PageOrder Order { get; } = order;
-            public double Margin { get; } = margin;
-            public (Size Cell, Size Container) Size { get; } = (cell, container);
             public Transform Transform { get; } = transform;
             public Geometry Clip { get; } = clip;
         }
