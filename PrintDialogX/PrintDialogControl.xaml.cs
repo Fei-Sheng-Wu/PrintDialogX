@@ -624,19 +624,16 @@ namespace PrintDialogX
                 Size container = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
                 double factor = scale ?? Math.Min(cell.Width / container.Width, cell.Height / container.Height);
                 factor = double.IsNaN(factor) ? 0 : factor;
+                x.ThrowIfCancellationRequested();
 
                 DocumentHostControl.DocumentSettings settings = new(arrangement.Columns, arrangement.Rows, model.PageOrderEntries.Selection, margin, cell, container, new ScaleTransform(factor, factor, 0, 0), new RectangleGeometry(new(0, 0, cell.Width / factor, cell.Height / factor)));
                 settings.Transform.Freeze();
                 settings.Clip.Freeze();
-
-                model.PreviewDocument.Value.PageSize = size;
-                lock (model.PreviewDocument.Value.Lock)
-                {
-                    model.PreviewDocument.Value.Pages.Clear();
-                }
+                x.ThrowIfCancellationRequested();
 
                 int index = 0;
                 (int Start, List<PrintPage> Chunk)? current = null;
+                List<(int Index, DocumentHostControl.DocumentPage Page)> document = [];
                 foreach (PrintPage content in model.PrintDocument.Pages)
                 {
                     x.ThrowIfCancellationRequested();
@@ -657,21 +654,20 @@ namespace PrintDialogX
 
                     if (current.Value.Chunk.Count >= arrangement.Count)
                     {
-                        lock (model.PreviewDocument.Value.Lock)
-                        {
-                            model.PreviewDocument.Value.Pages.Add((current.Value.Start, new(current.Value.Chunk, settings)));
-                        }
+                        document.Add((current.Value.Start, new(current.Value.Chunk, settings)));
                         current = null;
                     }
                 }
                 if (current != null)
                 {
-                    lock (model.PreviewDocument.Value.Lock)
-                    {
-                        model.PreviewDocument.Value.Pages.Add((current.Value.Start, new(current.Value.Chunk, settings)));
-                    }
+                    document.Add((current.Value.Start, new(current.Value.Chunk, settings)));
                 }
 
+                lock (model.PreviewDocument.Value.Lock)
+                {
+                    model.PreviewDocument.Value.Pages = document;
+                }
+                model.PreviewDocument.Value.PageSize = size;
                 model.PreviewDocument.Value.ZoomValue = ZoomCurrent();
                 model.PreviewDocument.OnPropertyChanged();
                 model.IsDocumentReady.Value = true;

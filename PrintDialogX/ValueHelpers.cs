@@ -523,7 +523,7 @@ namespace PrintDialogX
             }
 
             public object Lock { get; } = new();
-            public List<(int Index, DocumentPage Page)> Pages { get; } = [];
+            public List<(int Index, DocumentPage Page)> Pages { get; set; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
 
