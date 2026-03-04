@@ -23,9 +23,9 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> dispatcher, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, InterfaceSettings appearance, PrintSettings settings, Action retriever, Action visualizer, Action informer)
     {
-        internal sealed class ModelValue<T>(Action<Action> dispatcher, T initial, Action? callback = null) : INotifyPropertyChanged
+        internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? callback = null) : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged = null;
 
@@ -50,13 +50,13 @@ namespace PrintDialogX
 
             public void OnPropertyChanged()
             {
-                dispatcher(() => PropertyChanged?.Invoke(this, new(nameof(Value))));
+                invoker(() => PropertyChanged?.Invoke(this, new(nameof(Value))));
             }
         }
 
-        internal sealed class ModelCollection<T>(Action<Action> dispatcher, IEnumerable<T> initial, T? selection, T fallback, Action? callback = null) : INotifyPropertyChanged where T : struct
+        internal sealed class ModelCollection<T>(Action<Action> invoker, IEnumerable<T> initial, T? selection, T fallback, Action? callback = null) : INotifyPropertyChanged where T : struct
         {
-            internal sealed class Entries(Action<Action> dispatcher, IEnumerable<T> initial) : List<T>(initial), INotifyCollectionChanged
+            internal sealed class Entries(Action<Action> invoker, IEnumerable<T> initial) : List<T>(initial), INotifyCollectionChanged
             {
                 public event NotifyCollectionChangedEventHandler? CollectionChanged = null;
 
@@ -75,7 +75,7 @@ namespace PrintDialogX
                         Add(fallback);
                     }
 
-                    dispatcher(() => CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Reset)));
+                    invoker(() => CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Reset)));
                 }
             }
 
@@ -99,14 +99,14 @@ namespace PrintDialogX
                 }
             }
 
-            public Entries Collection { get; } = new(dispatcher, [.. initial]);
+            public Entries Collection { get; } = new(invoker, [.. initial]);
 
             private T? current = selection ?? null;
             private bool isCustomized = false;
 
-            public void Load<T2>(IEnumerable<T2>? capability, T2? target, Func<T2, T?> converter) where T2 : struct
+            public void Load<T2>(IEnumerable<T2>? collection, T2? target, Func<T2, T?> converter) where T2 : struct
             {
-                Collection.Reset(capability?.Select(converter), fallback);
+                Collection.Reset(collection?.Select(converter), fallback);
                 OnPropertyChanged(nameof(Collection));
 
                 if (!isCustomized && selection != null && Collection.Contains(selection.Value))
@@ -124,7 +124,7 @@ namespace PrintDialogX
                 OnPropertyChanged(nameof(Selection));
             }
 
-            public void SilentSelect(T value)
+            public void Fallback(T value)
             {
                 current = value;
                 OnPropertyChanged(nameof(Selection));
@@ -132,7 +132,7 @@ namespace PrintDialogX
 
             public void OnPropertyChanged(string property)
             {
-                dispatcher(() => PropertyChanged?.Invoke(this, new(property)));
+                invoker(() => PropertyChanged?.Invoke(this, new(property)));
             }
         }
 
@@ -140,44 +140,44 @@ namespace PrintDialogX
         public PrintSettings PrintSettings { get; } = settings;
         public PrintDocument PrintDocument { get; } = document;
 
-        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(dispatcher, new());
+        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new());
 
-        public ModelValue<bool> IsPrinting { get; } = new(dispatcher, false);
-        public ModelValue<object> PrintingContent { get; } = new(dispatcher, string.Empty);
-        public ModelValue<double> PrintingProgress { get; } = new(dispatcher, 0);
+        public ModelValue<bool> IsPrinting { get; } = new(invoker, false);
+        public ModelValue<object> PrintingContent { get; } = new(invoker, string.Empty);
+        public ModelValue<double> PrintingProgress { get; } = new(invoker, 0);
         public Action? PrintingCallback { get; set; } = null;
 
-        public ModelValue<bool> IsError { get; } = new(dispatcher, false);
-        public ModelValue<object> ErrorContent { get; } = new(dispatcher, string.Empty);
+        public ModelValue<bool> IsError { get; } = new(invoker, false);
+        public ModelValue<object> ErrorContent { get; } = new(invoker, string.Empty);
         public Action? ErrorCallback { get; set; } = null;
 
-        public ModelValue<bool> IsPrintersReady { get; } = new(dispatcher, true);
-        public ModelValue<bool> IsSettingsReady { get; } = new(dispatcher, true);
-        public ModelValue<bool> IsDocumentReady { get; } = new(dispatcher, true);
+        public ModelValue<bool> IsPrintersReady { get; } = new(invoker, true);
+        public ModelValue<bool> IsSettingsReady { get; } = new(invoker, true);
+        public ModelValue<bool> IsDocumentReady { get; } = new(invoker, true);
 
         public ObservableCollection<PrintQueue> PrinterEntries { get; } = [];
-        public ModelValue<PrintQueue?> Printer { get; } = new(dispatcher, null, retriever);
-        public ModelValue<int> Copies { get; } = new(dispatcher, settings.Copies, informer);
-        public ModelValue<int> CopiesMaximum { get; } = new(dispatcher, settings.Fallbacks.FallbackMaximumCopies);
-        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated, informer);
-        public ModelValue<bool> IsCollationSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsCollationSupported);
-        public ModelCollection<Enums.Pages> PagesEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Pages)).Cast<Enums.Pages>(), settings.Pages, Enums.Pages.AllPages, visualizer);
-        public ModelValue<double> PagesCurrent { get; } = new(dispatcher, 1);
-        public ModelValue<string> PagesCustom { get; } = new(dispatcher, settings.CustomPages, visualizer);
-        public ModelCollection<Enums.Layout> LayoutEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Layout)).Cast<Enums.Layout>(), settings.Layout, Enums.Layout.Portrait, visualizer);
-        public ModelCollection<Enums.Size> SizeEntries { get; } = new(dispatcher, [], settings.Size, settings.Fallbacks.FallbackSize, visualizer);
-        public ModelCollection<Enums.Color> ColorEntries { get; } = new(dispatcher, [], settings.Color, settings.Fallbacks.FallbackColor, informer);
-        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(dispatcher, [], settings.Quality, settings.Fallbacks.FallbackQuality, informer);
-        public ModelCollection<Enums.PagesPerSheet> PagesPerSheetEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PagesPerSheet)).Cast<Enums.PagesPerSheet>(), settings.PagesPerSheet, Enums.PagesPerSheet.One, visualizer);
-        public ModelCollection<Enums.PageOrder> PageOrderEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.PageOrder)).Cast<Enums.PageOrder>(), settings.PageOrder, Enums.PageOrder.Horizontal, visualizer);
-        public ModelCollection<Enums.Scale> ScaleEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Scale)).Cast<Enums.Scale>(), settings.Scale, Enums.Scale.AutoFit, visualizer);
-        public ModelValue<int> ScaleCustom { get; } = new(dispatcher, settings.CustomScale, visualizer);
-        public ModelCollection<Enums.Margin> MarginEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.Margin)).Cast<Enums.Margin>(), settings.Margin, Enums.Margin.Default, visualizer);
-        public ModelValue<int> MarginCustom { get; } = new(dispatcher, settings.CustomMargin, visualizer);
-        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(dispatcher, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided, informer);
-        public ModelValue<bool> IsDoubleSidedSupported { get; } = new(dispatcher, settings.Fallbacks.FallbackIsDoubleSidedSupported);
-        public ModelCollection<Enums.Type> TypeEntries { get; } = new(dispatcher, [], settings.Type, settings.Fallbacks.FallbackType, informer);
-        public ModelCollection<Enums.Source> SourceEntries { get; } = new(dispatcher, [], settings.Source, settings.Fallbacks.FallbackSource, informer);
+        public ModelValue<PrintQueue?> Printer { get; } = new(invoker, null, retriever);
+        public ModelValue<int> Copies { get; } = new(invoker, settings.Copies, informer);
+        public ModelValue<int> CopiesMaximum { get; } = new(invoker, settings.Fallbacks.FallbackMaximumCopies);
+        public ModelCollection<Enums.Collation> CollationEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.Collation)).Cast<Enums.Collation>(), settings.Collation, Enums.Collation.Collated, informer);
+        public ModelValue<bool> IsCollationSupported { get; } = new(invoker, settings.Fallbacks.FallbackIsCollationSupported);
+        public ModelCollection<Enums.Pages> PagesEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.Pages)).Cast<Enums.Pages>(), settings.Pages, Enums.Pages.AllPages, visualizer);
+        public ModelValue<double> PagesCurrent { get; } = new(invoker, 1);
+        public ModelValue<string> PagesCustom { get; } = new(invoker, settings.CustomPages, visualizer);
+        public ModelCollection<Enums.Layout> LayoutEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.Layout)).Cast<Enums.Layout>(), settings.Layout, Enums.Layout.Portrait, visualizer);
+        public ModelCollection<Enums.Size> SizeEntries { get; } = new(invoker, [], settings.Size, settings.Fallbacks.FallbackSize, visualizer);
+        public ModelCollection<Enums.Color> ColorEntries { get; } = new(invoker, [], settings.Color, settings.Fallbacks.FallbackColor, informer);
+        public ModelCollection<Enums.Quality> QualityEntries { get; } = new(invoker, [], settings.Quality, settings.Fallbacks.FallbackQuality, informer);
+        public ModelCollection<Enums.PagesPerSheet> PagesPerSheetEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.PagesPerSheet)).Cast<Enums.PagesPerSheet>(), settings.PagesPerSheet, Enums.PagesPerSheet.One, visualizer);
+        public ModelCollection<Enums.PageOrder> PageOrderEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.PageOrder)).Cast<Enums.PageOrder>(), settings.PageOrder, Enums.PageOrder.Horizontal, visualizer);
+        public ModelCollection<Enums.Scale> ScaleEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.Scale)).Cast<Enums.Scale>(), settings.Scale, Enums.Scale.AutoFit, visualizer);
+        public ModelValue<int> ScaleCustom { get; } = new(invoker, settings.CustomScale, visualizer);
+        public ModelCollection<Enums.Margin> MarginEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.Margin)).Cast<Enums.Margin>(), settings.Margin, Enums.Margin.Default, visualizer);
+        public ModelValue<int> MarginCustom { get; } = new(invoker, settings.CustomMargin, visualizer);
+        public ModelCollection<Enums.DoubleSided> DoubleSidedEntries { get; } = new(invoker, Enum.GetValues(typeof(Enums.DoubleSided)).Cast<Enums.DoubleSided>(), settings.DoubleSided, Enums.DoubleSided.OneSided, informer);
+        public ModelValue<bool> IsDoubleSidedSupported { get; } = new(invoker, settings.Fallbacks.FallbackIsDoubleSidedSupported);
+        public ModelCollection<Enums.Type> TypeEntries { get; } = new(invoker, [], settings.Type, settings.Fallbacks.FallbackType, informer);
+        public ModelCollection<Enums.Source> SourceEntries { get; } = new(invoker, [], settings.Source, settings.Fallbacks.FallbackSource, informer);
     }
 
     internal partial class PrintDialogControl : UserControl, ILanguageHost
@@ -185,9 +185,11 @@ namespace PrintDialogX
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
 
+        public object Lock { get; } = new();
+
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
-        private readonly (PrintServer Server, bool IsProvided) server;
+        private readonly (PrintServer Server, bool IsCustomized) server;
 
         private (Task Task, CancellationTokenSource Cancellation)? task = null;
 
@@ -204,6 +206,8 @@ namespace PrintDialogX
             host.SetShortcutHandler(HandleShortcuts);
             model = new(Dispatcher.Invoke, dialog.Document, dialog.InterfaceSettings, dialog.PrintSettings, LoadSettings, LoadDocument, async () =>
             {
+                await TaskStop();
+
                 if (await UpdateDocument())
                 {
                     LoadDocument();
@@ -220,7 +224,7 @@ namespace PrintDialogX
             iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
 
-            LoadPrinters(server.IsProvided ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
+            LoadPrinters(server.IsCustomized ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
                 try
                 {
@@ -237,7 +241,7 @@ namespace PrintDialogX
         {
             await TaskStop(false);
 
-            if (!server.IsProvided)
+            if (!server.IsCustomized)
             {
                 server.Server.Dispose();
             }
@@ -249,36 +253,42 @@ namespace PrintDialogX
         {
             await TaskStop();
 
-            CancellationTokenSource cancellation = new();
-            task = (Task.Run(async () =>
+            lock (Lock)
             {
-                try
+                CancellationTokenSource cancellation = new();
+                task = (Task.Run(async () =>
                 {
-                    cancellation.Token.ThrowIfCancellationRequested();
-                    await callback(cancellation.Token);
-                }
-                catch (OperationCanceledException) { }
-                finally
-                {
-                    cancellation.Dispose();
-                }
-            }), cancellation);
-            await task.Value.Task;
+                    try
+                    {
+                        cancellation.Token.ThrowIfCancellationRequested();
+                        await callback(cancellation.Token);
+                    }
+                    catch (OperationCanceledException) { }
+                    finally
+                    {
+                        cancellation.Dispose();
+                    }
+                }), cancellation);
+            }
         }
 
-        private async Task TaskStop(bool isWaiting = true)
+        private async Task TaskStop(bool isBlocking = true)
         {
-            if (task == null || task.Value.Task.IsCompleted)
+            lock (Lock)
             {
-                return;
+                if (task == null || task.Value.Task.IsCompleted)
+                {
+                    return;
+                }
+
+                try
+                {
+                    task.Value.Cancellation.Cancel();
+                }
+                catch { }
             }
 
-            try
-            {
-                task.Value.Cancellation.Cancel();
-            }
-            catch { }
-            if (isWaiting)
+            if (isBlocking)
             {
                 await task.Value.Task;
             }
@@ -453,7 +463,7 @@ namespace PrintDialogX
                 model.IsCollationSupported.Value = capabilities?.CollationCapability.Any(y => y == Collation.Collated) ?? model.PrintSettings.Fallbacks.FallbackIsCollationSupported;
                 if (!model.IsCollationSupported.Value)
                 {
-                    model.CollationEntries.SilentSelect(Enums.Collation.Uncollated);
+                    model.CollationEntries.Fallback(Enums.Collation.Uncollated);
                 }
                 x.ThrowIfCancellationRequested();
 
@@ -507,7 +517,7 @@ namespace PrintDialogX
                 model.IsDoubleSidedSupported.Value = capabilities?.DuplexingCapability.Any(y => y == Duplexing.TwoSidedShortEdge || y == Duplexing.TwoSidedLongEdge) ?? model.PrintSettings.Fallbacks.FallbackIsDoubleSidedSupported;
                 if (!model.IsDoubleSidedSupported.Value)
                 {
-                    model.DoubleSidedEntries.SilentSelect(Enums.DoubleSided.OneSided);
+                    model.DoubleSidedEntries.Fallback(Enums.DoubleSided.OneSided);
                 }
                 x.ThrowIfCancellationRequested();
 
@@ -716,7 +726,7 @@ namespace PrintDialogX
             PrintSettingsEventArgs settings = new(model.Printer.Value, new()
             {
                 Fallbacks = model.PrintSettings.Fallbacks,
-                Copies = model.Copies.Value,
+                Copies = Math.Max(1, model.Copies.Value),
                 Collation = model.CollationEntries.Selection,
                 Pages = model.PagesEntries.Selection,
                 CustomPages = model.PagesCustom.Value,
@@ -727,9 +737,9 @@ namespace PrintDialogX
                 PagesPerSheet = model.PagesPerSheetEntries.Selection,
                 PageOrder = model.PageOrderEntries.Selection,
                 Scale = model.ScaleEntries.Selection,
-                CustomScale = model.ScaleCustom.Value,
+                CustomScale = Math.Max(0, model.ScaleCustom.Value),
                 Margin = model.MarginEntries.Selection,
-                CustomMargin = model.MarginCustom.Value,
+                CustomMargin = Math.Max(0, model.MarginCustom.Value),
                 DoubleSided = model.DoubleSidedEntries.Selection,
                 Type = model.TypeEntries.Selection,
                 Source = model.SourceEntries.Selection
