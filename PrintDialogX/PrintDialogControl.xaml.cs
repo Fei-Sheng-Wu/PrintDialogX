@@ -276,21 +276,21 @@ namespace PrintDialogX
         {
             lock (Lock)
             {
-                if (task == null || task.Value.Task.IsCompleted)
+                if (task?.Task.IsCompleted ?? true)
                 {
                     return;
                 }
 
                 try
                 {
-                    task.Value.Cancellation.Cancel();
+                    task?.Cancellation.Cancel();
                 }
                 catch { }
             }
 
             if (isBlocking)
             {
-                await task.Value.Task;
+                await (task?.Task ?? Task.CompletedTask);
             }
         }
 
@@ -544,7 +544,7 @@ namespace PrintDialogX
                 model.IsDocumentReady.Value = false;
 
                 bool isLandscape = model.LayoutEntries.Selection == Enums.Layout.Landscape;
-                model.PreviewDocument.Value.PageSize = isLandscape ? new(model.SizeEntries.Selection.Height, model.SizeEntries.Selection.Width) : new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height);
+                Size size = isLandscape ? new(model.SizeEntries.Selection.Height, model.SizeEntries.Selection.Width) : new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height);
                 x.ThrowIfCancellationRequested();
 
                 (int Count, int Columns, int Rows) arrangement = model.PagesPerSheetEntries.Selection switch
@@ -585,7 +585,8 @@ namespace PrintDialogX
                                 PageMediaSize = new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                                 PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping)
                             }).PageImageableArea);
-                            return Math.Min(Math.Min(model.PreviewDocument.Value.PageSize.Width, model.PreviewDocument.Value.PageSize.Height) / 2, Math.Max(area.OriginWidth, area.OriginHeight));
+
+                            return Math.Min(Math.Min(size.Width, size.Height) / 2, Math.Max(area.OriginWidth, area.OriginHeight));
                         }
                         catch
                         {
@@ -599,115 +600,76 @@ namespace PrintDialogX
 
                 List<object>? pages = model.PagesEntries.Selection switch
                 {
-                    Enums.Pages.CurrentPage => model.PreviewDocument.Value.PageCount > 0 ? new Func<List<object>>(() =>
+                    Enums.Pages.CurrentPage => new Func<List<object>>(() =>
                     {
                         lock (model.PreviewDocument.Value.Lock)
                         {
-                            return [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index];
+                            return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : [];
                         }
-                    })() : [],
+                    })(),
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, model.PrintDocument.PageCount).Result,
                     _ => null
                 };
+                if (!(pages?.Any() ?? true))
+                {
+                    pages = null;
+                }
                 x.ThrowIfCancellationRequested();
 
+                model.PrintDocument.MeasuredSize = new(Math.Max(0, size.Width - margin * 2), Math.Max(0, size.Height - margin * 2));
+                await UpdateDocument(true);
+                x.ThrowIfCancellationRequested();
+
+                Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
+                Size container = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
+                double factor = scale ?? Math.Min(cell.Width / container.Width, cell.Height / container.Height);
+                factor = double.IsNaN(factor) ? 0 : factor;
+
+                DocumentHostControl.DocumentSettings settings = new(arrangement.Columns, arrangement.Rows, model.PageOrderEntries.Selection, margin, cell, container, new ScaleTransform(factor, factor, 0, 0), new RectangleGeometry(new(0, 0, cell.Width / factor, cell.Height / factor)));
+                settings.Transform.Freeze();
+                settings.Clip.Freeze();
+
+                model.PreviewDocument.Value.PageSize = size;
                 lock (model.PreviewDocument.Value.Lock)
                 {
                     model.PreviewDocument.Value.Pages.Clear();
                 }
-                model.PrintDocument.MeasuredSize = new(Math.Max(0, model.PreviewDocument.Value.PageSize.Width - margin * 2), Math.Max(0, model.PreviewDocument.Value.PageSize.Height - margin * 2));
-                await UpdateDocument(true);
-                x.ThrowIfCancellationRequested();
 
                 int index = 0;
-                List<PrintPage>? current = null;
-                List<(int Start, List<PrintPage> Chunk)> document = [];
+                (int Start, List<PrintPage> Chunk)? current = null;
                 foreach (PrintPage content in model.PrintDocument.Pages)
                 {
+                    x.ThrowIfCancellationRequested();
+
                     index++;
-                    if (pages != null && pages.Any() && !pages.Any(y => y switch
+                    if (!(pages?.Any(y => y switch
                     {
                         int single => single == index,
                         (int start, int end) => start <= index && end >= index,
                         _ => false
-                    }))
+                    }) ?? true))
                     {
                         continue;
                     }
 
-                    if (current == null || current.Count >= arrangement.Count)
+                    current ??= (index, []);
+                    current.Value.Chunk.Add(content);
+
+                    if (current.Value.Chunk.Count >= arrangement.Count)
                     {
-                        current = [];
-                        document.Add((index, current));
-                    }
-                    current.Add(content);
-                }
-                x.ThrowIfCancellationRequested();
-
-                Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
-                Size area = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
-                double factor = scale ?? Math.Min(cell.Width / area.Width, cell.Height / area.Height);
-                factor = double.IsNaN(factor) ? 0 : factor;
-
-                ScaleTransform transform = new(factor, factor, 0, 0);
-                transform.Freeze();
-                RectangleGeometry clip = new(new(0, 0, cell.Width / factor, cell.Height / factor));
-                clip.Freeze();
-
-                foreach ((int start, List<PrintPage> chunk) in document)
-                {
-                    x.ThrowIfCancellationRequested();
-
-                    await Dispatcher.InvokeAsync(async () =>
-                    {
-                        Canvas page = new();
-
-                        int subindex = 0;
-                        foreach (PrintPage content in chunk)
-                        {
-                            (int column, int row) = model.PageOrderEntries.Selection switch
-                            {
-                                Enums.PageOrder.HorizontalReverse => (arrangement.Columns - subindex % arrangement.Columns - 1, subindex / arrangement.Columns),
-                                Enums.PageOrder.Vertical => (subindex / arrangement.Rows, subindex % arrangement.Rows),
-                                Enums.PageOrder.VerticalReverse => (subindex / arrangement.Rows, arrangement.Rows - subindex % arrangement.Rows - 1),
-                                _ => (subindex % arrangement.Columns, subindex / arrangement.Columns)
-                            };
-                            subindex++;
-
-                            if (content.Content == null)
-                            {
-                                continue;
-                            }
-                            if (content.Content.Parent != null)
-                            {
-                                if (content.Content.Parent is not Decorator parent)
-                                {
-                                    throw new PrintDocumentException(content.Content, "The content is already the child of another element.");
-                                }
-                                parent.Child = null;
-                            }
-
-                            Decorator container = new()
-                            {
-                                Child = content.Content,
-                                Width = area.Width,
-                                Height = area.Height,
-                                RenderTransform = transform,
-                                Clip = clip
-                            };
-
-                            Canvas.SetLeft(container, margin + column * cell.Width);
-                            Canvas.SetTop(container, margin + row * cell.Height);
-                            page.Children.Add(container);
-                        }
-
                         lock (model.PreviewDocument.Value.Lock)
                         {
-                            model.PreviewDocument.Value.Pages.Add(new(start, page));
+                            model.PreviewDocument.Value.Pages.Add((current.Value.Start, new(current.Value.Chunk, settings)));
                         }
-
-                        await Dispatcher.Yield();
-                    });
+                        current = null;
+                    }
+                }
+                if (current != null)
+                {
+                    lock (model.PreviewDocument.Value.Lock)
+                    {
+                        model.PreviewDocument.Value.Pages.Add((current.Value.Start, new(current.Value.Chunk, settings)));
+                    }
                 }
 
                 model.PreviewDocument.Value.ZoomValue = ZoomCurrent();

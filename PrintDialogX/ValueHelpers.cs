@@ -505,16 +505,16 @@ namespace PrintDialogX
             public override int PageCount { get => Pages.Count; }
             public override Size PageSize { get; set; } = new();
             public override IDocumentPaginatorSource? Source { get => null; }
-            public override DocumentPage GetPage(int index)
+            public override System.Windows.Documents.DocumentPage GetPage(int index)
             {
                 lock (Lock)
                 {
                     if (index < 0 || index >= Pages.Count)
                     {
-                        return DocumentPage.Missing;
+                        return System.Windows.Documents.DocumentPage.Missing;
                     }
 
-                    Canvas content = Pages[index].Content;
+                    Canvas content = Pages[index].Page.Content;
                     content.Measure(PageSize);
                     content.Arrange(new(PageSize));
 
@@ -523,7 +523,7 @@ namespace PrintDialogX
             }
 
             public object Lock { get; } = new();
-            public List<(int Index, Canvas Content)> Pages { get; } = [];
+            public List<(int Index, DocumentPage Page)> Pages { get; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
 
@@ -535,6 +535,75 @@ namespace PrintDialogX
             public DocumentZoom ZoomMode { get; set; } = DocumentZoom.FitToWidth;
             public Point? ZoomTarget { get; set; } = null;
             public int ColumnCount { get; set; } = 1;
+        }
+
+        internal sealed class DocumentPage(List<PrintPage> chunk, DocumentSettings settings)
+        {
+            public Canvas Content
+            {
+                get
+                {
+                    if (content != null)
+                    {
+                        return content;
+                    }
+
+                    content = new();
+
+                    int index = 0;
+                    foreach (PrintPage page in chunk)
+                    {
+                        (int column, int row) = settings.Order switch
+                        {
+                            Enums.PageOrder.HorizontalReverse => (settings.Arrangement.Columns - index % settings.Arrangement.Columns - 1, index / settings.Arrangement.Columns),
+                            Enums.PageOrder.Vertical => (index / settings.Arrangement.Rows, index % settings.Arrangement.Rows),
+                            Enums.PageOrder.VerticalReverse => (index / settings.Arrangement.Rows, settings.Arrangement.Rows - index % settings.Arrangement.Rows - 1),
+                            _ => (index % settings.Arrangement.Columns, index / settings.Arrangement.Columns)
+                        };
+                        index++;
+
+                        if (page.Content == null)
+                        {
+                            continue;
+                        }
+                        if (page.Content.Parent != null)
+                        {
+                            if (page.Content.Parent is not Decorator parent)
+                            {
+                                throw new PrintDocumentException(page.Content, "The content is already the child of another element.");
+                            }
+                            parent.Child = null;
+                        }
+
+                        Decorator container = new()
+                        {
+                            Child = page.Content,
+                            Width = settings.Size.Container.Width,
+                            Height = settings.Size.Container.Height,
+                            RenderTransform = settings.Transform,
+                            Clip = settings.Clip
+                        };
+
+                        Canvas.SetLeft(container, settings.Margin + column * settings.Size.Cell.Width);
+                        Canvas.SetTop(container, settings.Margin + row * settings.Size.Cell.Height);
+                        content.Children.Add(container);
+                    }
+
+                    return content;
+                }
+            }
+
+            private Canvas? content = null;
+        }
+
+        internal sealed class DocumentSettings(int columns, int rows, Enums.PageOrder order, double margin, Size cell, Size container, Transform transform, Geometry clip)
+        {
+            public (int Columns, int Rows) Arrangement { get; } = (columns, rows);
+            public Enums.PageOrder Order { get; } = order;
+            public double Margin { get; } = margin;
+            public (Size Cell, Size Container) Size { get; } = (cell, container);
+            public Transform Transform { get; } = transform;
+            public Geometry Clip { get; } = clip;
         }
 
         internal sealed class DocumentEffect() : ShaderEffect
@@ -588,9 +657,14 @@ namespace PrintDialogX
         public const double LENGTH_SPACING = 8;
 
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
-        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(Canvas), typeof(DocumentHostControl), new(null, (x, e) =>
+        public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(DocumentPage), typeof(DocumentHostControl), new(null, (x, e) =>
         {
-            VisualBrush visual = new((Visual)e.NewValue)
+            if (e.NewValue is not DocumentPage page)
+            {
+                return;
+            }
+
+            VisualBrush visual = new(page.Content)
             {
                 ViewboxUnits = BrushMappingMode.Absolute
             };
@@ -608,9 +682,9 @@ namespace PrintDialogX
             get => (VirtualizingStackPanel?)GetValue(ViewerProperty);
             set => SetValue(ViewerProperty, value);
         }
-        public Canvas? Content
+        public DocumentPage? Content
         {
-            get => (Canvas?)GetValue(ContentProperty);
+            get => (DocumentPage?)GetValue(ContentProperty);
             set => SetValue(ContentProperty, value);
         }
         public double Zoom
@@ -705,11 +779,12 @@ namespace PrintDialogX
 
     internal sealed class DocumentToContentConverter() : IValueConverter
     {
-        internal sealed class Content(DocumentHostControl.Document document, VirtualizingStackPanel viewer, Canvas page)
+        internal sealed class Content(DocumentHostControl.Document document, VirtualizingStackPanel viewer, DocumentHostControl.DocumentPage page)
         {
             public VirtualizingStackPanel? Viewer { get; } = viewer;
             public object DataContext { get; } = viewer.DataContext;
-            public Canvas Page { get; } = page;
+
+            public DocumentHostControl.DocumentPage Page { get; } = page;
             public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
             public double Zoom { get; } = document.ZoomValue;
         }
@@ -726,7 +801,7 @@ namespace PrintDialogX
             {
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, viewer, x.Content)));
+                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, viewer, x.Page)));
                 }
             }
 
