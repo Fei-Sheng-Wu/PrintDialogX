@@ -674,7 +674,7 @@ namespace PrintDialogX
                     using (await Lock.Document.LockAsync())
                     {
                         int index = 0;
-                        (int Start, List<PrintPage> Chunk)? current = null;
+                        List<PrintPage>? chunk = null;
                         foreach (PrintPage content in model.PrintDocument.Pages)
                         {
                             x.ThrowIfCancellationRequested();
@@ -690,17 +690,16 @@ namespace PrintDialogX
                                 continue;
                             }
 
-                            if (current == null)
+                            if (chunk == null)
                             {
-                                List<PrintPage> chunk = [];
-                                current = (index, chunk);
+                                chunk = [];
                                 model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
                             }
 
-                            current.Value.Chunk.Add(content);
-                            if (current.Value.Chunk.Count >= arrangement.Count)
+                            chunk.Add(content);
+                            if (chunk.Count >= arrangement.Count)
                             {
-                                current = null;
+                                chunk = null;
                             }
                         }
                     }
