@@ -23,8 +23,40 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, SemaphoreSlim scheduler, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, PrintDialogViewModel.ModelLock locker, Action retriever, Action visualizer, Action informer)
     {
+        internal sealed class ModelLock() : IDisposable
+        {
+            internal sealed class Locker(SemaphoreSlim locker) : IDisposable
+            {
+                public void Dispose()
+                {
+                    locker.Release();
+                }
+            }
+
+            private readonly SemaphoreSlim locker = new(1, 1);
+
+            public Locker Lock()
+            {
+                locker.Wait();
+
+                return new(locker);
+            }
+
+            public async Task<Locker> LockAsync()
+            {
+                await locker.WaitAsync();
+
+                return new(locker);
+            }
+
+            public void Dispose()
+            {
+                locker.Dispose();
+            }
+        }
+
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? callback = null) : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged = null;
@@ -141,7 +173,7 @@ namespace PrintDialogX
         public InterfaceSettings InterfaceSettings { get; } = appearance;
         public PerformanceStrategy PerformanceStrategy { get; } = strategy;
 
-        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(scheduler));
+        public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(locker));
 
         public ModelValue<bool> IsPrinting { get; } = new(invoker, false);
         public ModelValue<object> PrintingContent { get; } = new(invoker, string.Empty);
@@ -186,7 +218,7 @@ namespace PrintDialogX
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
 
-        public (SemaphoreSlim Task, SemaphoreSlim Document, SemaphoreSlim Preview) Lock { get; } = (new(1, 1), new(1, 1), new(1, 1));
+        public (PrintDialogViewModel.ModelLock Task, PrintDialogViewModel.ModelLock Document, PrintDialogViewModel.ModelLock Preview) Lock { get; } = (new(), new(), new());
 
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
@@ -222,6 +254,7 @@ namespace PrintDialogX
             iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
             iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
+            ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).PerformanceStrategy = dialog.PerformanceStrategy;
 
             LoadPrinters(server.IsCustomized ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
@@ -256,8 +289,7 @@ namespace PrintDialogX
         {
             await TaskStop();
 
-            await Lock.Task.WaitAsync();
-            try
+            using (await Lock.Task.LockAsync())
             {
                 CancellationTokenSource cancellation = new();
                 task = (Task.Run(async () =>
@@ -274,16 +306,11 @@ namespace PrintDialogX
                     }
                 }), cancellation);
             }
-            finally
-            {
-                Lock.Task.Release();
-            }
         }
 
         private async Task TaskStop()
         {
-            await Lock.Task.WaitAsync();
-            try
+            using (await Lock.Task.LockAsync())
             {
                 if (task == null || task.Value.Task.IsCompleted)
                 {
@@ -296,10 +323,6 @@ namespace PrintDialogX
                 }
                 catch { }
                 await task.Value.Task;
-            }
-            finally
-            {
-                Lock.Task.Release();
             }
         }
 
@@ -611,14 +634,9 @@ namespace PrintDialogX
                 {
                     Enums.Pages.CurrentPage => await new Func<Task<List<object>?>>(async () =>
                     {
-                        await Lock.Preview.WaitAsync(x);
-                        try
+                        using (await Lock.Preview.LockAsync())
                         {
                             return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
-                        }
-                        finally
-                        {
-                            Lock.Preview.Release();
                         }
                     })(),
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum).Result,
@@ -649,62 +667,43 @@ namespace PrintDialogX
                 x.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.PageSize = size;
-                await Lock.Document.WaitAsync(x);
-                await Lock.Preview.WaitAsync(x);
-                try
+                using (await Lock.Preview.LockAsync())
                 {
                     model.PreviewDocument.Value.Pages.Clear();
 
-                    int index = 0;
-                    (int Start, List<PrintPage> Chunk)? current = null;
-                    foreach (PrintPage content in model.PrintDocument.Pages)
+                    using (await Lock.Document.LockAsync())
                     {
-                        x.ThrowIfCancellationRequested();
-
-                        index++;
-                        if (!(pages?.Any(y => y switch
-                        {
-                            int single => single == index,
-                            (int start, int end) => start <= index && end >= index,
-                            _ => false
-                        }) ?? true))
-                        {
-                            continue;
-                        }
-
-                        if (current == null)
-                        {
-                            List<PrintPage> chunk = [];
-                            current = (index, chunk);
-                            model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
-                        }
-
-                        current.Value.Chunk.Add(content);
-                        if (current.Value.Chunk.Count >= arrangement.Count)
-                        {
-                            current = null;
-                        }
-                    }
-
-                    if (model.PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
-                    {
-                        foreach ((int start, DocumentHostControl.DocumentPage page) in model.PreviewDocument.Value.Pages)
+                        int index = 0;
+                        (int Start, List<PrintPage> Chunk)? current = null;
+                        foreach (PrintPage content in model.PrintDocument.Pages)
                         {
                             x.ThrowIfCancellationRequested();
 
-                            await Dispatcher.InvokeAsync(async () =>
+                            index++;
+                            if (!(pages?.Any(y => y switch
                             {
-                                page.GetContent();
+                                int single => single == index,
+                                (int start, int end) => start <= index && end >= index,
+                                _ => false
+                            }) ?? true))
+                            {
+                                continue;
+                            }
 
-                                await Dispatcher.Yield();
-                            });
+                            if (current == null)
+                            {
+                                List<PrintPage> chunk = [];
+                                current = (index, chunk);
+                                model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
+                            }
+
+                            current.Value.Chunk.Add(content);
+                            if (current.Value.Chunk.Count >= arrangement.Count)
+                            {
+                                current = null;
+                            }
                         }
                     }
-                }
-                finally
-                {
-                    Lock.Document.Release();
-                    Lock.Preview.Release();
                 }
 
                 model.PreviewDocument.Value.ZoomValue = ZoomCurrent();
@@ -720,8 +719,7 @@ namespace PrintDialogX
                 return isUpdating;
             }
 
-            await Lock.Document.WaitAsync();
-            try
+            using (await Lock.Document.LockAsync())
             {
                 PrintSettingsEventArgs settings = new(model.Printer.Value, new()
                 {
@@ -754,10 +752,6 @@ namespace PrintDialogX
                 ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
 
                 return settings.IsUpdating.Value;
-            }
-            finally
-            {
-                Lock.Document.Release();
             }
         }
 

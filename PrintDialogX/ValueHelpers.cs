@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Printing;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -500,7 +499,7 @@ namespace PrintDialogX
             FitToPage
         }
 
-        internal sealed class Document(SemaphoreSlim scheduler) : DocumentPaginator
+        internal sealed class Document(PrintDialogViewModel.ModelLock locker) : DocumentPaginator
         {
             public override bool IsPageCountValid { get => true; }
             public override int PageCount { get => Pages.Count; }
@@ -508,27 +507,22 @@ namespace PrintDialogX
             public override IDocumentPaginatorSource? Source { get => null; }
             public override System.Windows.Documents.DocumentPage GetPage(int index)
             {
-                Lock.Wait();
-                try
+                using (Lock.Lock())
                 {
                     if (index < 0 || index >= PageCount)
                     {
                         return System.Windows.Documents.DocumentPage.Missing;
                     }
 
-                    Canvas content = Pages[index].Page.GetContent();
+                    Canvas content = Pages[index].Page.UpdateContent();
                     content.Measure(PageSize);
                     content.Arrange(new(PageSize));
 
                     return new(content, PageSize, new(PageSize), new(PageSize));
                 }
-                finally
-                {
-                    Lock.Release();
-                }
             }
 
-            public SemaphoreSlim Lock { get; } = scheduler;
+            public PrintDialogViewModel.ModelLock Lock { get; } = locker;
             public List<(int Index, DocumentPage Page)> Pages { get; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
@@ -547,7 +541,7 @@ namespace PrintDialogX
         {
             private Canvas? content = null;
 
-            public Canvas GetContent()
+            public Canvas UpdateContent()
             {
                 if (content != null)
                 {
@@ -671,7 +665,7 @@ namespace PrintDialogX
                 return;
             }
 
-            VisualBrush visual = new(page.GetContent())
+            VisualBrush visual = new(page.UpdateContent())
             {
                 ViewboxUnits = BrushMappingMode.Absolute
             };
@@ -797,6 +791,8 @@ namespace PrintDialogX
             public double Zoom { get; } = document.ZoomValue;
         }
 
+        public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
+
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer)
@@ -804,21 +800,24 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            document.Lock.Wait();
-            try
+            List<IEnumerable<Content>> rows = [];
+            using (document.Lock.Lock())
             {
-                List<IEnumerable<Content>> rows = [];
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x => new Content(document, viewer, x.Page)));
-                }
+                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
+                    {
+                        if (PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
+                        {
+                            x.Page.UpdateContent();
+                        }
 
-                return rows;
+                        return new Content(document, viewer, x.Page);
+                    }));
+                }
             }
-            finally
-            {
-                document.Lock.Release();
-            }
+
+            return rows;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
