@@ -591,13 +591,13 @@ namespace PrintDialogX.Test
             panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Miscellaneous" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Page Generation Time:",-25} {DateTime.Now:yyyy-MM-dd (UTCzzz) HH\\:mm\\:ss\\:fffffff}" });
 
-            grid.Children.Add(new Rectangle() { Margin = new(sizeGuideline + 12), Height = sizeGuideline, VerticalAlignment = VerticalAlignment.Bottom, Fill = brushDeadzone });
-            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 0, 1, 1) });
-            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 0, 0, 1) });
-            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 1, 1, 0) });
-            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 1, 0, 0) });
-            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 1, Y2 = 0, Stretch = Stretch.Fill, VerticalAlignment = VerticalAlignment.Center, Stroke = brushCenterline, StrokeThickness = 1 });
-            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 0, Y2 = 1, Stretch = Stretch.Fill, HorizontalAlignment = HorizontalAlignment.Center, Stroke = brushCenterline, StrokeThickness = 1 });
+            grid.Children.Add(new Rectangle() { Margin = new(sizeGuideline + 12), Height = sizeGuideline, Fill = brushDeadzone, VerticalAlignment = VerticalAlignment.Bottom });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 0, 1, 1), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 0, 0, 1), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Top });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(0, 1, 1, 0), HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Bottom });
+            grid.Children.Add(new Border() { Width = sizeGuideline, Height = sizeGuideline, Background = brushGuidelineFill, BorderBrush = brushGuideline, BorderThickness = new(1, 1, 0, 0), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Bottom });
+            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 1, Y2 = 0, Stretch = Stretch.Fill, Stroke = brushCenterline, StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center });
+            grid.Children.Add(new Line() { X1 = 0, Y1 = 0, X2 = 0, Y2 = 1, Stretch = Stretch.Fill, Stroke = brushCenterline, StrokeThickness = 1, HorizontalAlignment = HorizontalAlignment.Center });
             grid.Children.Add(new Rectangle() { Width = sizeGuideline, Height = sizeGuideline, Stroke = brushCenterline, StrokeThickness = 1 });
 
             return container;

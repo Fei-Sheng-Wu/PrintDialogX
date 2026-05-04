@@ -84,7 +84,7 @@
                                                 <DataTemplate>
                                                     <DockPanel Background="Transparent" ToolTip="{Binding Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToDescription}}}">
                                                         <ContentPresenter DockPanel.Dock="Left" Margin="0,0,16,0" Width="40" Height="40" ContentTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.PrinterIcon}}" Content="{Binding Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToIcon}}, ConverterParameter=False}" />
-                                                        <StackPanel DockPanel.Dock="Right" MaxWidth="300" Orientation="Vertical" VerticalAlignment="Center">
+                                                        <StackPanel DockPanel.Dock="Right" MaxWidth="300" VerticalAlignment="Center" Orientation="Vertical">
                                                             <TextBlock Text="{Binding Path=Name}" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
                                                             <TextBlock Text="{Binding Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToStatus}}}" TextTrimming="CharacterEllipsis" />
                                                         </StackPanel>
@@ -342,7 +342,7 @@
                 </Binding>
             </ScrollViewer.Content>
         </ScrollViewer>
-        <StackPanel Grid.Column="0" Grid.Row="1" Margin="8" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <StackPanel Grid.Column="0" Grid.Row="1" Margin="8" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
             <ui:Button Appearance="Primary" Width="100" IsDefault="True" Content="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonPrint}}" Click="Print">
                 <ui:Button.IsEnabled>
                     <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
