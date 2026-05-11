@@ -54,6 +54,8 @@ The print settings responsively adapt to the capabilities of specific printers, 
 
 An example project is included under the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) folder, with custom configurations to generate the print dialog accordingly, and three template documents to showcase the capability of PrintDialogX.
 
+More examples and applications of PrintDialogX beyond its general usage are available at the [Wiki](https://github.com/Fei-Sheng-Wu/PrintDialogX/wiki).
+
 ### Quick Start
 
 The usage of PrintDialogX is straightforward:

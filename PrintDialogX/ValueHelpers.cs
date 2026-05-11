@@ -104,7 +104,7 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class ValueToDescriptionConverter() : LanguageHostConverter, IValueConverter
+    internal sealed class ValueToDescriptionConverter() : LanguageHostConverter(), IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -325,7 +325,7 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class PrinterToStatusConverter() : LanguageHostConverter, IValueConverter
+    internal sealed class PrinterToStatusConverter() : LanguageHostConverter(), IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -379,7 +379,7 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class PrinterToDescriptionConverter() : LanguageHostConverter, IValueConverter
+    internal sealed class PrinterToDescriptionConverter() : LanguageHostConverter(), IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -455,7 +455,7 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class SizeToDescriptionConverter() : LanguageHostConverter, IValueConverter
+    internal sealed class SizeToDescriptionConverter() : LanguageHostConverter(), IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -826,7 +826,7 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class DocumentToDescriptionConverter() : LanguageHostConverter, IMultiValueConverter
+    internal sealed class DocumentToDescriptionConverter() : LanguageHostConverter(), IMultiValueConverter
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
