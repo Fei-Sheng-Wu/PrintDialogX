@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace PrintDialogX
@@ -17,7 +16,7 @@ namespace PrintDialogX
         public FrameworkElement? Content
         {
             get;
-            set => field = value == null || VisualTreeHelper.GetParent(value) == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
+            set => field = value?.Parent == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
         } = null;
     }
 

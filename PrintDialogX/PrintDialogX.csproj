@@ -23,6 +23,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
         <DebugType>portable</DebugType>
     </PropertyGroup>
