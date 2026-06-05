@@ -23,8 +23,8 @@ namespace PrintDialogX.Test
             DynamicAll
         }
 
-        private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> configurations = [];
-        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, Dictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> templates = new()
+        private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> CONFIGURATIONS = [];
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, Dictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> TEMPLATES = new()
         {
             ["Debug Information Test"] = (GenerateContentDebugInformation, TemplateDynamism.DynamicAll),
             ["UI Library Test"] = (GenerateContentUILibrary, TemplateDynamism.Static),
@@ -37,7 +37,7 @@ namespace PrintDialogX.Test
         {
             InitializeComponent();
 
-            foreach (object entry in templates.Keys)
+            foreach (object entry in TEMPLATES.Keys)
             {
                 optionTemplate.Items.Add(entry);
             }
@@ -132,15 +132,15 @@ namespace PrintDialogX.Test
             {
                 case TextBox text:
                     text.Text = Convert.ToString(initial);
-                    configurations.Add(name, (initial, () => text.Text));
+                    CONFIGURATIONS.Add(name, (initial, () => text.Text));
                     break;
                 case CheckBox check:
                     check.IsChecked = Convert.ToBoolean(initial);
-                    configurations.Add(name, (initial, () => check.IsChecked));
+                    CONFIGURATIONS.Add(name, (initial, () => check.IsChecked));
                     break;
                 case ComboBox combo:
                     combo.SelectedItem = initial;
-                    configurations.Add(name, (initial, () => combo.SelectedItem));
+                    CONFIGURATIONS.Add(name, (initial, () => combo.SelectedItem));
                     break;
             }
             DockPanel.SetDock(content, Dock.Right);
@@ -151,13 +151,13 @@ namespace PrintDialogX.Test
 
         private static bool CheckConfiguration(string name)
         {
-            return !Equals(configurations[name].Callback(), configurations[name].Initial);
+            return !Equals(CONFIGURATIONS[name].Callback(), CONFIGURATIONS[name].Initial);
         }
 
         private static void HandleConfiguration<T>(string name, Action<T> callback)
         {
-            object? value = configurations[name].Callback();
-            if (value is T parameter && !Equals(value, configurations[name].Initial))
+            object? value = CONFIGURATIONS[name].Callback();
+            if (value is T parameter && !Equals(value, CONFIGURATIONS[name].Initial))
             {
                 callback(parameter);
             }
@@ -205,7 +205,7 @@ namespace PrintDialogX.Test
                 GenerateCode("}");
             });
 
-            if (templates[optionTemplate.SelectedItem].Dynamism != TemplateDynamism.Static)
+            if (TEMPLATES[optionTemplate.SelectedItem].Dynamism != TemplateDynamism.Static)
             {
                 GenerateCode();
                 GenerateCode("// Add the event listener for updates to print settings.");
@@ -466,7 +466,7 @@ namespace PrintDialogX.Test
 
         private void GenerateCode(string? code = null, int indent = 0)
         {
-            textCode.Text += $"{(textCode.Text.Any() ? Environment.NewLine : string.Empty)}{new string(' ', indent * 4)}{code}";
+            textCode.Text += $"{(textCode.Text.Any() ? Environment.NewLine : string.Empty)}{new string(' ', 4 * indent)}{code}";
         }
 
         private void GenerateDocument(PrintDocument document, PrintSettings settings)
@@ -476,7 +476,7 @@ namespace PrintDialogX.Test
             {
                 document.Pages.Add(new()
                 {
-                    Content = templates[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                    Content = TEMPLATES[optionTemplate.SelectedItem].Callback(i, document, settings, context)
                 });
             }
         }
@@ -488,7 +488,7 @@ namespace PrintDialogX.Test
             {
                 document.Pages.Add(new()
                 {
-                    Content = templates[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                    Content = TEMPLATES[optionTemplate.SelectedItem].Callback(i, document, settings, context)
                 });
 
                 await Dispatcher.Yield();
@@ -497,7 +497,7 @@ namespace PrintDialogX.Test
 
         private async void HandlePrintSettingsChanged(object? sender, PrintSettingsEventArgs e)
         {
-            if (sender is not PrintDocument document || !(templates[optionTemplate.SelectedItem].Dynamism switch
+            if (sender is not PrintDocument document || !(TEMPLATES[optionTemplate.SelectedItem].Dynamism switch
             {
                 TemplateDynamism.Static => false,
                 TemplateDynamism.DynamicVisual => e.IsUpdating ?? false,
@@ -513,7 +513,7 @@ namespace PrintDialogX.Test
             Dictionary<string, object> context = [];
             foreach (PrintPage page in document.Pages)
             {
-                page.Content = templates[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings, context);
+                page.Content = TEMPLATES[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings, context);
                 index++;
 
                 await Dispatcher.Yield();
@@ -634,10 +634,10 @@ namespace PrintDialogX.Test
             {
                 for (int x = 0; x < 128; x++)
                 {
-                    int i = y * 128 * 4 + x * 4;
-                    bitmapPixels[i + 0] = (byte)((Math.Sin(x * 0.15) * 0.5 + 0.5) * 255.0);
-                    bitmapPixels[i + 1] = (byte)((Math.Sin(y * 0.15) * 0.5 + 0.5) * 255.0);
-                    bitmapPixels[i + 2] = (byte)((Math.Sin((x + y) * 0.15) * 0.5 + 0.5) * 255.0);
+                    int i = 128 * 4 * y + 4 * x;
+                    bitmapPixels[i + 0] = (byte)(255.0 * (0.5 * Math.Sin(0.15 * x) + 0.5));
+                    bitmapPixels[i + 1] = (byte)(255.0 * (0.5 * Math.Sin(0.15 * y) + 0.5));
+                    bitmapPixels[i + 2] = (byte)(255.0 * (0.5 * Math.Sin(0.15 * (x + y)) + 0.5));
                 }
             }
             bitmap.WritePixels(new(0, 0, 128, 32), bitmapPixels, 128 * 4, 0);
@@ -743,8 +743,8 @@ namespace PrintDialogX.Test
                     (Brush color, object content) = j <= 0 ? (Brushes.Black, (new object[] { "Index", "Label", "Calculation", "Hash", "Random" })[k]) : k switch
                     {
                         0 => (Brushes.Black, position),
-                        1 => (new SolidColorBrush(Color.FromRgb((byte)((1 - (position - 1) % 26 / 26.0) * 255.0), (byte)(Math.Sin((position - 1) % 26 / 26.0 * Math.PI) * 255.0), (byte)((position - 1) % 26 / 26.0 * 255.0))), (char)('A' + (position - 1) % 26)),
-                        2 => (Brushes.Black, $"f({position}) = {Math.Sin(position * 12.34) * 4321.1234 % 1:0.000000000000}"),
+                        1 => (new SolidColorBrush(Color.FromRgb((byte)(255.0 * (1 - (position - 1) % 26 / 26.0)), (byte)(255.0 * Math.Sin((position - 1) % 26 / 26.0 * Math.PI)), (byte)(255.0 * ((position - 1) % 26 / 26.0)))), (char)('A' + (position - 1) % 26)),
+                        2 => (Brushes.Black, $"f({position}) = {4321.1234 * Math.Sin(12.34 * position) % 1:0.000000000000}"),
                         3 => ($"{position}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green, $"{position}".GetHashCode()),
                         4 => (Brushes.DarkGray, Random.Shared.Next()),
                         _ => (Brushes.Black, string.Empty)

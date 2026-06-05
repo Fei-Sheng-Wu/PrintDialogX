@@ -2,14 +2,14 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <TargetFrameworks>net472;net6.0-windows</TargetFrameworks>
+        <LangVersion>14.0</LangVersion>
         <UseWPF>true</UseWPF>
         <Nullable>enable</Nullable>
-        <LangVersion>14.0</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup>
         <Title>PrintDialogX</Title>
-        <Version>3.4.1</Version>
+        <Version>3.5.0</Version>
         <Authors>FeiShengWu</Authors>
         <Description>A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.</Description>
         <Copyright>Copyright © 2026 FeiShengWu</Copyright>

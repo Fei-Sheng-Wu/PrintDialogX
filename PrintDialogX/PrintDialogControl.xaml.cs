@@ -213,18 +213,17 @@ namespace PrintDialogX
         public ModelCollection<Enums.Source> SourceEntries { get; } = new(invoker, [], settings.Source, settings.Fallbacks.FallbackSource, informer);
     }
 
-    internal partial class PrintDialogControl : UserControl, ILanguageHost
+    internal partial class PrintDialogControl : UserControl
     {
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
-
-        public (PrintDialogViewModel.ModelLock Task, PrintDialogViewModel.ModelLock Document, PrintDialogViewModel.ModelLock Preview) Lock { get; } = (new(), new(), new());
 
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
         private readonly (PrintServer Server, bool IsCustomized) server;
 
         private (Task Task, CancellationTokenSource Cancellation)? task = null;
+        private (PrintDialogViewModel.ModelLock Task, PrintDialogViewModel.ModelLock Document, PrintDialogViewModel.ModelLock Preview) locks = (new(), new(), new());
 
         public PrintDialogControl(PrintDialog dialog, IPrintDialogHost window)
         {
@@ -237,7 +236,7 @@ namespace PrintDialogX
 
             host = window;
             host.SetShortcutHandler(HandleShortcuts);
-            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, Lock.Preview, LoadSettings, LoadDocument, async () =>
+            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, locks.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (await UpdateDocument())
                 {
@@ -248,7 +247,16 @@ namespace PrintDialogX
 
             DataContext = model;
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
-            InterfaceToContentConverter.ApplyLanguage(this, dialog.InterfaceSettings.DisplayLanguage);
+            InterfaceToContentConverter.ApplyLanguage(dialog.InterfaceSettings.DisplayLanguage, (x, y, z) =>
+            {
+                Language = XmlLanguage.GetLanguage(x);
+                FlowDirection = y;
+                Resources.MergedDictionaries.Add(z);
+                foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToDescription })
+                {
+                    ((LanguageHostConverter)Resources[key]).Resources = z;
+                }
+            });
 
             PrinterToIconConverter iconizer = (PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon];
             iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
@@ -280,16 +288,16 @@ namespace PrintDialogX
 
             DataContext = null;
 
-            Lock.Task.Dispose();
-            Lock.Document.Dispose();
-            Lock.Preview.Dispose();
+            locks.Task.Dispose();
+            locks.Document.Dispose();
+            locks.Preview.Dispose();
         }
 
         private async void TaskStart(Func<CancellationToken, Task> callback)
         {
             await TaskStop();
 
-            using (await Lock.Task.LockAsync())
+            using (await locks.Task.LockAsync())
             {
                 CancellationTokenSource cancellation = new();
                 task = (Task.Run(async () =>
@@ -310,7 +318,7 @@ namespace PrintDialogX
 
         private async Task TaskStop()
         {
-            using (await Lock.Task.LockAsync())
+            using (await locks.Task.LockAsync())
             {
                 if (task == null || task.Value.Task.IsCompleted)
                 {
@@ -526,8 +534,8 @@ namespace PrintDialogX
                             {
                                 DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last(), ValueMappings.XmlSizeNameMapping),
                                 FallbackName = node.SelectSingleNode(string.Format(search, "DisplayName"), namespaces)?.InnerText,
-                                Width = width / 25400.0 * 96.0,
-                                Height = height / 25400.0 * 96.0
+                                Width = 96.0 * width / 25400.0,
+                                Height = 96.0 * height / 25400.0
                             };
                             sizes.Add(size);
 
@@ -634,7 +642,7 @@ namespace PrintDialogX
                 {
                     Enums.Pages.CurrentPage => await new Func<Task<List<object>?>>(async () =>
                     {
-                        using (await Lock.Preview.LockAsync())
+                        using (await locks.Preview.LockAsync())
                         {
                             return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
                         }
@@ -648,11 +656,11 @@ namespace PrintDialogX
                 }
                 x.ThrowIfCancellationRequested();
 
-                model.PrintDocument.MeasuredSize = new(Math.Max(0, size.Width - margin * 2), Math.Max(0, size.Height - margin * 2));
+                model.PrintDocument.MeasuredSize = new(Math.Max(0, size.Width - 2 * margin), Math.Max(0, size.Height - 2 * margin));
                 await UpdateDocument(true);
                 x.ThrowIfCancellationRequested();
 
-                Size extent = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - model.PrintDocument.DocumentMargin * 2, model.PrintDocument.DocumentSize.Value.Height - model.PrintDocument.DocumentMargin * 2) : model.PrintDocument.MeasuredSize;
+                Size extent = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - 2 * model.PrintDocument.DocumentMargin, model.PrintDocument.DocumentSize.Value.Height - 2 * model.PrintDocument.DocumentMargin) : model.PrintDocument.MeasuredSize;
                 Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
                 double factor = scale ?? Math.Min(cell.Width / extent.Width, cell.Height / extent.Height);
                 if (double.IsNaN(factor))
@@ -667,11 +675,11 @@ namespace PrintDialogX
                 x.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.PageSize = size;
-                using (await Lock.Preview.LockAsync())
+                using (await locks.Preview.LockAsync())
                 {
                     model.PreviewDocument.Value.Pages.Clear();
 
-                    using (await Lock.Document.LockAsync())
+                    using (await locks.Document.LockAsync())
                     {
                         int index = 0;
                         List<PrintPage>? chunk = null;
@@ -718,7 +726,7 @@ namespace PrintDialogX
                 return isUpdating;
             }
 
-            using (await Lock.Document.LockAsync())
+            using (await locks.Document.LockAsync())
             {
                 PrintSettingsEventArgs settings = new(model.Printer.Value, new()
                 {
@@ -838,7 +846,7 @@ namespace PrintDialogX
                     host.SetResult(new()
                     {
                         IsSuccess = true,
-                        PaperCount = model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? count : (int)Math.Ceiling(count * 0.5)
+                        PaperCount = model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? count : (int)Math.Ceiling(0.5 * count)
                     });
                 };
                 writer.WriteAsync(model.PreviewDocument.Value);
@@ -915,7 +923,7 @@ namespace PrintDialogX
                     double zoom = 0.15 * Math.Sign(e.Delta);
                     model.PreviewDocument.Value.ZoomValue *= 1 + zoom;
                     model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.Custom;
-                    model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.ZoomValue - position.X, y * model.PreviewDocument.Value.ZoomValue - position.Y - GetPageOffset(Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX), DocumentHostControl.LENGTH_SPACING * 2) * zoom);
+                    model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.ZoomValue - position.X, y * model.PreviewDocument.Value.ZoomValue - position.Y - GetPageOffset(Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX), 2 * DocumentHostControl.LENGTH_SPACING) * zoom);
                     model.PreviewDocument.OnPropertyChanged();
                     e.Handled = true;
                     break;
@@ -939,7 +947,7 @@ namespace PrintDialogX
 
         private Size GetPageSize(double? scale = null)
         {
-            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + DocumentHostControl.LENGTH_SPACING * 2, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + DocumentHostControl.LENGTH_SPACING * 2);
+            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING);
         }
 
         private double GetPageOffset(double index, double? unit = null)
@@ -1146,17 +1154,6 @@ namespace PrintDialogX
                 action();
                 e.Handled = true;
             }
-        }
-
-        public void UpdateLanguage(ResourceDictionary resources, string language)
-        {
-            Resources.MergedDictionaries.Add(resources);
-            foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToDescription })
-            {
-                ((ILanguageHost)Resources[key]).UpdateLanguage(resources, language);
-            }
-
-            Language = XmlLanguage.GetLanguage(language);
         }
     }
 }

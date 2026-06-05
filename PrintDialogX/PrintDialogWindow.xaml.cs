@@ -10,7 +10,7 @@ using System.Windows.Controls;
 
 namespace PrintDialogX
 {
-    internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost, ILanguageHost
+    internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
         private bool isAvailable = true;
         private Func<Task<FrameworkElement>>? loader = null;
@@ -57,7 +57,16 @@ namespace PrintDialogX
             isAvailable = false;
             loader = callback;
 
-            InterfaceToContentConverter.ApplyLanguage(this, dialog.InterfaceSettings.DisplayLanguage);
+            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
+            Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
+            InterfaceToContentConverter.ApplyLanguage(dialog.InterfaceSettings.DisplayLanguage, (x, y, z) =>
+            {
+                Language = XmlLanguage.GetLanguage(x);
+                FlowDirection = y;
+                Resources.MergedDictionaries.Add(z);
+            });
+
             if (dialog.InterfaceSettings.Title != null)
             {
                 Title = dialog.InterfaceSettings.Title;
@@ -69,10 +78,6 @@ namespace PrintDialogX
                 Text = Title
             };
             title.Icon = dialog.InterfaceSettings.Icon;
-
-            Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
-            Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
-            Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
 
             if (isDialog)
             {
@@ -104,18 +109,12 @@ namespace PrintDialogX
                 IPrintDialogHost.PrintDialogProgressState.Error => TaskbarItemProgressState.Error,
                 _ => TaskbarItemProgressState.None
             };
-            TaskbarItemInfo.ProgressValue = progress.Value / 100;
+            TaskbarItemInfo.ProgressValue = progress.Value / 100.0;
         }
 
         public void SetShortcutHandler(KeyEventHandler value)
         {
             handler = value;
-        }
-
-        public void UpdateLanguage(ResourceDictionary resources, string language)
-        {
-            Resources.MergedDictionaries.Add(resources);
-            Language = XmlLanguage.GetLanguage(language);
         }
 
         protected override void OnClosing(CancelEventArgs e)

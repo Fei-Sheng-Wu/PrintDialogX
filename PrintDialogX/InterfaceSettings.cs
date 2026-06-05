@@ -3,15 +3,11 @@ using System.Windows;
 
 namespace PrintDialogX
 {
-    internal interface ILanguageHost
-    {
-        public void UpdateLanguage(ResourceDictionary resources, string language);
-    }
-
     [AttributeUsage(AttributeTargets.All)]
-    internal sealed class LanguageAttribute(string language) : Attribute
+    internal sealed class LanguageAttribute(string language, FlowDirection direction) : Attribute
     {
         public string Language { get; set; } = language;
+        public FlowDirection Direction { get; set; } = direction;
     }
 
     /// <summary>
@@ -123,37 +119,37 @@ namespace PrintDialogX
             /// <summary>
             /// English (Canada).
             /// </summary>
-            [Language("en-CA")]
+            [Language("en-CA", FlowDirection.LeftToRight)]
             en_CA,
 
             /// <summary>
             /// English (United Kingdom).
             /// </summary>
-            [Language("en-GB")]
+            [Language("en-GB", FlowDirection.LeftToRight)]
             en_GB,
 
             /// <summary>
             /// English (United States).
             /// </summary>
-            [Language("en-US")]
+            [Language("en-US", FlowDirection.LeftToRight)]
             en_US,
 
             /// <summary>
             /// Chinese (China).
             /// </summary>
-            [Language("zh-CN")]
+            [Language("zh-CN", FlowDirection.LeftToRight)]
             zh_CN,
 
             /// <summary>
             /// Chinese (Hong Kong).
             /// </summary>
-            [Language("zh-HK")]
+            [Language("zh-HK", FlowDirection.LeftToRight)]
             zh_HK,
 
             /// <summary>
             /// Chinese (Taiwan).
             /// </summary>
-            [Language("zh-TW")]
+            [Language("zh-TW", FlowDirection.LeftToRight)]
             zh_TW
         }
 

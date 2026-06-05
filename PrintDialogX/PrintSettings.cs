@@ -1487,16 +1487,6 @@ namespace PrintDialogX.Enums
             Height = height;
         }
 
-        public override readonly bool Equals(object? value)
-        {
-            return value is Size size && Equals(size.DefinedName, size.Width, size.Height);
-        }
-
-        public override readonly int GetHashCode()
-        {
-            return (DefinedName, GetRoundedSize()).GetHashCode();
-        }
-
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
@@ -1530,6 +1520,18 @@ namespace PrintDialogX.Enums
             return GetRoundedSize(Width, Height, digits);
         }
 
+        /// <inheritdoc />
+        public override readonly bool Equals(object? value)
+        {
+            return value is Size size && Equals(size.DefinedName, size.Width, size.Height);
+        }
+
+        /// <inheritdoc />
+        public override readonly int GetHashCode()
+        {
+            return (DefinedName, GetRoundedSize()).GetHashCode();
+        }
+
         /// <summary>
         /// Gets the size in rounded width and height.
         /// </summary>
@@ -1542,14 +1544,26 @@ namespace PrintDialogX.Enums
             return (Math.Round((decimal)width, digits), Math.Round((decimal)height, digits));
         }
 
-        public static bool operator ==(Size? x, Size? y)
+        /// <summary>
+        /// Compares two values to determine equality.
+        /// </summary>
+        /// <param name="left">The value on the left.</param>
+        /// <param name="right">The value on the right.</param>
+        /// <returns><see langword="true"/> if the values are equal; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(Size? left, Size? right)
         {
-            return x.Equals(y);
+            return left.Equals(right);
         }
 
-        public static bool operator !=(Size? x, Size? y)
+        /// <summary>
+        /// Compares two values to determine inequality.
+        /// </summary>
+        /// <param name="left">The value on the left.</param>
+        /// <param name="right">The value on the right.</param>
+        /// <returns><see langword="true"/> if the values are not equal; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(Size? left, Size? right)
         {
-            return !x.Equals(y);
+            return !left.Equals(right);
         }
     }
 
@@ -1702,27 +1716,51 @@ namespace PrintDialogX.Enums
     /// </summary>
     public enum Scale
     {
+        /// <summary>
+        /// Auto-fit scale.
+        /// </summary>
         [StringResource(StringResource.EntryAutoFit)]
         AutoFit,
 
+        /// <summary>
+        /// 25% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent25)]
         Percent25,
 
+        /// <summary>
+        /// 50% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent50)]
         Percent50,
 
+        /// <summary>
+        /// 75% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent75)]
         Percent75,
 
+        /// <summary>
+        /// 100% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent100)]
         Percent100,
 
+        /// <summary>
+        /// 150% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent150)]
         Percent150,
 
+        /// <summary>
+        /// 200% scale.
+        /// </summary>
         [StringResource(StringResource.EntryPercent200)]
         Percent200,
 
+        /// <summary>
+        /// Custom scale.
+        /// </summary>
         [StringResource(StringResource.EntryCustom)]
         Custom
     }
@@ -1732,15 +1770,27 @@ namespace PrintDialogX.Enums
     /// </summary>
     public enum Margin
     {
+        /// <summary>
+        /// Default margin.
+        /// </summary>
         [StringResource(StringResource.EntryDefault)]
         Default,
 
+        /// <summary>
+        /// No margin.
+        /// </summary>
         [StringResource(StringResource.EntryNone)]
         None,
 
+        /// <summary>
+        /// Minimum margin.
+        /// </summary>
         [StringResource(StringResource.EntryMinimum)]
         Minimum,
 
+        /// <summary>
+        /// Custom margin.
+        /// </summary>
         [StringResource(StringResource.EntryCustom)]
         Custom
     }

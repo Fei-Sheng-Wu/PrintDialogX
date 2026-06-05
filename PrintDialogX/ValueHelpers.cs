@@ -17,14 +17,9 @@ using System.Windows.Documents;
 
 namespace PrintDialogX
 {
-    internal abstract class LanguageHostConverter() : ILanguageHost
+    internal abstract class LanguageHostConverter()
     {
         public ResourceDictionary? Resources { get; set; } = null;
-
-        public void UpdateLanguage(ResourceDictionary resources, string language)
-        {
-            Resources = resources;
-        }
     }
 
     internal sealed class InterfaceToContentConverter() : IValueConverter
@@ -76,9 +71,9 @@ namespace PrintDialogX
             }
         }
 
-        public static void ApplyLanguage(ILanguageHost host, InterfaceSettings.Language language)
+        public static void ApplyLanguage(InterfaceSettings.Language language, Action<string, FlowDirection, ResourceDictionary> applier)
         {
-            string code = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : new Func<InterfaceSettings.Language>(() =>
+            LanguageAttribute? attribute = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : new Func<InterfaceSettings.Language>(() =>
             {
                 string[] current = CultureInfo.CurrentUICulture.IetfLanguageTag.Split('-');
                 return (current[0], current.Length > 1 ? current[1] : null) switch
@@ -96,11 +91,11 @@ namespace PrintDialogX
                     ("yue", _) => InterfaceSettings.Language.zh_HK,
                     _ => InterfaceSettings.Language.en_US
                 };
-            })())?.Language ?? "en-US";
-            host.UpdateLanguage(new()
+            })());
+            applier(attribute?.Language ?? "en-US", attribute?.Direction ?? FlowDirection.LeftToRight, new()
             {
-                Source = new($"/PrintDialogX;component/Resources/Languages/{code}.xaml", UriKind.Relative)
-            }, code);
+                Source = new($"/PrintDialogX;component/Resources/Languages/{attribute?.Language ?? "en-US"}.xaml", UriKind.Relative)
+            });
         }
     }
 
@@ -465,7 +460,7 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionSize], size.Width * 2.54 / 96.0, size.Height * 2.54 / 96.0);
+            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionSize], 2.54 * size.Width / 96.0, 2.54 * size.Height / 96.0);
 
             return System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionCustom], description));
         }
@@ -501,6 +496,20 @@ namespace PrintDialogX
 
         internal sealed class Document(PrintDialogViewModel.ModelLock locker) : DocumentPaginator
         {
+            public PrintDialogViewModel.ModelLock Lock { get; } = locker;
+            public List<(int Index, DocumentPage Page)> Pages { get; } = [];
+
+            public VirtualizingStackPanel? Viewer { get; set; } = null;
+
+            public double ZoomValue
+            {
+                get;
+                set => field = Math.Max(0.05, Math.Min(10000, value));
+            } = 1;
+            public DocumentZoom ZoomMode { get; set; } = DocumentZoom.FitToWidth;
+            public Point? ZoomTarget { get; set; } = null;
+            public int ColumnCount { get; set; } = 1;
+
             public override bool IsPageCountValid { get => true; }
             public override int PageCount { get => Pages.Count; }
             public override Size PageSize { get; set; } = new();
@@ -521,20 +530,6 @@ namespace PrintDialogX
                     return new(content, PageSize, new(PageSize), new(PageSize));
                 }
             }
-
-            public PrintDialogViewModel.ModelLock Lock { get; } = locker;
-            public List<(int Index, DocumentPage Page)> Pages { get; } = [];
-
-            public VirtualizingStackPanel? Viewer { get; set; } = null;
-
-            public double ZoomValue
-            {
-                get;
-                set => field = Math.Max(0.05, Math.Min(10000, value));
-            } = 1;
-            public DocumentZoom ZoomMode { get; set; } = DocumentZoom.FitToWidth;
-            public Point? ZoomTarget { get; set; } = null;
-            public int ColumnCount { get; set; } = 1;
         }
 
         internal sealed class DocumentPage(List<PrintPage> chunk, DocumentSettings settings)
