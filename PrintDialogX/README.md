@@ -1,20 +1,20 @@
 # PrintDialogX v3.5.0-dev
 
-[![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)](#)
-[![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
-[![.NET](https://img.shields.io/badge/.NET-%E2%89%A56.0-orange.svg?style=flat-square)](#)
-[![.NET Framework](https://img.shields.io/badge/.NET%20Framework-%E2%89%A54.7.2-orange.svg?style=flat-square)](#)
+![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)
+![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)
+![.NET](https://img.shields.io/badge/.NET-%E2%89%A56.0-orange.svg?style=flat-square)
+![.NET Framework](https://img.shields.io/badge/.NET%20Framework-%E2%89%A54.7.2-orange.svg?style=flat-square)
 [![NuGet](https://img.shields.io/nuget/v/PrintDialogX?label=NuGet&logo=nuget&logoColor=white&style=flat-square)](https://www.nuget.org/packages/PrintDialogX)
 [![Downloads](https://img.shields.io/nuget/dt/PrintDialogX?label=Downloads&logo=nuget&logoColor=white&style=flat-square)](https://www.nuget.org/packages/PrintDialogX)
 [![Commits Since](https://img.shields.io/github/commits-since/Fei-Sheng-Wu/PrintDialogX/v3.4.0?label=Commits%20Since&style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/commits/master)
-[![License](https://img.shields.io/github/license/Fei-Sheng-Wu/PrintDialogX?label=License&style=flat-square)](LICENSE.txt)
+[![License](https://img.shields.io/github/license/Fei-Sheng-Wu/PrintDialogX?label=License&style=flat-square)](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt)
 [![Sponsor](https://img.shields.io/badge/GitHub%20Sponsors-red.svg?logo=githubsponsors&logoColor=white&style=flat-square)](https://github.com/sponsors/Fei-Sheng-Wu)
 
 > A custom WPF print dialog with lightning-fast real-time preview. Support a full scope of print settings for modern demands, with the flexibility for complete customization. Provide the ability to dynamically adjust documents according to changes in print settings. Empowers the user experience with a responsive, elegant, and configurable interface.
 
 ## Preview
 
-![Preview](preview.png)
+![Preview](https://raw.githubusercontent.com/Fei-Sheng-Wu/PrintDialogX/a80ddc062643162730333bbdd32375d2feea0e3b/preview.png)
 
 ## Dependencies
 
@@ -52,7 +52,7 @@ The print settings responsively adapt to the capabilities of specific printers, 
 
 ## How to Use
 
-An example project is included under the [PrintDialogX.Test](PrintDialogX.Test) folder, with custom configurations to generate the print dialog accordingly, and three template documents to showcase the capability of PrintDialogX.
+An example project is included under the [PrintDialogX.Test](https://github.com/Fei-Sheng-Wu/PrintDialogX/tree/master/PrintDialogX.Test) folder on GitHub, with custom configurations to generate the print dialog accordingly, and three template documents to showcase the capability of PrintDialogX.
 
 More examples and applications of PrintDialogX beyond its general usage are available at the [Wiki](https://github.com/Fei-Sheng-Wu/PrintDialogX/wiki).
 
@@ -188,10 +188,6 @@ dialog.InterfaceSettings.BasicSettings = [PrintDialogX.InterfaceSettings.Option.
 dialog.InterfaceSettings.AdvancedSettings = [PrintDialogX.InterfaceSettings.Option.Color, PrintDialogX.InterfaceSettings.Option.Quality, PrintDialogX.InterfaceSettings.Option.Scale, PrintDialogX.InterfaceSettings.Option.Margin, PrintDialogX.InterfaceSettings.Option.DoubleSided, PrintDialogX.InterfaceSettings.Option.Type, PrintDialogX.InterfaceSettings.Option.Source];
 ```
 
-## Contributors
-
-[![Contributors](https://contrib.rocks/image?repo=Fei-Sheng-Wu/PrintDialogX)](https://github.com/Fei-Sheng-Wu/PrintDialogX/graphs/contributors)
-
 ## License
 
-PrintDialogX is licensed under the [MIT License](LICENSE.txt).
+PrintDialogX is licensed under the [MIT License](https://github.com/Fei-Sheng-Wu/PrintDialogX/blob/master/LICENSE.txt).
