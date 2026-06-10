@@ -244,8 +244,8 @@ namespace PrintDialogX
             public double Size { get; } = size;
         }
 
-        public static readonly Dictionary<(PrinterType, bool), ImageSource> Cache = [];
-        public static readonly string[] FilterFile = ["portprompt", "nul", "file"];
+        public static readonly string[] FILTER_FILE = ["portprompt", "nul", "file"];
+        public static readonly Dictionary<(PrinterType, bool), ImageSource> CACHE = [];
 
         public PrintQueueCollection CollectionFax { get; set; } = [];
         public PrintQueueCollection CollectionNetwork { get; set; } = [];
@@ -257,7 +257,7 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), CheckFilter(printer, FilterFile)) switch
+            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), CheckFilter(printer, FILTER_FILE)) switch
             {
                 (true, false, _) => PrinterType.Fax,
                 (true, true, _) => PrinterType.FaxNetwork,
@@ -276,7 +276,7 @@ namespace PrintDialogX
             catch { }
 
             (PrinterType, bool) key = (target, isSmall);
-            if (!Cache.TryGetValue(key, out ImageSource? icon))
+            if (!CACHE.TryGetValue(key, out ImageSource? icon))
             {
                 try
                 {
@@ -295,7 +295,7 @@ namespace PrintDialogX
                 if (icon != null)
                 {
                     icon.Freeze();
-                    Cache[key] = icon;
+                    CACHE[key] = icon;
                 }
             }
 
@@ -825,12 +825,7 @@ namespace PrintDialogX
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            if (values[0] is not double current || values[1] is not DocumentHostControl.Document document || Resources == null)
-            {
-                return Binding.DoNothing;
-            }
-
-            return string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)(current + PrintDialogControl.EPSILON_INDEX), document.PageCount);
+            return values[0] is double current && values[1] is DocumentHostControl.Document document && Resources != null ? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)(current + PrintDialogControl.EPSILON_INDEX), document.PageCount) : Binding.DoNothing;
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)

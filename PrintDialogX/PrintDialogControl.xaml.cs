@@ -63,22 +63,20 @@ namespace PrintDialogX
 
             public T Value
             {
-                get => current;
+                get;
                 set
                 {
-                    if (Equals(current, value))
+                    if (Equals(field, value))
                     {
                         return;
                     }
 
-                    current = value;
+                    field = value;
 
                     OnPropertyChanged();
                     callback?.Invoke();
                 }
-            }
-
-            private T current = initial;
+            } = initial;
 
             public void OnPropertyChanged()
             {
@@ -532,7 +530,7 @@ namespace PrintDialogX
 
                             Enums.Size size = new()
                             {
-                                DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last(), ValueMappings.XmlSizeNameMapping),
+                                DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last(), ValueMappings.MAPPING_SIZE_XML),
                                 FallbackName = node.SelectSingleNode(string.Format(search, "DisplayName"), namespaces)?.InnerText,
                                 Width = 96.0 * width / 25400.0,
                                 Height = 96.0 * height / 25400.0
@@ -550,8 +548,8 @@ namespace PrintDialogX
                 model.SizeEntries.Load(sizes, target, y => y);
                 x.ThrowIfCancellationRequested();
 
-                model.ColorEntries.Load(capabilities?.OutputColorCapability, defaults?.OutputColor, y => ValueMappings.Map(y, ValueMappings.ColorMapping));
-                model.QualityEntries.Load(capabilities?.OutputQualityCapability, defaults?.OutputQuality, y => ValueMappings.Map(y, ValueMappings.QualityMapping));
+                model.ColorEntries.Load(capabilities?.OutputColorCapability, defaults?.OutputColor, y => ValueMappings.Map(y, ValueMappings.MAPPING_COLOR));
+                model.QualityEntries.Load(capabilities?.OutputQualityCapability, defaults?.OutputQuality, y => ValueMappings.Map(y, ValueMappings.MAPPING_QUALITY));
                 x.ThrowIfCancellationRequested();
 
                 model.IsDoubleSidedSupported.Value = capabilities?.DuplexingCapability.Any(y => y == Duplexing.TwoSidedShortEdge || y == Duplexing.TwoSidedLongEdge) ?? model.PrintSettings.Fallbacks.FallbackIsDoubleSidedSupported;
@@ -561,8 +559,8 @@ namespace PrintDialogX
                 }
                 x.ThrowIfCancellationRequested();
 
-                model.TypeEntries.Load(capabilities?.PageMediaTypeCapability, defaults?.PageMediaType, y => ValueMappings.Map(y, ValueMappings.TypeMapping));
-                model.SourceEntries.Load(capabilities?.InputBinCapability, defaults?.InputBin, y => ValueMappings.Map(y, ValueMappings.SourceMapping));
+                model.TypeEntries.Load(capabilities?.PageMediaTypeCapability, defaults?.PageMediaType, y => ValueMappings.Map(y, ValueMappings.MAPPING_TYPE));
+                model.SourceEntries.Load(capabilities?.InputBinCapability, defaults?.InputBin, y => ValueMappings.Map(y, ValueMappings.MAPPING_SOURCE));
                 x.ThrowIfCancellationRequested();
 
                 //TODO: support for stapling
@@ -623,7 +621,7 @@ namespace PrintDialogX
                             PageImageableArea area = await Dispatcher.InvokeAsync(() => model.Printer.Value.GetPrintCapabilities(new()
                             {
                                 PageMediaSize = new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
-                                PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping)
+                                PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.MAPPING_LAYOUT)
                             }).PageImageableArea);
 
                             return Math.Min(Math.Min(size.Width, size.Height) / 2, Math.Max(area.OriginWidth, area.OriginHeight));
@@ -775,17 +773,17 @@ namespace PrintDialogX
                 model.Printer.Value.CurrentJobSettings.CurrentPrintTicket = new()
                 {
                     CopyCount = model.Copies.Value,
-                    Collation = ValueMappings.Map(model.CollationEntries.Selection, ValueMappings.CollationMapping),
-                    PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.LayoutMapping),
-                    PageMediaSize = new(model.SizeEntries.Selection.DefinedName != null ? ValueMappings.Map(model.SizeEntries.Selection.DefinedName, ValueMappings.SizeNameMapping) : PageMediaSizeName.Unknown, model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
-                    OutputColor = ValueMappings.Map(model.ColorEntries.Selection, ValueMappings.ColorMapping),
-                    OutputQuality = ValueMappings.Map(model.QualityEntries.Selection, ValueMappings.QualityMapping),
+                    Collation = ValueMappings.Map(model.CollationEntries.Selection, ValueMappings.MAPPING_COLLATION),
+                    PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.MAPPING_LAYOUT),
+                    PageMediaSize = new(model.SizeEntries.Selection.DefinedName != null ? ValueMappings.Map(model.SizeEntries.Selection.DefinedName, ValueMappings.MAPPING_SIZE) : PageMediaSizeName.Unknown, model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
+                    OutputColor = ValueMappings.Map(model.ColorEntries.Selection, ValueMappings.MAPPING_COLOR),
+                    OutputQuality = ValueMappings.Map(model.QualityEntries.Selection, ValueMappings.MAPPING_QUALITY),
                     PagesPerSheet = 1,
                     PagesPerSheetDirection = PagesPerSheetDirection.RightBottom,
                     PageScalingFactor = 100,
-                    Duplexing = ValueMappings.Map(model.DoubleSidedEntries.Selection, ValueMappings.DoubleSidedMapping),
-                    PageMediaType = ValueMappings.Map(model.TypeEntries.Selection, ValueMappings.TypeMapping),
-                    InputBin = ValueMappings.Map(model.SourceEntries.Selection, ValueMappings.SourceMapping)
+                    Duplexing = ValueMappings.Map(model.DoubleSidedEntries.Selection, ValueMappings.MAPPING_DOUBLE_SIDED),
+                    PageMediaType = ValueMappings.Map(model.TypeEntries.Selection, ValueMappings.MAPPING_TYPE),
+                    InputBin = ValueMappings.Map(model.SourceEntries.Selection, ValueMappings.MAPPING_SOURCE)
                 };
                 model.Printer.Value.CurrentJobSettings.Description = model.PrintDocument.DocumentName;
 
@@ -825,10 +823,7 @@ namespace PrintDialogX
                         Value = progress
                     });
                 };
-                writer.WritingCancelled += (x, e) =>
-                {
-                    Cancel(StringResource.MessagePrintJobCancelled);
-                };
+                writer.WritingCancelled += (x, e) => Cancel(StringResource.MessagePrintJobCancelled);
                 writer.WritingCompleted += (x, e) =>
                 {
                     if (e.Cancelled)
@@ -957,22 +952,12 @@ namespace PrintDialogX
 
         private double ZoomHorizontal(double padding = 16)
         {
-            if (model.PreviewDocument.Value.Viewer == null)
-            {
-                return 1;
-            }
-
-            return (model.PreviewDocument.Value.Viewer.ViewportWidth - padding * model.PreviewDocument.Value.ColumnCount) / GetPageSize(1).Width / model.PreviewDocument.Value.ColumnCount;
+            return model.PreviewDocument.Value.Viewer != null ? (model.PreviewDocument.Value.Viewer.ViewportWidth - padding * model.PreviewDocument.Value.ColumnCount) / GetPageSize(1).Width / model.PreviewDocument.Value.ColumnCount : 1;
         }
 
         private double ZoomVertical(double padding = 12)
         {
-            if (model.PreviewDocument.Value.Viewer == null)
-            {
-                return 1;
-            }
-
-            return (model.PreviewDocument.Value.Viewer.ViewportHeight - padding) / GetPageSize(1).Height;
+            return model.PreviewDocument.Value.Viewer != null ? (model.PreviewDocument.Value.Viewer.ViewportHeight - padding) / GetPageSize(1).Height : 1;
         }
 
         private double ZoomDelta(double delta)

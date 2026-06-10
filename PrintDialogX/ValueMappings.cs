@@ -11,12 +11,7 @@ namespace PrintDialogX
         public static T? Attribute<T>(object value) where T : Attribute
         {
             Type type = value.GetType();
-            if (Enum.GetName(type, value) is not string name)
-            {
-                return null;
-            }
-
-            return type.GetField(name)?.GetCustomAttribute<T>();
+            return Enum.GetName(type, value) is string name ? (type.GetField(name)?.GetCustomAttribute<T>()) : null;
         }
 
         public static T2? Map<T1, T2>(T1? key, Dictionary<T1, T2> mapping) where T1 : notnull where T2 : struct
@@ -29,19 +24,19 @@ namespace PrintDialogX
             return mapping.First(x => Equals(x.Value, value ?? default)).Key;
         }
 
-        public static readonly Dictionary<Collation, Enums.Collation> CollationMapping = new()
+        public static readonly Dictionary<Collation, Enums.Collation> MAPPING_COLLATION = new()
         {
             [Collation.Collated] = Enums.Collation.Collated,
             [Collation.Uncollated] = Enums.Collation.Uncollated
         };
 
-        public static readonly Dictionary<PageOrientation, Enums.Layout> LayoutMapping = new()
+        public static readonly Dictionary<PageOrientation, Enums.Layout> MAPPING_LAYOUT = new()
         {
             [PageOrientation.Portrait] = Enums.Layout.Portrait,
             [PageOrientation.Landscape] = Enums.Layout.Landscape
         };
 
-        public static readonly Dictionary<PageMediaSizeName, Enums.Size.DefinedSize> SizeNameMapping = new()
+        public static readonly Dictionary<PageMediaSizeName, Enums.Size.DefinedSize> MAPPING_SIZE = new()
         {
             [PageMediaSizeName.ISOA0] = Enums.Size.DefinedSize.ISOA0,
             [PageMediaSizeName.ISOA1] = Enums.Size.DefinedSize.ISOA1,
@@ -215,7 +210,7 @@ namespace PrintDialogX
             [PageMediaSizeName.CreditCard] = Enums.Size.DefinedSize.CreditCard
         };
 
-        public static readonly Dictionary<string, Enums.Size.DefinedSize> XmlSizeNameMapping = new(StringComparer.OrdinalIgnoreCase)
+        public static readonly Dictionary<string, Enums.Size.DefinedSize> MAPPING_SIZE_XML = new(StringComparer.OrdinalIgnoreCase)
         {
             ["isoa0"] = Enums.Size.DefinedSize.ISOA0,
             ["isoa1"] = Enums.Size.DefinedSize.ISOA1,
@@ -389,14 +384,14 @@ namespace PrintDialogX
             ["creditcard"] = Enums.Size.DefinedSize.CreditCard
         };
 
-        public static readonly Dictionary<OutputColor, Enums.Color> ColorMapping = new()
+        public static readonly Dictionary<OutputColor, Enums.Color> MAPPING_COLOR = new()
         {
             [OutputColor.Color] = Enums.Color.Color,
             [OutputColor.Grayscale] = Enums.Color.Grayscale,
             [OutputColor.Monochrome] = Enums.Color.Monochrome
         };
 
-        public static readonly Dictionary<OutputQuality, Enums.Quality> QualityMapping = new()
+        public static readonly Dictionary<OutputQuality, Enums.Quality> MAPPING_QUALITY = new()
         {
             [OutputQuality.Automatic] = Enums.Quality.Automatic,
             [OutputQuality.Draft] = Enums.Quality.Draft,
@@ -407,14 +402,14 @@ namespace PrintDialogX
             [OutputQuality.Text] = Enums.Quality.Text
         };
 
-        public static readonly Dictionary<Duplexing, Enums.DoubleSided> DoubleSidedMapping = new()
+        public static readonly Dictionary<Duplexing, Enums.DoubleSided> MAPPING_DOUBLE_SIDED = new()
         {
             [Duplexing.OneSided] = Enums.DoubleSided.OneSided,
             [Duplexing.TwoSidedShortEdge] = Enums.DoubleSided.DoubleSidedShortEdge,
             [Duplexing.TwoSidedLongEdge] = Enums.DoubleSided.DoubleSidedLongEdge
         };
 
-        public static readonly Dictionary<PageMediaType, Enums.Type> TypeMapping = new()
+        public static readonly Dictionary<PageMediaType, Enums.Type> MAPPING_TYPE = new()
         {
             [PageMediaType.AutoSelect] = Enums.Type.AutoSelect,
             [PageMediaType.Archival] = Enums.Type.Archival,
@@ -446,7 +441,7 @@ namespace PrintDialogX
             [PageMediaType.TShirtTransfer] = Enums.Type.TShirtTransfer
         };
 
-        public static readonly Dictionary<InputBin, Enums.Source> SourceMapping = new()
+        public static readonly Dictionary<InputBin, Enums.Source> MAPPING_SOURCE = new()
         {
             [InputBin.AutoSelect] = Enums.Source.AutoSelect,
             [InputBin.Cassette] = Enums.Source.Cassette,

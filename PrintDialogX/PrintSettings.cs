@@ -1507,7 +1507,7 @@ namespace PrintDialogX.Enums
         /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(PageMediaSize? size)
         {
-            return size != null && Equals(size.PageMediaSizeName != null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.SizeNameMapping) : null, size.Width, size.Height);
+            return size != null && Equals(size.PageMediaSizeName != null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.MAPPING_SIZE) : null, size.Width, size.Height);
         }
 
         /// <summary>
