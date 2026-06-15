@@ -81,6 +81,7 @@ namespace PrintDialogX
                     ("en", "CA") => InterfaceSettings.Language.en_CA,
                     ("en", "GB") => InterfaceSettings.Language.en_GB,
                     ("en", _) => InterfaceSettings.Language.en_US,
+					("pl", _) => InterfaceSettings.Language.pl_PL,
                     ("zh", "HK") => InterfaceSettings.Language.zh_HK,
                     ("zh", "TW") => InterfaceSettings.Language.zh_TW,
                     ("zh", "Hans") => InterfaceSettings.Language.zh_CN,
