@@ -104,7 +104,7 @@ namespace PrintDialogX
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            return value != null && Resources != null ? GetDescription(value, Resources) : Binding.DoNothing;
+            return value is not Enum || Resources == null ? Binding.DoNothing : GetDescription(value, Resources);
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
