@@ -133,6 +133,12 @@ namespace PrintDialogX
             /// </summary>
             [Language("en-US", FlowDirection.LeftToRight)]
             en_US,
+			
+			/// <summary>
+            /// Polish
+            /// </summary>
+            [Language("pl-PL", FlowDirection.LeftToRight)]
+            pl_PL,
 
             /// <summary>
             /// Chinese (China).
