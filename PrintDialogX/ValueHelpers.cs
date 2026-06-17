@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Printing;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -73,29 +74,31 @@ namespace PrintDialogX
 
         public static void ApplyLanguage(InterfaceSettings.Language language, Action<string, FlowDirection, ResourceDictionary> applier)
         {
-            LanguageAttribute? attribute = ValueMappings.Attribute<LanguageAttribute>(language != InterfaceSettings.Language.System ? language : new Func<InterfaceSettings.Language>(() =>
+            if (language == InterfaceSettings.Language.System)
             {
                 string[] current = CultureInfo.CurrentUICulture.IetfLanguageTag.Split('-');
-                return (current[0], current.Length > 1 ? current[1] : null) switch
+                language = (current.First(), current.Length > 1 ? current[1] : null) switch
                 {
                     ("en", "CA") => InterfaceSettings.Language.en_CA,
                     ("en", "GB") => InterfaceSettings.Language.en_GB,
                     ("en", _) => InterfaceSettings.Language.en_US,
-					("pl", _) => InterfaceSettings.Language.pl_PL,
+                    ("pl", _) => InterfaceSettings.Language.pl_PL,
+                    ("yue", "HK") => InterfaceSettings.Language.zh_HK,
+                    ("yue", "TW") => InterfaceSettings.Language.zh_TW,
+                    ("yue", _) => InterfaceSettings.Language.zh_HK,
                     ("zh", "HK") => InterfaceSettings.Language.zh_HK,
                     ("zh", "TW") => InterfaceSettings.Language.zh_TW,
                     ("zh", "Hans") => InterfaceSettings.Language.zh_CN,
                     ("zh", "Hant") => InterfaceSettings.Language.zh_HK,
                     ("zh", _) => InterfaceSettings.Language.zh_CN,
-                    ("yue", "HK") => InterfaceSettings.Language.zh_HK,
-                    ("yue", "TW") => InterfaceSettings.Language.zh_TW,
-                    ("yue", _) => InterfaceSettings.Language.zh_HK,
                     _ => InterfaceSettings.Language.en_US
                 };
-            })());
+            }
+
+            LanguageAttribute? attribute = Enum.GetName(typeof(InterfaceSettings.Language), language) is string name ? typeof(InterfaceSettings.Language).GetField(name)?.GetCustomAttribute<LanguageAttribute>() : null;
             applier(attribute?.Language ?? "en-US", attribute?.Direction ?? FlowDirection.LeftToRight, new()
             {
-                Source = new($"/PrintDialogX;component/Resources/Languages/{attribute?.Language ?? "en-US"}.xaml", UriKind.Relative)
+                Source = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Languages/{0}.xaml", attribute?.Language ?? "en-US"), UriKind.Relative)
             });
         }
     }
@@ -104,7 +107,7 @@ namespace PrintDialogX
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            return value is not Enum || Resources == null ? Binding.DoNothing : GetDescription(value, Resources);
+            return value is Enum entry && Resources != null ? GetDescription(entry, Resources) : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -112,9 +115,9 @@ namespace PrintDialogX
             return Binding.DoNothing;
         }
 
-        public static object GetDescription(object value, ResourceDictionary resources)
+        public static object GetDescription(Enum value, ResourceDictionary resources)
         {
-            return ValueMappings.Attribute<StringResourceAttribute>(value)?.Resource is StringResource resource ? resources[resource] : value;
+            return Enum.GetName(value.GetType(), value) is string name && value.GetType().GetField(name)?.GetCustomAttribute<StringResourceAttribute>()?.Resource is StringResource resource ? resources[resource] : value;
         }
     }
 
@@ -393,19 +396,19 @@ namespace PrintDialogX
 
             try
             {
-                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionDocuments], printer.NumberOfJobs));
+                info.Add(string.Format(culture, (string)Resources[StringResource.ConstructionDocuments], printer.NumberOfJobs));
             }
             catch { }
             try
             {
-                info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionLocation], string.IsNullOrWhiteSpace(printer.Location) ? Resources[StringResource.LabelUnknown] : printer.Location));
+                info.Add(string.Format(culture, (string)Resources[StringResource.ConstructionLocation], string.IsNullOrWhiteSpace(printer.Location) ? Resources[StringResource.LabelUnknown] : printer.Location));
             }
             catch { }
             try
             {
                 if (!string.IsNullOrWhiteSpace(printer.Comment))
                 {
-                    info.Add(string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionComment], printer.Comment));
+                    info.Add(string.Format(culture, (string)Resources[StringResource.ConstructionComment], printer.Comment));
                 }
             }
             catch { }
@@ -428,7 +431,7 @@ namespace PrintDialogX
             return value is string pages && TryConvert(pages, Maximum, true).IsValid ? System.Windows.Controls.ValidationResult.ValidResult : new(false, string.Empty);
         }
 
-        public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum, bool isValidation = false)
+        public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum, bool isValidation)
         {
             List<object>? result = isValidation ? null : [];
             foreach (string entry in value.Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
@@ -461,9 +464,9 @@ namespace PrintDialogX
             }
 
             object? name = size.DefinedName != null ? ValueToDescriptionConverter.GetDescription(size.DefinedName.Value, Resources) : size.FallbackName;
-            string description = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionSize], 2.54 * size.Width / 96.0, 2.54 * size.Height / 96.0);
+            string description = string.Format(culture, (string)Resources[StringResource.ConstructionSize], 2.54 * size.Width / 96.0, 2.54 * size.Height / 96.0);
 
-            return System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture) ? description : (name ?? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionCustom], description));
+            return System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture) ? description : (name ?? string.Format(culture, (string)Resources[StringResource.ConstructionCustom], description));
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -637,7 +640,7 @@ namespace PrintDialogX
             {
                 PixelShader = new()
                 {
-                    UriSource = new($"/PrintDialogX;component/Resources/Effects/{name}.ps", UriKind.Relative)
+                    UriSource = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Effects/{0}.ps", name), UriKind.Relative)
                 };
                 UpdateShaderValue(InputProperty);
                 UpdateShaderValue(ViewportLeftProperty);
@@ -826,7 +829,7 @@ namespace PrintDialogX
     {
         public object Convert(object[] values, Type type, object parameter, CultureInfo culture)
         {
-            return values[0] is double current && values[1] is DocumentHostControl.Document document && Resources != null ? string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionPage], (int)(current + PrintDialogControl.EPSILON_INDEX), document.PageCount) : Binding.DoNothing;
+            return values[0] is double current && values[1] is DocumentHostControl.Document document && Resources != null ? string.Format(culture, (string)Resources[StringResource.ConstructionPage], (int)(current + PrintDialogControl.EPSILON_INDEX), document.PageCount) : Binding.DoNothing;
         }
 
         public object[] ConvertBack(object value, Type[] types, object parameter, CultureInfo culture)

@@ -454,7 +454,7 @@ namespace PrintDialogX
                 using Process? process = Process.Start(new ProcessStartInfo()
                 {
                     FileName = "rundll32",
-                    Arguments = $"printui.dll,PrintUIEntry /p /n \"{model.Printer.Value.FullName}\"",
+                    Arguments = string.Format(CultureInfo.InvariantCulture, "printui.dll,PrintUIEntry /p /n \"{0}\"", model.Printer.Value.FullName),
                     UseShellExecute = true
                 });
             }
@@ -523,7 +523,7 @@ namespace PrintDialogX
                         {
                             x.ThrowIfCancellationRequested();
 
-                            if (!long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long width) || !long.TryParse(node.SelectSingleNode(string.Format(search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long height))
+                            if (!long.TryParse(node.SelectSingleNode(string.Format(CultureInfo.InvariantCulture, search, "MediaSizeWidth"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long width) || !long.TryParse(node.SelectSingleNode(string.Format(CultureInfo.InvariantCulture, search, "MediaSizeHeight"), namespaces)?.InnerText, NumberStyles.Integer, CultureInfo.InvariantCulture, out long height))
                             {
                                 continue;
                             }
@@ -531,7 +531,7 @@ namespace PrintDialogX
                             Enums.Size size = new()
                             {
                                 DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last(), ValueMappings.MAPPING_SIZE_XML),
-                                FallbackName = node.SelectSingleNode(string.Format(search, "DisplayName"), namespaces)?.InnerText,
+                                FallbackName = node.SelectSingleNode(string.Format(CultureInfo.InvariantCulture, search, "DisplayName"), namespaces)?.InnerText,
                                 Width = 96.0 * width / 25400.0,
                                 Height = 96.0 * height / 25400.0
                             };
@@ -645,7 +645,7 @@ namespace PrintDialogX
                             return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
                         }
                     })(),
-                    Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum).Result,
+                    Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum, false).Result,
                     _ => null
                 };
                 if (!(pages?.Any() ?? true))
@@ -815,7 +815,7 @@ namespace PrintDialogX
                     }
 
                     double progress = 100.0 * e.Number / model.PreviewDocument.Value.PageCount;
-                    model.PrintingContent.Value = string.Format(CultureInfo.InvariantCulture, (string)Resources[StringResource.ConstructionProgress], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.PageCount);
+                    model.PrintingContent.Value = string.Format(Language.GetSpecificCulture(), (string)Resources[StringResource.ConstructionProgress], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.PageCount);
                     model.PrintingProgress.Value = progress;
                     host.SetProgress(new()
                     {

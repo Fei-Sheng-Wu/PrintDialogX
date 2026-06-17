@@ -133,9 +133,9 @@ namespace PrintDialogX
             /// </summary>
             [Language("en-US", FlowDirection.LeftToRight)]
             en_US,
-			
-			/// <summary>
-            /// Polish
+
+            /// <summary>
+            /// Polish (Poland).
             /// </summary>
             [Language("pl-PL", FlowDirection.LeftToRight)]
             pl_PL,
