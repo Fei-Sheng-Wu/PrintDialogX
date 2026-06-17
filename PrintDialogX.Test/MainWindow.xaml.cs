@@ -713,7 +713,7 @@ namespace PrintDialogX.Test
             {
                 context["position"] = 0;
 
-                container.Children.Add(new TextBlock() { FontSize = 24, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Text = $"Mock Dataset" });
+                container.Children.Add(new TextBlock() { FontSize = 24, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, Text = "Mock Dataset" });
                 container.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 32), HorizontalAlignment = HorizontalAlignment.Center, Text = $"ID: #{Guid.NewGuid()}" });
 
                 container.Measure(new(double.PositiveInfinity, double.PositiveInfinity));
@@ -745,7 +745,7 @@ namespace PrintDialogX.Test
                         0 => (Brushes.Black, position),
                         1 => (new SolidColorBrush(Color.FromRgb((byte)(255.0 * (1 - (position - 1) % 26 / 26.0)), (byte)(255.0 * Math.Sin((position - 1) % 26 / 26.0 * Math.PI)), (byte)(255.0 * ((position - 1) % 26 / 26.0)))), (char)('A' + (position - 1) % 26)),
                         2 => (Brushes.Black, $"f({position}) = {4321.1234 * Math.Sin(12.34 * position) % 1:0.000000000000}"),
-                        3 => ($"{position}".GetHashCode() < 0 ? Brushes.Red : Brushes.Green, $"{position}".GetHashCode()),
+                        3 => (position.ToString().GetHashCode() < 0 ? Brushes.Red : Brushes.Green, position.ToString().GetHashCode()),
                         4 => (Brushes.DarkGray, Random.Shared.Next()),
                         _ => (Brushes.Black, string.Empty)
                     };
