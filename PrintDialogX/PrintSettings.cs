@@ -1308,8 +1308,7 @@ namespace PrintDialogX.Enums
         public Size(DefinedSize name) : this()
         {
             DefinedName = name;
-
-            (double width, double height) = name switch
+            (Width, Height) = name switch
             {
                 DefinedSize.ISOA0 => (3178.5826772, 4493.8582677),
                 DefinedSize.ISOA1 => (2245.0393701, 3178.5826772),
@@ -1483,8 +1482,28 @@ namespace PrintDialogX.Enums
                 DefinedSize.CreditCard => (324, 204),
                 _ => (0, 0)
             };
-            Width = width;
-            Height = height;
+        }
+
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
+        public readonly (decimal Width, decimal Height) Round(int digits = 1)
+        {
+            return Round(Width, Height, digits);
+        }
+
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="width">The width of the size.</param>
+        /// <param name="height">The height of the size.</param>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
+        public static (decimal Width, decimal Height) Round(double width, double height, int digits = 1)
+        {
+            return (Math.Round((decimal)width, digits), Math.Round((decimal)height, digits));
         }
 
         /// <summary>
@@ -1497,7 +1516,7 @@ namespace PrintDialogX.Enums
         /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
         {
-            return (name != null && name == DefinedName) || (width != null && height != null && GetRoundedSize(width.Value, height.Value, digits) == GetRoundedSize(digits));
+            return (name != null && name == DefinedName) || (width != null && height != null && Round(width.Value, height.Value, digits) == Round(digits));
         }
 
         /// <summary>
@@ -1510,16 +1529,6 @@ namespace PrintDialogX.Enums
             return size != null && Equals(size.PageMediaSizeName != null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.MAPPING_SIZE) : null, size.Width, size.Height);
         }
 
-        /// <summary>
-        /// Gets the size in rounded width and height.
-        /// </summary>
-        /// <param name="digits">The number of decimal places in the return value.</param>
-        /// <returns>The values of the rounded width and height.</returns>
-        public readonly (decimal Width, decimal Height) GetRoundedSize(int digits = 1)
-        {
-            return GetRoundedSize(Width, Height, digits);
-        }
-
         /// <inheritdoc />
         public override readonly bool Equals(object? value)
         {
@@ -1529,19 +1538,7 @@ namespace PrintDialogX.Enums
         /// <inheritdoc />
         public override readonly int GetHashCode()
         {
-            return (DefinedName, GetRoundedSize()).GetHashCode();
-        }
-
-        /// <summary>
-        /// Gets the size in rounded width and height.
-        /// </summary>
-        /// <param name="width">The width of the size.</param>
-        /// <param name="height">The height of the size.</param>
-        /// <param name="digits">The number of decimal places in the return value.</param>
-        /// <returns>The values of the rounded width and height.</returns>
-        public static (decimal Width, decimal Height) GetRoundedSize(double width, double height, int digits = 1)
-        {
-            return (Math.Round((decimal)width, digits), Math.Round((decimal)height, digits));
+            return (DefinedName, Round()).GetHashCode();
         }
 
         /// <summary>
