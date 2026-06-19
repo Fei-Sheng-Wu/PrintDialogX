@@ -13,16 +13,16 @@ namespace PrintDialogX
     internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
         private bool isAvailable = true;
+        private PrintDialogResult result = new();
         private Func<Task<FrameworkElement>>? loader = null;
         private KeyEventHandler? handler = null;
-        private PrintDialogResult result = new();
 
         public PrintDialogWindow()
         {
             InitializeComponent();
         }
 
-        private async void AttachControl(object sender, EventArgs e)
+        private async void LoadContent(object sender, EventArgs e)
         {
             if (loader == null)
             {
@@ -32,7 +32,7 @@ namespace PrintDialogX
             content.Child = await loader();
         }
 
-        private void HandleShortcuts(object sender, KeyEventArgs e)
+        private void PerformShortcuts(object sender, KeyEventArgs e)
         {
             handler?.Invoke(sender, e);
         }

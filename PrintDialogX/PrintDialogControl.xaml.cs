@@ -57,7 +57,7 @@ namespace PrintDialogX
             }
         }
 
-        internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? callback = null) : INotifyPropertyChanged
+        internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? updater = null) : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged = null;
 
@@ -74,7 +74,7 @@ namespace PrintDialogX
                     field = value;
 
                     OnPropertyChanged();
-                    callback?.Invoke();
+                    updater?.Invoke();
                 }
             } = initial;
 
@@ -84,7 +84,7 @@ namespace PrintDialogX
             }
         }
 
-        internal sealed class ModelCollection<T>(Action<Action> invoker, IEnumerable<T> initial, T? selection, T fallback, Action? callback = null) : INotifyPropertyChanged where T : struct
+        internal sealed class ModelCollection<T>(Action<Action> invoker, IEnumerable<T> initial, T? selection, T fallback, Action? updater = null) : INotifyPropertyChanged where T : struct
         {
             internal sealed class Entries(Action<Action> invoker, IEnumerable<T> initial) : List<T>(initial), INotifyCollectionChanged
             {
@@ -125,7 +125,7 @@ namespace PrintDialogX
                     current = value;
 
                     OnPropertyChanged(nameof(Selection));
-                    callback?.Invoke();
+                    updater?.Invoke();
                 }
             }
 
@@ -173,14 +173,14 @@ namespace PrintDialogX
 
         public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(locker));
 
+        public ModelValue<bool> IsError { get; } = new(invoker, false);
+        public ModelValue<object> ErrorContent { get; } = new(invoker, string.Empty);
+        public Action? ErrorCallback { get; set; } = null;
+
         public ModelValue<bool> IsPrinting { get; } = new(invoker, false);
         public ModelValue<object> PrintingContent { get; } = new(invoker, string.Empty);
         public ModelValue<double> PrintingProgress { get; } = new(invoker, 0);
         public Action? PrintingCallback { get; set; } = null;
-
-        public ModelValue<bool> IsError { get; } = new(invoker, false);
-        public ModelValue<object> ErrorContent { get; } = new(invoker, string.Empty);
-        public Action? ErrorCallback { get; set; } = null;
 
         public ModelValue<bool> IsPrintersReady { get; } = new(invoker, true);
         public ModelValue<bool> IsSettingsReady { get; } = new(invoker, true);
@@ -233,7 +233,36 @@ namespace PrintDialogX
             }
 
             host = window;
-            host.SetShortcutHandler(HandleShortcuts);
+            host.SetShortcutHandler((x, e) =>
+            {
+                Action? handler = (Keyboard.Modifiers, e.Key) switch
+                {
+                    (ModifierKeys.Control, Key.P) => Print,
+                    (ModifierKeys.Control, Key.OemPlus) => ZoomIn,
+                    (ModifierKeys.Control, Key.Add) => ZoomIn,
+                    (ModifierKeys.Control, Key.OemMinus) => ZoomOut,
+                    (ModifierKeys.Control, Key.Subtract) => ZoomOut,
+                    (ModifierKeys.Control, Key.D0) => ZoomActual,
+                    (ModifierKeys.Control, Key.NumPad0) => ZoomActual,
+                    (ModifierKeys.Alt, Key.System) => e.SystemKey switch
+                    {
+                        Key.Home => NavigatePageFirst,
+                        Key.Left => NavigatePagePrevious,
+                        Key.Right => NavigatePageNext,
+                        Key.End => NavigatePageLast,
+                        _ => null
+                    },
+                    (ModifierKeys.None, Key.PageUp) => NavigatePagePrevious,
+                    (ModifierKeys.None, Key.PageDown) => NavigatePageNext,
+                    _ => null
+                };
+
+                if (handler != null)
+                {
+                    handler();
+                    e.Handled = true;
+                }
+            });
             model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, locks.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (await UpdateDocument())
@@ -277,7 +306,7 @@ namespace PrintDialogX
 
         private async void Exit(object sender, RoutedEventArgs e)
         {
-            await TaskStop();
+            await Stop();
 
             if (!server.IsCustomized)
             {
@@ -291,9 +320,9 @@ namespace PrintDialogX
             locks.Preview.Dispose();
         }
 
-        private async void TaskStart(Func<CancellationToken, Task> callback)
+        private async void Execute(Func<CancellationToken, Task> executor)
         {
-            await TaskStop();
+            await Stop();
 
             using (await locks.Task.LockAsync())
             {
@@ -303,7 +332,7 @@ namespace PrintDialogX
                     try
                     {
                         cancellation.Token.ThrowIfCancellationRequested();
-                        await callback(cancellation.Token);
+                        await executor(cancellation.Token);
                     }
                     catch (OperationCanceledException) { }
                     finally
@@ -314,7 +343,7 @@ namespace PrintDialogX
             }
         }
 
-        private async Task TaskStop()
+        private async Task Stop()
         {
             using (await locks.Task.LockAsync())
             {
@@ -332,13 +361,13 @@ namespace PrintDialogX
             }
         }
 
-        private void CloseDialogError(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
+        private void DismissError(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsError.Value = false;
             model.ErrorCallback?.Invoke();
         }
 
-        private void CloseDialogPrinting(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
+        private void DismissPrinting(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsPrinting.Value = false;
             model.PrintingCallback?.Invoke();
@@ -442,7 +471,7 @@ namespace PrintDialogX
             }
         }
 
-        private void OpenPrinterPreferences(object sender, RoutedEventArgs e)
+        private void OpenPrinter(object sender, RoutedEventArgs e)
         {
             if (model.Printer.Value == null)
             {
@@ -473,7 +502,7 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskStart(async x =>
+            Execute(async x =>
             {
                 model.IsSettingsReady.Value = false;
                 model.IsDocumentReady.Value = false;
@@ -577,7 +606,7 @@ namespace PrintDialogX
                 return;
             }
 
-            TaskStart(async x =>
+            Execute(async x =>
             {
                 model.IsDocumentReady.Value = false;
 
@@ -883,6 +912,16 @@ namespace PrintDialogX
             });
         }
 
+        private Size GetPageSize(double? scale = null)
+        {
+            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING);
+        }
+
+        private double GetPageOffset(double index, double? unit = null)
+        {
+            return (unit ?? GetPageSize().Height) * Math.Floor((Math.Max(1, Math.Min(model.PreviewDocument.Value.PageCount, index)) - 1) / model.PreviewDocument.Value.ColumnCount);
+        }
+
         private void InitializeViewer(object sender, EventArgs e)
         {
             model.PreviewDocument.Value.Viewer = (VirtualizingStackPanel)sender;
@@ -938,16 +977,6 @@ namespace PrintDialogX
                 model.PreviewDocument.Value.Viewer.SetVerticalOffset(model.PreviewDocument.Value.ZoomTarget.Value.Y);
                 model.PreviewDocument.Value.ZoomTarget = null;
             }
-        }
-
-        private Size GetPageSize(double? scale = null)
-        {
-            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING);
-        }
-
-        private double GetPageOffset(double index, double? unit = null)
-        {
-            return (unit ?? GetPageSize().Height) * Math.Floor((Math.Max(1, Math.Min(model.PreviewDocument.Value.PageCount, index)) - 1) / model.PreviewDocument.Value.ColumnCount);
         }
 
         private double ZoomHorizontal(double padding = 16)
@@ -1108,37 +1137,6 @@ namespace PrintDialogX
         private void NavigatePageLast(object sender, RoutedEventArgs e)
         {
             NavigatePageLast();
-        }
-
-        private void HandleShortcuts(object sender, KeyEventArgs e)
-        {
-            Action? action = (Keyboard.Modifiers, e.Key) switch
-            {
-                (ModifierKeys.Control, Key.P) => Print,
-                (ModifierKeys.Control, Key.OemPlus) => ZoomIn,
-                (ModifierKeys.Control, Key.Add) => ZoomIn,
-                (ModifierKeys.Control, Key.OemMinus) => ZoomOut,
-                (ModifierKeys.Control, Key.Subtract) => ZoomOut,
-                (ModifierKeys.Control, Key.D0) => ZoomActual,
-                (ModifierKeys.Control, Key.NumPad0) => ZoomActual,
-                (ModifierKeys.Alt, Key.System) => e.SystemKey switch
-                {
-                    Key.Home => NavigatePageFirst,
-                    Key.Left => NavigatePagePrevious,
-                    Key.Right => NavigatePageNext,
-                    Key.End => NavigatePageLast,
-                    _ => null
-                },
-                (ModifierKeys.None, Key.PageUp) => NavigatePagePrevious,
-                (ModifierKeys.None, Key.PageDown) => NavigatePageNext,
-                _ => null
-            };
-
-            if (action != null)
-            {
-                action();
-                e.Handled = true;
-            }
         }
     }
 }

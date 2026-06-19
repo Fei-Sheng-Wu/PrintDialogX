@@ -12,8 +12,8 @@
                  Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.TitlePrint}}"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica"
-                 ContentRendered="AttachControl"
-                 PreviewKeyDown="HandleShortcuts">
+                 ContentRendered="LoadContent"
+                 PreviewKeyDown="PerformShortcuts">
     <ui:FluentWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

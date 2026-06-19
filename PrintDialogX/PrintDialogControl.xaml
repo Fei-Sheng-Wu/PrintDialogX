@@ -113,7 +113,7 @@
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PrinterPreferences}" TargetType="{x:Type TypeName=ContentControl}">
-                        <ui:Button Margin="0,4" Padding="20,6" HorizontalAlignment="Right" Content="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonPrinterPreferences}}" Click="OpenPrinterPreferences" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
+                        <ui:Button Margin="0,4" Padding="20,6" HorizontalAlignment="Right" Content="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonPrinterPreferences}}" Click="OpenPrinter" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Copies}" TargetType="{x:Type TypeName=ContentControl}">
@@ -427,7 +427,7 @@
                 </Binding>
             </ui:ProgressRing.Visibility>
         </ui:ProgressRing>
-        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.LabelError}}" Content="{Binding Path=ErrorContent.Value}" CloseButtonText="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonOK}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="CloseDialogError" IsVisibleChanged="UpdateDialog">
+        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.LabelError}}" Content="{Binding Path=ErrorContent.Value}" CloseButtonText="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonOK}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="DismissError" IsVisibleChanged="UpdateDialog">
             <ui:ContentDialog.Visibility>
                 <Binding Path="IsError.Value" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToVisibility}}">
                     <Binding.ConverterParameter>
@@ -436,7 +436,7 @@
                 </Binding>
             </ui:ContentDialog.Visibility>
         </ui:ContentDialog>
-        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMargin="0" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.LabelPrinting}}" CloseButtonText="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonCancel}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="CloseDialogPrinting" IsVisibleChanged="UpdateDialog">
+        <ui:ContentDialog Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" DialogMargin="0" DialogMaxHeight="220" DefaultButton="Close" Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.LabelPrinting}}" CloseButtonText="{DynamicResource ResourceKey={x:Static Member=local:StringResource.ButtonCancel}}" KeyboardNavigation.TabNavigation="Cycle" d:IsHidden="True" ButtonClicked="DismissPrinting" IsVisibleChanged="UpdateDialog">
             <ui:ContentDialog.Visibility>
                 <Binding Path="IsPrinting.Value" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToVisibility}}">
                     <Binding.ConverterParameter>
