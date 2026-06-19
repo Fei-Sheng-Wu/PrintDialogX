@@ -287,7 +287,7 @@ namespace PrintDialogX
 
             PrinterToIconConverter iconizer = (PrinterToIconConverter)Resources[ConverterResource.PrinterToIcon];
             iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
-            iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Shared, EnumeratedPrintQueueTypes.Connections]);
+            iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
             ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).PerformanceStrategy = dialog.PerformanceStrategy;
 

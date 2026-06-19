@@ -248,7 +248,8 @@ namespace PrintDialogX
             public double Size { get; } = size;
         }
 
-        public static readonly string[] FILTER_FILE = ["portprompt", "nul", "file"];
+        public static readonly string[] FILTER_NETWORK = ["ip_", "wsd-"];
+        public static readonly string[] FILTER_FILE = ["file:", "portprompt:", "nul:", "xpsport:", "c:\\", "d:\\"];
         public static readonly Dictionary<(PrinterType, bool), ImageSource> CACHE = [];
 
         public PrintQueueCollection CollectionFax { get; set; } = [];
@@ -261,12 +262,12 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance), CheckFilter(printer, FILTER_FILE)) switch
+            PrinterType target = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance) || CheckFilter(printer, FILTER_NETWORK), CheckFilter(printer, FILTER_FILE)) switch
             {
                 (true, false, _) => PrinterType.Fax,
                 (true, true, _) => PrinterType.FaxNetwork,
-                (_, _, true) => PrinterType.PrinterFile,
                 (_, true, _) => PrinterType.PrinterNetwork,
+                (_, _, true) => PrinterType.PrinterFile,
                 _ => PrinterType.Printer,
             };
             bool isSmall = System.Convert.ToBoolean(parameter, CultureInfo.InvariantCulture);
