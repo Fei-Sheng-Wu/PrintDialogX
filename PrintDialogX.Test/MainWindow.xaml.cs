@@ -24,7 +24,7 @@ namespace PrintDialogX.Test
         }
 
         private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> CONFIGURATIONS = [];
-        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, Dictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> TEMPLATES = new()
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, IDictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> TEMPLATES = new()
         {
             ["Debug Information Test"] = (GenerateContentDebugInformation, TemplateDynamism.DynamicAll),
             ["UI Library Test"] = (GenerateContentUILibrary, TemplateDynamism.Static),
@@ -526,7 +526,7 @@ namespace PrintDialogX.Test
 
         #region Debug Information Test
 
-        private static FrameworkElement GenerateContentDebugInformation(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
+        private static FrameworkElement GenerateContentDebugInformation(int index, PrintDocument document, PrintSettings settings, IDictionary<string, object> context)
         {
             double sizeGuideline = 24;
 
@@ -607,7 +607,7 @@ namespace PrintDialogX.Test
 
         #region UI Library Test
 
-        private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
+        private static FrameworkElement GenerateContentUILibrary(int index, PrintDocument document, PrintSettings settings, IDictionary<string, object> context)
         {
             Brush brushPrimary = Brushes.SlateGray;
             Brush brushContrast = Brushes.White;
@@ -690,7 +690,7 @@ namespace PrintDialogX.Test
 
         #region Mock Dataset Test
 
-        private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings, Dictionary<string, object> context)
+        private static FrameworkElement GenerateContentMockDataset(int index, PrintDocument document, PrintSettings settings, IDictionary<string, object> context)
         {
             if (document.MeasuredSize == Size.Empty)
             {

@@ -14,7 +14,7 @@
 
 ## Preview
 
-![Preview](https://raw.githubusercontent.com/Fei-Sheng-Wu/PrintDialogX/a80ddc062643162730333bbdd32375d2feea0e3b/preview.png)
+![Preview](https://raw.githubusercontent.com/Fei-Sheng-Wu/PrintDialogX/v3.5.0/preview.png)
 
 ## Dependencies
 

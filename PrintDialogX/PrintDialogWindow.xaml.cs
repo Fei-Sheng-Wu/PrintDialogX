@@ -22,6 +22,12 @@ namespace PrintDialogX
             InitializeComponent();
         }
 
+        private void Exit(object sender, CancelEventArgs e)
+        {
+            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
+            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
+        }
+
         private async void LoadContent(object sender, EventArgs e)
         {
             if (loader == null)
@@ -115,14 +121,6 @@ namespace PrintDialogX
         public void SetShortcutHandler(KeyEventHandler value)
         {
             handler = value;
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
-            Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
-
-            base.OnClosing(e);
         }
     }
 }

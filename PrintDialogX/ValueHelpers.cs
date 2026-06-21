@@ -434,24 +434,24 @@ namespace PrintDialogX
 
         public static (bool IsValid, List<object>? Result) TryConvert(string value, int maximum, bool isValidation)
         {
-            List<object>? result = isValidation ? null : [];
+            List<object>? pages = isValidation ? null : [];
             foreach (string entry in value.Split(',', ';', '，', '、', '､', '﹑', '،', '؛', '﹐').Where(x => !string.IsNullOrWhiteSpace(x)))
             {
                 string[] range = entry.Split('-', '\u2010', '\u2011', '\u2012', '\u2013', '\u2014', '\u2015', '\ufe58', '\ufe63', '\uff0d');
                 switch (range.Length)
                 {
                     case 1 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
-                        result?.Add(single);
+                        pages?.Add(single);
                         break;
                     case 2 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
-                        result?.Add((start, end));
+                        pages?.Add((start, end));
                         break;
                     default:
                         return (false, null);
                 }
             }
 
-            return (true, result);
+            return (true, pages);
         }
     }
 
@@ -537,7 +537,7 @@ namespace PrintDialogX
             }
         }
 
-        internal sealed class DocumentPage(List<PrintPage> chunk, DocumentSettings settings)
+        internal sealed class DocumentPage(IEnumerable<PrintPage> chunk, DocumentSettings settings)
         {
             private Canvas? content = null;
 
