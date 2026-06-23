@@ -259,8 +259,8 @@ namespace PrintDialogX
 
                 if (handler != null)
                 {
-                    handler();
                     e.Handled = true;
+                    handler();
                 }
             });
             model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, locks.Preview, LoadSettings, LoadDocument, async () =>
@@ -273,6 +273,7 @@ namespace PrintDialogX
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
 
             DataContext = model;
+            Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             InterfaceToContentConverter.ApplyLanguage(dialog.InterfaceSettings.DisplayLanguage, (x, y, z) =>
             {

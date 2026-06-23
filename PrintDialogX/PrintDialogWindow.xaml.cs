@@ -63,6 +63,12 @@ namespace PrintDialogX
             isAvailable = false;
             loader = callback;
 
+            if (Application.Current == null)
+            {
+                Application application = new();
+            }
+
+            Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);

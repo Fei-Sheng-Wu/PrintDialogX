@@ -287,7 +287,7 @@ namespace PrintDialogX
                 {
                     SHSTOCKICONINFO info = new()
                     {
-                        cbSize = (uint)Marshal.SizeOf(typeof(SHSTOCKICONINFO))
+                        cbSize = (uint)Marshal.SizeOf<SHSTOCKICONINFO>()
                     };
                     if (SHGetStockIconInfo((uint)target, 256 | (uint)(isSmall ? 1 : 4), ref info) == 0 && info.hIcon != IntPtr.Zero)
                     {
