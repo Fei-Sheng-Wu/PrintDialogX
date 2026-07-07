@@ -188,7 +188,7 @@
                                     <ControlTemplate TargetType="{x:Type TypeName=Control}">
                                         <StackPanel Orientation="Vertical">
                                             <AdornedElementPlaceholder />
-                                            <TextBlock Margin="4,0" Text="{DynamicResource ResourceKey={x:Static Member=local:StringResource.MessageValueInvalid}}">
+                                            <TextBlock Margin="4,0" Text="{DynamicResource ResourceKey={x:Static Member=local:StringResource.MessageInvalidValue}}">
                                                 <TextBlock.Foreground>
                                                     <SolidColorBrush Color="{DynamicResource ResourceKey=PaletteRedColor}" />
                                                 </TextBlock.Foreground>

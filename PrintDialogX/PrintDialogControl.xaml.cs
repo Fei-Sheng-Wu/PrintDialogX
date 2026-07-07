@@ -265,10 +265,12 @@ namespace PrintDialogX
             });
             model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, locks.Preview, LoadSettings, LoadDocument, async () =>
             {
-                if (await UpdateDocument())
+                if (!await UpdateDocument())
                 {
-                    LoadDocument();
+                    return;
                 }
+
+                LoadDocument();
             });
             server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
 
@@ -832,7 +834,7 @@ namespace PrintDialogX
                     }
                     catch
                     {
-                        Cancel(StringResource.MessagePrintJobCancelled);
+                        Cancel(StringResource.MessageCancelledPrintJob);
                     }
                 };
                 model.IsPrinting.Value = true;
@@ -853,17 +855,17 @@ namespace PrintDialogX
                         Value = progress
                     });
                 };
-                writer.WritingCancelled += (x, e) => Cancel(StringResource.MessagePrintJobCancelled);
+                writer.WritingCancelled += (x, e) => Cancel(StringResource.MessageCancelledPrintJob);
                 writer.WritingCompleted += (x, e) =>
                 {
                     if (e.Cancelled)
                     {
-                        Cancel(StringResource.MessagePrintJobCancelled);
+                        Cancel(StringResource.MessageCancelledPrintJob);
                         return;
                     }
                     else if (e.Error != null)
                     {
-                        Cancel(StringResource.MessagePrintJobError);
+                        Cancel(StringResource.MessageErrorPrintJob);
                         return;
                     }
 

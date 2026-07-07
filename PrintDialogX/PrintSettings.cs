@@ -1487,16 +1487,6 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Gets the size in rounded width and height.
         /// </summary>
-        /// <param name="digits">The number of decimal places in the return value.</param>
-        /// <returns>The values of the rounded width and height.</returns>
-        public readonly (decimal Width, decimal Height) Round(int digits = 1)
-        {
-            return Round(Width, Height, digits);
-        }
-
-        /// <summary>
-        /// Gets the size in rounded width and height.
-        /// </summary>
         /// <param name="width">The width of the size.</param>
         /// <param name="height">The height of the size.</param>
         /// <param name="digits">The number of decimal places in the return value.</param>
@@ -1504,6 +1494,16 @@ namespace PrintDialogX.Enums
         public static (decimal Width, decimal Height) Round(double width, double height, int digits = 1)
         {
             return (Math.Round((decimal)width, digits), Math.Round((decimal)height, digits));
+        }
+
+        /// <summary>
+        /// Gets the size in rounded width and height.
+        /// </summary>
+        /// <param name="digits">The number of decimal places in the return value.</param>
+        /// <returns>The values of the rounded width and height.</returns>
+        public readonly (decimal Width, decimal Height) Round(int digits = 1)
+        {
+            return Round(Width, Height, digits);
         }
 
         /// <summary>

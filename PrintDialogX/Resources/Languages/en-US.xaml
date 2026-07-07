@@ -11,5 +11,5 @@
     <system:String x:Key="{x:Static Member=local:StringResource.EntryColor}">Color</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.EntryGrayscale}">Grayscale</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.MessagePrintJobCancelled}">The print job was canceled!</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.MessageCancelledPrintJob}">The print job was canceled!</system:String>
 </ResourceDictionary>

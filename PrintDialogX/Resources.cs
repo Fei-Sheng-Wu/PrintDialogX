@@ -351,13 +351,13 @@ namespace PrintDialogX
         ConstructionProgress,
         ConstructionPage,
         TipCustomPages,
-        MessageValueInvalid,
+        MessageInvalidValue,
         MessageNoPrinter,
         MessageFailedPrinterPreferences,
         MessageFailedAddPrinter,
         MessageFailedPrintJob,
-        MessagePrintJobCancelled,
-        MessagePrintJobError
+        MessageCancelledPrintJob,
+        MessageErrorPrintJob
     }
 
     [AttributeUsage(AttributeTargets.All)]

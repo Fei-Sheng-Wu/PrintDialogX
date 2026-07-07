@@ -320,11 +320,11 @@
 
     <system:String x:Key="{x:Static Member=local:StringResource.TipCustomPages}">np. 1, 3-5, 8</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageValueInvalid}">Wartość jest nieprawidłowa!</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.MessageInvalidValue}">Wartość jest nieprawidłowa!</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.MessageNoPrinter}">Nie wykryto drukarki!</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedPrinterPreferences}">Nie można otworzyć okna preferencji drukarki!</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedAddPrinter}">Nie można otworzyć systemowego okna instalacji drukarki!</system:String>
     <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedPrintJob}">Nie można rozpocząć zadania drukowania!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessagePrintJobCancelled}">Zadanie drukowania zostało anulowane!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessagePrintJobError}">Wystąpił błąd podczas zadania drukowania!</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.MessageCancelledPrintJob}">Zadanie drukowania zostało anulowane!</system:String>
+    <system:String x:Key="{x:Static Member=local:StringResource.MessageErrorPrintJob}">Wystąpił błąd podczas zadania drukowania!</system:String>
 </ResourceDictionary>
