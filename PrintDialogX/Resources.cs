@@ -39,7 +39,7 @@ namespace PrintDialogX
         PagesCustom,
     }
 
-    internal enum StringResource
+    internal enum TextResource
     {
         TitlePrint,
         ButtonOK,
@@ -361,8 +361,8 @@ namespace PrintDialogX
     }
 
     [AttributeUsage(AttributeTargets.All)]
-    internal sealed class StringResourceAttribute(StringResource resource) : Attribute
+    internal sealed class StringResourceAttribute(TextResource resource) : Attribute
     {
-        public StringResource Resource { get; set; } = resource;
+        public TextResource Resource { get; set; } = resource;
     }
 }

@@ -6,10 +6,10 @@
         <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-CA.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionColor}">Color</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionColor}">Color</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryColor}">Color</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryGrayscale}">Grayscale</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryColor}">Color</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryGrayscale}">Grayscale</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageCancelledPrintJob}">The print job was canceled!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageCancelledPrintJob}">The print job was canceled!</system:String>
 </ResourceDictionary>

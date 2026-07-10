@@ -23,8 +23,8 @@ namespace PrintDialogX.Test
             DynamicAll
         }
 
-        private static readonly Dictionary<string, (object? Initial, Func<object?> Callback)> CONFIGURATIONS = [];
-        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, IDictionary<string, object>, FrameworkElement> Callback, TemplateDynamism Dynamism)> TEMPLATES = new()
+        private static readonly Dictionary<string, (object? Initial, Func<object?> Attainer)> CONFIGURATIONS = [];
+        private static readonly Dictionary<object, (Func<int, PrintDocument, PrintSettings, IDictionary<string, object>, FrameworkElement> Instantiator, TemplateDynamism Dynamism)> TEMPLATES = new()
         {
             ["Debug Information Test"] = (GenerateContentDebugInformation, TemplateDynamism.DynamicAll),
             ["UI Library Test"] = (GenerateContentUILibrary, TemplateDynamism.Static),
@@ -151,15 +151,15 @@ namespace PrintDialogX.Test
 
         private static bool CheckConfiguration(string name)
         {
-            return !Equals(CONFIGURATIONS[name].Callback(), CONFIGURATIONS[name].Initial);
+            return !Equals(CONFIGURATIONS[name].Attainer(), CONFIGURATIONS[name].Initial);
         }
 
-        private static void HandleConfiguration<T>(string name, Action<T> callback)
+        private static void HandleConfiguration<T>(string name, Action<T> attainer)
         {
-            object? value = CONFIGURATIONS[name].Callback();
+            object? value = CONFIGURATIONS[name].Attainer();
             if (value is T parameter && !Equals(value, CONFIGURATIONS[name].Initial))
             {
-                callback(parameter);
+                attainer(parameter);
             }
         }
 
@@ -422,10 +422,10 @@ namespace PrintDialogX.Test
 
             bool isDialog = true;
             HandleConfiguration<bool>("windowDialog", x => isDialog = false);
-            Func<Task> callback = () => Task.CompletedTask;
+            Func<Task> generator = () => Task.CompletedTask;
             if (isAsynchronous)
             {
-                callback = async () =>
+                generator = async () =>
                 {
                     await GenerateDocumentAsync(document, dialog.PrintSettings);
                     dialog.Document = document;
@@ -450,13 +450,13 @@ namespace PrintDialogX.Test
             switch (isDialog, isAsynchronous)
             {
                 case (true, true):
-                    dialog.ShowDialog(callback);
+                    dialog.ShowDialog(generator);
                     break;
                 case (true, false):
                     dialog.ShowDialog();
                     break;
                 case (false, true):
-                    dialog.Show(callback);
+                    dialog.Show(generator);
                     break;
                 case (false, false):
                     dialog.Show();
@@ -476,7 +476,7 @@ namespace PrintDialogX.Test
             {
                 document.Pages.Add(new()
                 {
-                    Content = TEMPLATES[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                    Content = TEMPLATES[optionTemplate.SelectedItem].Instantiator(i, document, settings, context)
                 });
             }
         }
@@ -488,7 +488,7 @@ namespace PrintDialogX.Test
             {
                 document.Pages.Add(new()
                 {
-                    Content = TEMPLATES[optionTemplate.SelectedItem].Callback(i, document, settings, context)
+                    Content = TEMPLATES[optionTemplate.SelectedItem].Instantiator(i, document, settings, context)
                 });
 
                 await Dispatcher.Yield();
@@ -513,7 +513,7 @@ namespace PrintDialogX.Test
             Dictionary<string, object> context = [];
             foreach (PrintPage page in document.Pages)
             {
-                page.Content = TEMPLATES[optionTemplate.SelectedItem].Callback(index, document, e.CurrentSettings, context);
+                page.Content = TEMPLATES[optionTemplate.SelectedItem].Instantiator(index, document, e.CurrentSettings, context);
                 index++;
 
                 await Dispatcher.Yield();

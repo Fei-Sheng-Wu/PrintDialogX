@@ -2,329 +2,329 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
-    <system:String x:Key="{x:Static Member=local:StringResource.TitlePrint}">Print</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.TitlePrint}">Print</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonOK}">OK</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonPrint}">Print</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonCancel}">Cancel</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonAddPrinter}">Add New Printer</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonPrinterPreferences}">Printer Preferences</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonMoreSettings}">More Settings</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonZoomIn}">Zoom In</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonZoomOut}">Zoom Out</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonActualSize}">Actual Size</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonFitToWidth}">Fit to Width</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonWholePage}">Whole Page</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonTwoPages}">Two Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonFirstPage}">First Page</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonPreviousPage}">Previous Page</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonNextPage}">Next Page</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ButtonLastPage}">Last Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonOK}">OK</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrint}">Print</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonCancel}">Cancel</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonAddPrinter}">Add New Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterPreferences}">Printer Preferences</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonMoreSettings}">More Settings</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomIn}">Zoom In</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomOut}">Zoom Out</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonActualSize}">Actual Size</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFitToWidth}">Fit to Width</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonWholePage}">Whole Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonTwoPages}">Two Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFirstPage}">First Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPreviousPage}">Previous Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNextPage}">Next Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonLastPage}">Last Page</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPrinter}">Printer</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionCopies}">Copies</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPages}">Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionCustomPages}">Custom Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionSize}">Size</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionLayout}">Layout</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionColor}">Colour</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionQuality}">Quality</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPagesPerSheet}">Pages per Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPageOrder}">Page Order</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionScale}">Scale</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionCustomScale}">Custom Scale</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionMargin}">Margin</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionCustomMargin}">Custom Margin</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionDoubleSided}">Double-Sided</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPaperType}">Paper Type</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.OptionPaperSource}">Paper Source</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPrinter}">Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionCopies}">Copies</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPages}">Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomPages}">Custom Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionSize}">Size</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionLayout}">Layout</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionColor}">Colour</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionQuality}">Quality</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPagesPerSheet}">Pages per Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPageOrder}">Page Order</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionScale}">Scale</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomScale}">Custom Scale</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionMargin}">Margin</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomMargin}">Custom Margin</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionDoubleSided}">Double-Sided</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperType}">Paper Type</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperSource}">Paper Source</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryAllPages}">All Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCurrentPage}">Current Page</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCustomPages}">Custom Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPortrait}">Portrait</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryLandscape}">Landscape</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA0}">A0</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA1}">A1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA10}">A10</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA2}">A2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA3}">A3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA3Rotated}">A3 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA3Extra}">A3 Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA4}">A4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA4Rotated}">A4 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA4Extra}">A4 Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA5}">A5</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA5Rotated}">A5 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA5Extra}">A5 Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA6}">A6</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA6Rotated}">A6 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA7}">A7</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA8}">A8</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOA9}">A9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB0}">B0</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB1}">B1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB10}">B10</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB2}">B2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB3}">B3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB4}">B4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB4Envelope}">B4 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB5Envelope}">B5 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB5Extra}">B5 Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB7}">B7</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB8}">B8</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOB9}">B9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC0}">C0</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC1}">C1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC10}">C10</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC2}">C2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC3}">C3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC3Envelope}">C3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC4}">C4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC4Envelope}">C4 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC5}">C5</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC5Envelope}">C5 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC6}">C6</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC6Envelope}">C6 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC6C5Envelope}">C6C5 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC7}">C7</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC8}">C8</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOC9}">C9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISODLEnvelope}">DL Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISODLEnvelopeRotated}">DL Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryISOSRA3}">SRA3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanQuadrupleHagakiPostcard}">Quadruple Hagaki Postcard</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB0}">JB0</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB1}">JB1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB10}">JB10</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB2}">JB2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB3}">JB3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB4}">JB4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB4Rotated}">JB4 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB5}">JB5</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB5Rotated}">JB5 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB6}">JB6</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB6Rotated}">JB6 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB7}">JB7</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB8}">JB8</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJISB9}">JB9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3Envelope}">Chou 3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou3EnvelopeRotated}">Chou 3 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4Envelope}">Chou 4 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanChou4EnvelopeRotated}">Chou 4 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcard}">Hagaki Postcard</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanHagakiPostcardRotated}">Hagaki Postcard Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2Envelope}">Kaku 2 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku2EnvelopeRotated}">Kaku 2 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3Envelope}">Kaku 3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanKaku3EnvelopeRotated}">Kaku 3 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4Envelope}">You 4 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x11}">10" × 11"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x14}">10" × 14"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica11x17}">11" × 17"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica9x11}">9" × 11"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaArchitectureASheet}">Architecture A Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaArchitectureBSheet}">Architecture B Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaArchitectureCSheet}">Architecture C Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaArchitectureDSheet}">Architecture D Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaArchitectureESheet}">Architecture E Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaCSheet}">C Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaDSheet}">D Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaESheet}">E Sheet</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaExecutive}">Executive</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaGermanLegalFanfold}">German Legal Fanfold</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaGermanStandardFanfold}">German Standard Fanfold</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLegal}">Legal</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLegalExtra}">Legal Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLetter}">Letter</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLetterRotated}">Letter Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLetterExtra}">Letter Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaLetterPlus}">Letter Plus</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaMonarchEnvelope}">Monarch Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNote}">Note</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber10Envelope}">#10 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber10EnvelopeRotated}">#10 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber9Envelope}">#9 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber11Envelope}">#11 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber12Envelope}">#12 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaNumber14Envelope}">#14 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaPersonalEnvelope}">Personal Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaQuarto}">Quarto</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaStatement}">Statement</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaSuperA}">Super A</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaSuperB}">Super B</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaTabloid}">Tabloid</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmericaTabloidExtra}">Tabloid Extra</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOtherMetricA4Plus}">A4 Plus</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOtherMetricA3Plus}">A3 Plus</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOtherMetricFolio}">Folio</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOtherMetricInviteEnvelope}">Invite Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOtherMetricItalianEnvelope}">Italian Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC1Envelope}">Envelope #1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC1EnvelopeRotated}">Envelope #1 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC10Envelope}">Envelope #10</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC10EnvelopeRotated}">Envelope #10 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC16K}">16K</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC16KRotated}">16K Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC2Envelope}">Envelope #2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC2EnvelopeRotated}">Envelope #2 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC32K}">32K</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC32KRotated}">32K Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC32KBig}">32K Big</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC3Envelope}">Envelope #3</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC3EnvelopeRotated}">Envelope #3 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC4Envelope}">Envelope #4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC4EnvelopeRotated}">Envelope #4 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC5Envelope}">Envelope #5</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC5EnvelopeRotated}">Envelope #5 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC6Envelope}">Envelope #6</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC6EnvelopeRotated}">Envelope #6 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC7Envelope}">Envelope #7</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC7EnvelopeRotated}">Envelope #7 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC8Envelope}">Envelope #8</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC8EnvelopeRotated}">Envelope #8 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC9Envelope}">Envelope #9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPRC9EnvelopeRotated}">Envelope #9 Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll04Inch}">4" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll06Inch}">6" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll08Inch}">8" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll12Inch}">12" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll15Inch}">15" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll18Inch}">18" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll22Inch}">22" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll24Inch}">24" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll30Inch}">30" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll36Inch}">36" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryRoll54Inch}">54" Roll</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanDoubleHagakiPostcard}">Double Hagaki Postcard</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanDoubleHagakiPostcardRotated}">Double Hagaki Postcard Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanLPhoto}">L Photo</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapan2LPhoto}">2L Photo</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou1Envelope}">You 1 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou2Envelope}">You 2 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou3Envelope}">You 3 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou4EnvelopeRotated}">You 4 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6Envelope}">You 6 Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryJapanYou6EnvelopeRotated}">You 6 Envelope Rotated</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x6}">4" × 6"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica4x8}">4" × 8"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica5x7}">5" × 7"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica8x10}">8" × 10"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica10x12}">10" × 12"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNorthAmerica14x17}">14" × 17"</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryBusinessCard}">Business Card</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCreditCard}">Credit Card</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryColor}">Colour</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryGrayscale}">Greyscale</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryMonochrome}">Monochrome</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryAutomatic}">Automatic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryDraft}">Draft</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryFax}">Fax</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryHigh}">High</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNormal}">Normal</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographic}">Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryText}">Text</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryOne}">1</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTwo}">2</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryFour}">4</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntrySix}">6</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNine}">9</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntrySixteen}">16</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryHorizontal}">Horizontal</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryHorizontalReverse}">Horizontal Reverse</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryVertical}">Vertical</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryVerticalReverse}">Vertical Reverse</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryAutoFit}">Auto Fit</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent25}">25%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent50}">50%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent75}">75%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent100}">100%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent150}">150%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPercent200}">200%</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCustom}">Custom</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryDefault}">Default</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryNone}">None</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryMinimum}">Minimum</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryDoubleSidedShortEdge}">Flip on Short Edge</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryDoubleSidedLongEdge}">Flip on Long Edge</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryAutoSelect}">Auto Select</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryArchival}">Archival</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryBackPrintFilm}">Back-Printing Film</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryBond}">Bond</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCardStock}">Card Stock</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryContinuous}">Continuous-Feed</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryEnvelopePlain}">Standard Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryEnvelopeWindow}">Window Envelope</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryFabric}">Fabric</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryHighResolution}">High Resolution</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryLabel}">Label</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryMultiLayerForm}">Attached Multipart Forms</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryMultiPartForm}">Individual Multipart Forms</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicFilm}">Film Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicGlossy}">Glossy Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicHighGloss}">High-Gloss Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicMatte}">Matte Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicSatin}">Satin Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPhotographicSemiGloss}">Semi-Gloss Photographic</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryPlain}">Plain</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryScreen}">Continuous Screen</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryScreenPaged}">Paged Screen</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryStationery}">Stationery</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTabStockFull}">Full Tab Stock</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTabStockPreCut}">Precut Tab Stock</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTransparency}">Transparent</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTShirtTransfer}">T-Shirt Transfer</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryCassette}">Cassette</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryTractor}">Tractor</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryAutoSheetFeeder}">Auto Sheet Feeder</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.EntryManual}">Manual</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryAllPages}">All Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCurrentPage}">Current Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustomPages}">Custom Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPortrait}">Portrait</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryLandscape}">Landscape</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA0}">A0</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA1}">A1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA10}">A10</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA2}">A2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA3}">A3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA3Rotated}">A3 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA3Extra}">A3 Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA4}">A4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA4Rotated}">A4 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA4Extra}">A4 Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA5}">A5</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA5Rotated}">A5 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA5Extra}">A5 Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA6}">A6</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA6Rotated}">A6 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA7}">A7</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA8}">A8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA9}">A9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB0}">B0</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB1}">B1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB10}">B10</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB2}">B2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB3}">B3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB4}">B4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB4Envelope}">B4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB5Envelope}">B5 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB5Extra}">B5 Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB7}">B7</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB8}">B8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOB9}">B9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC0}">C0</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC1}">C1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC10}">C10</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC2}">C2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC3}">C3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC3Envelope}">C3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC4}">C4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC4Envelope}">C4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC5}">C5</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC5Envelope}">C5 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC6}">C6</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC6Envelope}">C6 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC6C5Envelope}">C6C5 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC7}">C7</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC8}">C8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOC9}">C9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISODLEnvelope}">DL Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISODLEnvelopeRotated}">DL Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryISOSRA3}">SRA3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanQuadrupleHagakiPostcard}">Quadruple Hagaki Postcard</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB0}">JB0</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB1}">JB1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB10}">JB10</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB2}">JB2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB3}">JB3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB4}">JB4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB4Rotated}">JB4 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB5}">JB5</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB5Rotated}">JB5 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB6}">JB6</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB6Rotated}">JB6 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB7}">JB7</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB8}">JB8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJISB9}">JB9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanChou3Envelope}">Chou 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanChou3EnvelopeRotated}">Chou 3 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanChou4Envelope}">Chou 4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanChou4EnvelopeRotated}">Chou 4 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanHagakiPostcard}">Hagaki Postcard</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanHagakiPostcardRotated}">Hagaki Postcard Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanKaku2Envelope}">Kaku 2 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanKaku2EnvelopeRotated}">Kaku 2 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanKaku3Envelope}">Kaku 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanKaku3EnvelopeRotated}">Kaku 3 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou4Envelope}">You 4 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica10x11}">10" × 11"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica10x14}">10" × 14"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica11x17}">11" × 17"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica9x11}">9" × 11"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaArchitectureASheet}">Architecture A Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaArchitectureBSheet}">Architecture B Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaArchitectureCSheet}">Architecture C Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaArchitectureDSheet}">Architecture D Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaArchitectureESheet}">Architecture E Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaCSheet}">C Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaDSheet}">D Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaESheet}">E Sheet</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaExecutive}">Executive</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaGermanLegalFanfold}">German Legal Fanfold</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaGermanStandardFanfold}">German Standard Fanfold</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLegal}">Legal</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLegalExtra}">Legal Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLetter}">Letter</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLetterRotated}">Letter Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLetterExtra}">Letter Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaLetterPlus}">Letter Plus</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaMonarchEnvelope}">Monarch Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNote}">Note</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber10Envelope}">#10 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber10EnvelopeRotated}">#10 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber9Envelope}">#9 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber11Envelope}">#11 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber12Envelope}">#12 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaNumber14Envelope}">#14 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaPersonalEnvelope}">Personal Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaQuarto}">Quarto</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaStatement}">Statement</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaSuperA}">Super A</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaSuperB}">Super B</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaTabloid}">Tabloid</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmericaTabloidExtra}">Tabloid Extra</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOtherMetricA4Plus}">A4 Plus</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOtherMetricA3Plus}">A3 Plus</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOtherMetricFolio}">Folio</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOtherMetricInviteEnvelope}">Invite Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOtherMetricItalianEnvelope}">Italian Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC1Envelope}">Envelope #1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC1EnvelopeRotated}">Envelope #1 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC10Envelope}">Envelope #10</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC10EnvelopeRotated}">Envelope #10 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC16K}">16K</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC16KRotated}">16K Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC2Envelope}">Envelope #2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC2EnvelopeRotated}">Envelope #2 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC32K}">32K</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC32KRotated}">32K Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC32KBig}">32K Big</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC3Envelope}">Envelope #3</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC3EnvelopeRotated}">Envelope #3 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC4Envelope}">Envelope #4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC4EnvelopeRotated}">Envelope #4 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC5Envelope}">Envelope #5</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC5EnvelopeRotated}">Envelope #5 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC6Envelope}">Envelope #6</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC6EnvelopeRotated}">Envelope #6 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC7Envelope}">Envelope #7</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC7EnvelopeRotated}">Envelope #7 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC8Envelope}">Envelope #8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC8EnvelopeRotated}">Envelope #8 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC9Envelope}">Envelope #9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPRC9EnvelopeRotated}">Envelope #9 Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll04Inch}">4" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll06Inch}">6" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll08Inch}">8" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll12Inch}">12" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll15Inch}">15" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll18Inch}">18" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll22Inch}">22" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll24Inch}">24" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll30Inch}">30" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll36Inch}">36" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryRoll54Inch}">54" Roll</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanDoubleHagakiPostcard}">Double Hagaki Postcard</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanDoubleHagakiPostcardRotated}">Double Hagaki Postcard Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanLPhoto}">L Photo</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapan2LPhoto}">2L Photo</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou1Envelope}">You 1 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou2Envelope}">You 2 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou3Envelope}">You 3 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou4EnvelopeRotated}">You 4 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou6Envelope}">You 6 Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryJapanYou6EnvelopeRotated}">You 6 Envelope Rotated</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica4x6}">4" × 6"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica4x8}">4" × 8"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica5x7}">5" × 7"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica8x10}">8" × 10"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica10x12}">10" × 12"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNorthAmerica14x17}">14" × 17"</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryBusinessCard}">Business Card</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCreditCard}">Credit Card</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryColor}">Colour</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryGrayscale}">Greyscale</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryMonochrome}">Monochrome</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryAutomatic}">Automatic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryDraft}">Draft</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryFax}">Fax</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryHigh}">High</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNormal}">Normal</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographic}">Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryText}">Text</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryOne}">1</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTwo}">2</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryFour}">4</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntrySix}">6</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNine}">9</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntrySixteen}">16</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryHorizontal}">Horizontal</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryHorizontalReverse}">Horizontal Reverse</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryVertical}">Vertical</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryVerticalReverse}">Vertical Reverse</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryAutoFit}">Auto Fit</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent25}">25%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent50}">50%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent75}">75%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent100}">100%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent150}">150%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent200}">200%</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustom}">Custom</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryDefault}">Default</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryNone}">None</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryMinimum}">Minimum</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryDoubleSidedShortEdge}">Flip on Short Edge</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryDoubleSidedLongEdge}">Flip on Long Edge</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryAutoSelect}">Auto Select</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryArchival}">Archival</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryBackPrintFilm}">Back-Printing Film</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryBond}">Bond</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCardStock}">Card Stock</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryContinuous}">Continuous-Feed</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryEnvelopePlain}">Standard Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryEnvelopeWindow}">Window Envelope</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryFabric}">Fabric</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryHighResolution}">High Resolution</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryLabel}">Label</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryMultiLayerForm}">Attached Multipart Forms</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryMultiPartForm}">Individual Multipart Forms</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicFilm}">Film Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicGlossy}">Glossy Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicHighGloss}">High-Gloss Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicMatte}">Matte Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicSatin}">Satin Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPhotographicSemiGloss}">Semi-Gloss Photographic</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPlain}">Plain</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryScreen}">Continuous Screen</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryScreenPaged}">Paged Screen</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryStationery}">Stationery</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTabStockFull}">Full Tab Stock</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTabStockPreCut}">Precut Tab Stock</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTransparency}">Transparent</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTShirtTransfer}">T-Shirt Transfer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCassette}">Cassette</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryTractor}">Tractor</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryAutoSheetFeeder}">Auto Sheet Feeder</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryManual}">Manual</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.SelectionCollation}">Collate</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.SelectionDoubleSided}">Print on Both Sides</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.SelectionCollation}">Collate</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.SelectionDoubleSided}">Print on Both Sides</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelError}">Error</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelUnknown}">Unknown</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelReady}">Ready</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelBusy}">Busy</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelDoorOpen}">Door Open</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelInitializing}">Initializing</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelIOActive}">Exchanging Data</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelManualFeed}">Need Manual Feed</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelNoToner}">No Toner</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelNotAvailable}">Not Available</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelOffline}">Offline</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelOutOfMemory}">Out of Memory</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelOutputBinFull}">Output Bin Full</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPagePunt}">Current Page Failed</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperJam}">Paper Jam</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperOut}">Out of Paper</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaperProblem}">Paper Error</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPaused}">Paused</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPendingDeletion}">Deleting Job</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPowerSave}">Power Save</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelPrinting}">Printing</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelProcessing}">Processing</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelServerUnknown}">Server Unknown</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelTonerLow}">Toner Low</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelUserIntervention}">Need User Intervention</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelWaiting}">Waiting</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.LabelWarmingUp}">Warming Up</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelError}">Error</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelUnknown}">Unknown</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelReady}">Ready</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelBusy}">Busy</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelDoorOpen}">Door Open</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelInitializing}">Initializing</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelIOActive}">Exchanging Data</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelManualFeed}">Need Manual Feed</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelNoToner}">No Toner</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelNotAvailable}">Not Available</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelOffline}">Offline</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelOutOfMemory}">Out of Memory</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelOutputBinFull}">Output Bin Full</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPagePunt}">Current Page Failed</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPaperJam}">Paper Jam</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPaperOut}">Out of Paper</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPaperProblem}">Paper Error</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPaused}">Paused</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPendingDeletion}">Deleting Job</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPowerSave}">Power Save</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinting}">Printing</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelProcessing}">Processing</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelServerUnknown}">Server Unknown</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelTonerLow}">Toner Low</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelUserIntervention}">Need User Intervention</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelWaiting}">Waiting</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelWarmingUp}">Warming Up</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionDocuments}">Documents: {0}</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionLocation}">Location: {0}</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionComment}">Comment: {0}</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionCustom}">Custom: {0}</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionSize}">{0:0.00} × {1:0.00} cm</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionProgress}">Progress: {0}% ({1} / {2})</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.ConstructionPage}">Page {0} / {1}</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionDocuments}">Documents: {0}</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionLocation}">Location: {0}</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionComment}">Comment: {0}</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionCustom}">Custom: {0}</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionSize}">{0:0.00} × {1:0.00} cm</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionProgress}">Progress: {0}% ({1} / {2})</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ConstructionPage}">Page {0} / {1}</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.TipCustomPages}">e.g. 1, 3-5, 8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.TipCustomPages}">e.g. 1, 3-5, 8</system:String>
 
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageInvalidValue}">The value is invalid!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageNoPrinter}">No printer was detected!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedPrinterPreferences}">Unable to open the printer preferences dialog!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedAddPrinter}">Unable to open the system printer installation dialog!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageFailedPrintJob}">Unable to start the print job!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageCancelledPrintJob}">The print job was cancelled!</system:String>
-    <system:String x:Key="{x:Static Member=local:StringResource.MessageErrorPrintJob}">An error occurred during the print job!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageInvalidValue}">The value is invalid!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageNoPrinter}">No printer was detected!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">Unable to open the printer preferences dialog!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedAddPrinter}">Unable to open the system printer installation dialog!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrintJob}">Unable to start the print job!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageCancelledPrintJob}">The print job was cancelled!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageErrorPrintJob}">An error occurred during the print job!</system:String>
 </ResourceDictionary>

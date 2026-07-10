@@ -9,7 +9,7 @@
                  mc:Ignorable="d"
                  Width="740" Height="520"
                  MinWidth="640" MinHeight="360"
-                 Title="{DynamicResource ResourceKey={x:Static Member=local:StringResource.TitlePrint}}"
+                 Title="{DynamicResource ResourceKey={x:Static Member=local:TextResource.TitlePrint}}"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica"
                  Closing="Exit"

@@ -75,13 +75,13 @@ namespace PrintDialogX
         /// <summary>
         /// Initializes a new instance of the <see cref="PrintDialog"/> class.
         /// </summary>
-        /// <param name="callback">The callback function that is invoked to customize the default <see cref="IPrintDialogHost"/> instance, which derives from <see cref="Window"/>.</param>
-        public PrintDialog(Action<Window> callback) : this()
+        /// <param name="customizer">The callback function that is invoked to customize the default <see cref="IPrintDialogHost"/> instance, which derives from <see cref="Window"/>.</param>
+        public PrintDialog(Action<Window> customizer) : this()
         {
-            callback((Window)Host);
+            customizer((Window)Host);
         }
 
-        private Func<Task<FrameworkElement>> GetCallback(Func<Task>? generator = null)
+        private Func<Task<FrameworkElement>> CreateInstantiator(Func<Task>? generator = null)
         {
             return async () =>
             {
@@ -99,7 +99,7 @@ namespace PrintDialogX
         /// </summary>
         public void Show()
         {
-            Host.Start(this, false, GetCallback());
+            Host.Start(this, false, CreateInstantiator());
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace PrintDialogX
         /// <param name="generator">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
         public void Show(Func<Task> generator)
         {
-            Host.Start(this, false, GetCallback(generator));
+            Host.Start(this, false, CreateInstantiator(generator));
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog()
         {
-            Host.Start(this, true, GetCallback());
+            Host.Start(this, true, CreateInstantiator());
 
             return Host.GetResult().IsSuccess;
         }
@@ -129,7 +129,7 @@ namespace PrintDialogX
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
         public bool ShowDialog(Func<Task> generator)
         {
-            Host.Start(this, true, GetCallback(generator));
+            Host.Start(this, true, CreateInstantiator(generator));
 
             return Host.GetResult().IsSuccess;
         }

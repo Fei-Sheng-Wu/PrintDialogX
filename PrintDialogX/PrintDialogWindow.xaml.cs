@@ -14,7 +14,7 @@ namespace PrintDialogX
     {
         private bool isAvailable = true;
         private PrintDialogResult result = new();
-        private Func<Task<FrameworkElement>>? loader = null;
+        private Func<Task<FrameworkElement>>? initializer = null;
         private KeyEventHandler? handler = null;
 
         public PrintDialogWindow()
@@ -30,12 +30,12 @@ namespace PrintDialogX
 
         private async void LoadContent(object sender, EventArgs e)
         {
-            if (loader == null)
+            if (initializer == null)
             {
                 return;
             }
 
-            content.Child = await loader();
+            content.Child = await initializer();
         }
 
         private void PerformShortcuts(object sender, KeyEventArgs e)
@@ -53,7 +53,7 @@ namespace PrintDialogX
             }
         }
 
-        public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> callback)
+        public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> instantiator)
         {
             if (!isAvailable)
             {
@@ -61,7 +61,7 @@ namespace PrintDialogX
             }
 
             isAvailable = false;
-            loader = callback;
+            initializer = instantiator;
 
             if (Application.Current == null)
             {
