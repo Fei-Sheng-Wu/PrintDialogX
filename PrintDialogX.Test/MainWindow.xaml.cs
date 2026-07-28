@@ -466,7 +466,7 @@ namespace PrintDialogX.Test
 
         private void GenerateCode(string? code = null, int indent = 0)
         {
-            textCode.Text += $"{(textCode.Text.Any() ? Environment.NewLine : string.Empty)}{new string(' ', 4 * indent)}{code}";
+            textCode.Text += $"{(textCode.Text.Length > 0 ? Environment.NewLine : string.Empty)}{new string(' ', 4 * indent)}{code}";
         }
 
         private void GenerateDocument(PrintDocument document, PrintSettings settings)
@@ -723,7 +723,7 @@ namespace PrintDialogX.Test
             int count = (int)Math.Floor(height / sizeRow);
             for (int j = 0; j < count; j++)
             {
-                int position = context.ContainsKey("position") ? (int)context["position"] : 0;
+                int position = context.TryGetValue("position", out object? value) ? (int)value : 0;
                 if (j > 0)
                 {
                     position++;

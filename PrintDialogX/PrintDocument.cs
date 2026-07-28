@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace PrintDialogX
 {
@@ -67,11 +66,10 @@ namespace PrintDialogX
         /// <summary>
         /// Raises the <see cref="PrintSettingsChanged"/> event.
         /// </summary>
-        /// <param name="dispatcher">The <see cref="Dispatcher"/> instance to be used to invoke the handler.</param>
         /// <param name="settings">The <see cref="PrintSettingsEventArgs"/> instance of the new print settings.</param>
-        public void OnPrintSettingsChanged(Dispatcher dispatcher, PrintSettingsEventArgs settings)
+        public void OnPrintSettingsChanged(PrintSettingsEventArgs settings)
         {
-            dispatcher.Invoke(() => PrintSettingsChanged?.Invoke(this, settings));
+            PrintSettingsChanged?.Invoke(this, settings);
         }
     }
 

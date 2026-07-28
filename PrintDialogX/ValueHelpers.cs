@@ -47,7 +47,7 @@ namespace PrintDialogX
 
             Expander expander = (Expander)template.FindName("PART_Expander", content);
             expander.IsExpanded = settings.IsSettingsExpanded;
-            if (!settings.AdvancedSettings.Any())
+            if (settings.AdvancedSettings.Length <= 0)
             {
                 expander.Visibility = Visibility.Collapsed;
             }
@@ -499,9 +499,9 @@ namespace PrintDialogX
             FitToPage
         }
 
-        internal sealed class Document(PrintDialogViewModel.ModelLock locker) : DocumentPaginator
+        internal sealed class Document(PrintDialogViewModel.ModelLocker locker) : DocumentPaginator
         {
-            public PrintDialogViewModel.ModelLock Lock { get; } = locker;
+            public PrintDialogViewModel.ModelLocker Lock { get; } = locker;
             public List<(int Index, DocumentPage Page)> Pages { get; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
@@ -519,6 +519,7 @@ namespace PrintDialogX
             public override int PageCount { get => Pages.Count; }
             public override Size PageSize { get; set; } = new();
             public override IDocumentPaginatorSource? Source { get => null; }
+
             public override System.Windows.Documents.DocumentPage GetPage(int index)
             {
                 using (Lock.Lock())

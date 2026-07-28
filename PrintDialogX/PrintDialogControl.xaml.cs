@@ -23,9 +23,9 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, PrintDialogViewModel.ModelLock locker, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, PrintDialogViewModel.ModelLocker locker, Action retriever, Action visualizer, Action informer)
     {
-        internal sealed class ModelLock() : IDisposable
+        internal sealed class ModelLocker() : IDisposable
         {
             internal sealed class Locker(SemaphoreSlim locker) : IDisposable
             {
@@ -221,7 +221,7 @@ namespace PrintDialogX
         private readonly (PrintServer Server, bool IsCustomized) server;
 
         private (Task Task, CancellationTokenSource Cancellation)? task = null;
-        private (PrintDialogViewModel.ModelLock Task, PrintDialogViewModel.ModelLock Document, PrintDialogViewModel.ModelLock Preview) locks = (new(), new(), new());
+        private (PrintDialogViewModel.ModelLocker Task, PrintDialogViewModel.ModelLocker Document, PrintDialogViewModel.ModelLocker Preview) lockers = (new(), new(), new());
 
         public PrintDialogControl(PrintDialog dialog, IPrintDialogHost window)
         {
@@ -263,7 +263,7 @@ namespace PrintDialogX
                     handler();
                 }
             });
-            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, locks.Preview, LoadSettings, LoadDocument, async () =>
+            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, lockers.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (!await UpdateDocument())
                 {
@@ -318,16 +318,16 @@ namespace PrintDialogX
 
             DataContext = null;
 
-            locks.Task.Dispose();
-            locks.Document.Dispose();
-            locks.Preview.Dispose();
+            lockers.Task.Dispose();
+            lockers.Document.Dispose();
+            lockers.Preview.Dispose();
         }
 
         private async void StartTask(Func<CancellationToken, Task> executor)
         {
             await StopTask();
 
-            using (await locks.Task.LockAsync())
+            using (await lockers.Task.LockAsync())
             {
                 CancellationTokenSource cancellation = new();
                 task = (Task.Run(async () =>
@@ -348,7 +348,7 @@ namespace PrintDialogX
 
         private async Task StopTask()
         {
-            using (await locks.Task.LockAsync())
+            using (await lockers.Task.LockAsync())
             {
                 if (task == null || task.Value.Task.IsCompleted)
                 {
@@ -439,11 +439,11 @@ namespace PrintDialogX
             model.IsPrintersReady.Value = true;
         }
 
-        private void LoadPrinters(object sender, EventArgs e)
+        private async void LoadPrinters(object sender, EventArgs e)
         {
             try
             {
-                Dispatcher.InvokeAsync(() => LoadPrinters(), DispatcherPriority.Background);
+                await Dispatcher.InvokeAsync(() => LoadPrinters(), DispatcherPriority.Background);
             }
             catch { }
         }
@@ -672,7 +672,7 @@ namespace PrintDialogX
                 {
                     Enums.Pages.CurrentPage => await new Func<Task<List<object>?>>(async () =>
                     {
-                        using (await locks.Preview.LockAsync())
+                        using (await lockers.Preview.LockAsync())
                         {
                             return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
                         }
@@ -680,7 +680,7 @@ namespace PrintDialogX
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum, false).Result,
                     _ => null
                 };
-                if (!(pages?.Any() ?? true))
+                if ((pages?.Count ?? 0) > 0)
                 {
                     pages = null;
                 }
@@ -705,11 +705,11 @@ namespace PrintDialogX
                 x.ThrowIfCancellationRequested();
 
                 model.PreviewDocument.Value.PageSize = size;
-                using (await locks.Preview.LockAsync())
+                using (await lockers.Preview.LockAsync())
                 {
                     model.PreviewDocument.Value.Pages.Clear();
 
-                    using (await locks.Document.LockAsync())
+                    using (await lockers.Document.LockAsync())
                     {
                         int index = 0;
                         List<PrintPage>? chunk = null;
@@ -756,7 +756,7 @@ namespace PrintDialogX
                 return isUpdating;
             }
 
-            using (await locks.Document.LockAsync())
+            using (await lockers.Document.LockAsync())
             {
                 PrintSettingsEventArgs settings = new(model.Printer.Value, new()
                 {
@@ -779,16 +779,20 @@ namespace PrintDialogX
                     Type = model.TypeEntries.Selection,
                     Source = model.SourceEntries.Selection
                 }, isUpdating);
-                model.PrintDocument.OnPrintSettingsChanged(Dispatcher, settings);
+                Dispatcher.Invoke(() => model.PrintDocument.OnPrintSettingsChanged(settings));
 
                 while (settings.IsUpdating == null)
                 {
                     await Task.Delay(DURATION_SLEEP);
                 }
 
-                ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
+                if (settings.IsUpdating ?? false)
+                {
+                    ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = model.PrintDocument.PageCount;
+                    return true;
+                }
 
-                return settings.IsUpdating.Value;
+                return false;
             }
         }
 
