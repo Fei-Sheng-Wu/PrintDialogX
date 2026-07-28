@@ -315,7 +315,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Column="0" Grid.Row="0" Padding="16,6,20,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
+        <ScrollViewer Grid.Column="0" Grid.Row="0" Padding="16,6,20,16" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" PanningMode="VerticalOnly">
             <ScrollViewer.Content>
                 <Binding Path="InterfaceSettings" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.InterfaceToContent}}" d:Source="{d:DesignInstance Type=local:InterfaceSettings, IsDesignTimeCreatable=True}" d:Path=".">
                     <Binding.ConverterParameter>
@@ -325,7 +325,7 @@
                                     <system:Double x:Key="{x:Static Member=local:ValueResource.LengthOption}">190</system:Double>
                                 </StackPanel.Resources>
                                 <StackPanel Name="PART_Basic" Orientation="Vertical" />
-                                <Expander Name="PART_Expander" Margin="0,16" Padding="0,0,12,0">
+                                <Expander Name="PART_Expander" Margin="0,16,0,0" Padding="0,0,12,0">
                                     <Expander.Resources>
                                         <system:Double x:Key="{x:Static Member=local:ValueResource.LengthOption}">160</system:Double>
                                     </Expander.Resources>
@@ -373,7 +373,7 @@
                         <ItemsControl HorizontalAlignment="Center" ItemsSource="{Binding Path=.}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=DataContext.ColorEntries.Selection}" />
+                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Path=ColorEmulationLevel}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>

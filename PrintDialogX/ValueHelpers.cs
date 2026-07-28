@@ -501,7 +501,7 @@ namespace PrintDialogX
 
         internal sealed class Document(PrintDialogViewModel.ModelLocker locker) : DocumentPaginator
         {
-            public PrintDialogViewModel.ModelLocker Lock { get; } = locker;
+            public PrintDialogViewModel.ModelLocker Locker { get; } = locker;
             public List<(int Index, DocumentPage Page)> Pages { get; } = [];
 
             public VirtualizingStackPanel? Viewer { get; set; } = null;
@@ -522,7 +522,7 @@ namespace PrintDialogX
 
             public override System.Windows.Documents.DocumentPage GetPage(int index)
             {
-                using (Lock.Lock())
+                using (Locker.Lock())
                 {
                     if (index < 0 || index >= PageCount)
                     {
@@ -642,7 +642,7 @@ namespace PrintDialogX
             {
                 PixelShader = new()
                 {
-                    UriSource = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Effects/{0}.ps", name), UriKind.Relative)
+                    UriSource = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Effects/{0}", name), UriKind.Relative)
                 };
                 UpdateShaderValue(InputProperty);
                 UpdateShaderValue(ViewportLeftProperty);
@@ -651,8 +651,6 @@ namespace PrintDialogX
                 UpdateShaderValue(ViewportHeightProperty);
             }
         }
-
-        public const double LENGTH_SPACING = 8;
 
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(VirtualizingStackPanel), typeof(DocumentHostControl), new(null));
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(DocumentPage), typeof(DocumentHostControl), new(null, (x, e) =>
@@ -678,6 +676,7 @@ namespace PrintDialogX
         }));
         public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(nameof(Zoom), typeof(double), typeof(DocumentHostControl), new(1.0));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Enums.Color), typeof(DocumentHostControl), new FrameworkPropertyMetadata(Enums.Color.Color, FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty ColorEmulationLevelProperty = DependencyProperty.Register(nameof(ColorEmulationLevel), typeof(ColorEmulationLevel), typeof(DocumentHostControl), new(ColorEmulationLevel.Simple));
 
         public VirtualizingStackPanel? Viewer
         {
@@ -698,6 +697,11 @@ namespace PrintDialogX
         {
             get => (Enums.Color)GetValue(ColorProperty);
             set => SetValue(ColorProperty, value);
+        }
+        public ColorEmulationLevel ColorEmulationLevel
+        {
+            get => (ColorEmulationLevel)GetValue(ColorEmulationLevelProperty);
+            set => SetValue(ColorEmulationLevelProperty, value);
         }
 
         public (VisualBrush Brush, Rectangle Container, VisualBrush Visual)? Brush { get; set; } = null;
@@ -752,12 +756,17 @@ namespace PrintDialogX
             }
 
             Rect clip = new(viewport.X / Zoom, viewport.Y / Zoom, viewport.Width / Zoom, viewport.Height / Zoom);
-            if (true || effect.Color != Color)
+            if (effect.Color != Color)
             {
-                effect = (Color, Color switch
+                effect = (Color, ColorEmulationLevel switch
                 {
-                    Enums.Color.Grayscale => new("Grayscale"),
-                    Enums.Color.Monochrome => new("Monochrome"),
+                    ColorEmulationLevel.Simple => Color != Enums.Color.Color ? new("Grayscale.ps") : null,
+                    ColorEmulationLevel.Full => Color switch
+                    {
+                        Enums.Color.Grayscale => new("Grayscale.ps"),
+                        Enums.Color.Monochrome => new("Monochrome.ps"),
+                        _ => null
+                    },
                     _ => null
                 });
             }
@@ -782,7 +791,7 @@ namespace PrintDialogX
 
     internal sealed class DocumentToContentConverter() : IValueConverter
     {
-        internal sealed class Content(DocumentHostControl.Document document, VirtualizingStackPanel viewer, DocumentHostControl.DocumentPage page)
+        internal sealed class Content(VirtualizingStackPanel viewer, DocumentHostControl.Document document, DocumentHostControl.DocumentPage page, ColorEmulationLevel color)
         {
             public VirtualizingStackPanel? Viewer { get; } = viewer;
             public object DataContext { get; } = viewer.DataContext;
@@ -790,9 +799,11 @@ namespace PrintDialogX
             public DocumentHostControl.DocumentPage Page { get; } = page;
             public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
             public double Zoom { get; } = document.ZoomValue;
+            public ColorEmulationLevel ColorEmulationLevel { get; } = color;
         }
 
         public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
+        public ColorEmulationLevel ColorEmulationLevel { get; set; } = ColorEmulationLevel.Simple;
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -802,7 +813,7 @@ namespace PrintDialogX
             }
 
             List<IEnumerable<Content>> rows = [];
-            using (document.Lock.Lock())
+            using (document.Locker.Lock())
             {
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
@@ -813,7 +824,7 @@ namespace PrintDialogX
                             x.Page.UpdateContent();
                         }
 
-                        return new Content(document, viewer, x.Page);
+                        return new Content(viewer, document, x.Page, ColorEmulationLevel);
                     }));
                 }
             }

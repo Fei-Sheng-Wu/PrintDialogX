@@ -39,7 +39,7 @@
             <TextBlock Grid.Column="0" Width="Auto" Text="Document Template:" />
             <ComboBox x:Name="optionTemplate" Grid.Column="1" Margin="8,0,0,0" />
             <TextBlock Grid.Column="2" Margin="8,0,0,0" Width="Auto" Text="Page Count:" />
-            <TextBox x:Name="optionCount" Grid.Column="3" Margin="8,0,0,0" Text="500" />
+            <TextBox x:Name="optionCount" Grid.Column="3" Margin="8,0,0,0" Text="100" />
             <Button Grid.Column="4" Margin="8,0,0,0" Content="Open Dialog" Click="OpenDialog" />
         </Grid>
         <Expander Grid.Row="1" Margin="0,8,0,0" IsExpanded="False" Header="Customizations">
@@ -50,20 +50,23 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Margin="0,0,4,0" Orientation="Vertical">
-                        <GroupBox Padding="8,0,8,8" Header="Document Settings">
-                            <StackPanel x:Name="containerDocument" Orientation="Vertical" />
+                        <GroupBox Padding="8" Header="Document Settings">
+                            <StackPanel x:Name="containerDocument" Margin="0,-8,0,0" Orientation="Vertical" />
                         </GroupBox>
-                        <GroupBox Margin="0,16,0,0" Padding="8,0,8,8" Header="Interface Settings">
+                        <GroupBox Margin="0,16,0,0" Padding="8" Header="Core Settings">
+                            <StackPanel x:Name="containerCore" Margin="0,-8,0,0" Orientation="Vertical" />
+                        </GroupBox>
+                        <GroupBox Margin="0,16,0,0" Padding="8" Header="Interface Settings">
                             <StackPanel Orientation="Vertical">
-                                <StackPanel x:Name="containerWindow" Orientation="Vertical" />
+                                <StackPanel x:Name="containerWindow" Margin="0,-8,0,0" Orientation="Vertical" />
                                 <StackPanel x:Name="containerInterface" Margin="0,16,0,0" Orientation="Vertical" />
                             </StackPanel>
                         </GroupBox>
                     </StackPanel>
                     <StackPanel Grid.Column="1" Margin="4,0,0,0" Orientation="Vertical">
-                        <GroupBox Padding="8,0,8,8" Header="Print Settings">
+                        <GroupBox Padding="8" Header="Print Settings">
                             <StackPanel Orientation="Vertical">
-                                <StackPanel x:Name="containerPrinter" Orientation="Vertical" />
+                                <StackPanel x:Name="containerPrinter" Margin="0,-8,0,0" Orientation="Vertical" />
                                 <StackPanel x:Name="containerDefault" Margin="0,16,0,0" Orientation="Vertical" />
                             </StackPanel>
                         </GroupBox>

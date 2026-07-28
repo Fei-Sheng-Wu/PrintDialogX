@@ -47,7 +47,9 @@ namespace PrintDialogX.Test
             AddOption(containerDocument, "documentName", "Name", new TextBox(), string.Empty);
             AddOption(containerDocument, "documentSize", "Size", CreateCombo<Enums.Size.DefinedSize>("(Dynamic Size)"), "(Dynamic Size)");
             AddOption(containerDocument, "documentMargin", "Margin", new TextBox(), "60.0");
-            AddOption(containerDocument, "documentPerformance", "Performance Strategy", CreateCombo<PerformanceStrategy>(), null);
+
+            AddOption(containerCore, "corePerformance", "Performance Strategy", CreateCombo<PerformanceStrategy>(), null);
+            AddOption(containerCore, "coreColorEmulation", "Color Emulation Level", CreateCombo<ColorEmulationLevel>(), null);
 
             AddOption(containerWindow, "windowDialog", "Window", CreateCheck("Show as Dialog"), true);
             AddOption(containerWindow, "windowTopmost", null, CreateCheck("Topmost"), false);
@@ -261,10 +263,15 @@ namespace PrintDialogX.Test
                 dialog.Document = document;
                 GenerateCode("dialog.Document = document;");
             }
-            HandleConfiguration<PerformanceStrategy>("documentPerformance", x =>
+            HandleConfiguration<PerformanceStrategy>("corePerformance", x =>
             {
                 dialog.PerformanceStrategy = x;
                 GenerateCode($"dialog.PerformanceStrategy = PrintDialogX.PerformanceStrategy.{x};");
+            });
+            HandleConfiguration<ColorEmulationLevel>("coreColorEmulation", x =>
+            {
+                dialog.ColorEmulationLevel = x;
+                GenerateCode($"dialog.ColorEmulationLevel = PrintDialogX.ColorEmulationLevel.{x};");
             });
 
             GenerateCode();
@@ -293,12 +300,12 @@ namespace PrintDialogX.Test
             });
             HandleConfiguration<string>("interfaceSettingsBasic", x =>
             {
-                dialog.InterfaceSettings.BasicSettings = [.. x.Split(',').Select(x => Enum.Parse<InterfaceSettings.Option>(x))];
+                dialog.InterfaceSettings.BasicSettings = [.. x.Split(',').Where(x => x.Length > 0).Select(x => Enum.Parse<InterfaceSettings.Option>(x))];
                 GenerateCode($"dialog.InterfaceSettings.BasicSettings = [{string.Join(", ", x.Split(',').Select(x => $"PrintDialogX.InterfaceSettings.Option.{x.Trim()}"))}];");
             });
             HandleConfiguration<string>("interfaceSettingsAdvanced", x =>
             {
-                dialog.InterfaceSettings.AdvancedSettings = [.. x.Split(',').Select(x => Enum.Parse<InterfaceSettings.Option>(x))];
+                dialog.InterfaceSettings.AdvancedSettings = [.. x.Split(',').Where(x => x.Length > 0).Select(x => Enum.Parse<InterfaceSettings.Option>(x))];
                 GenerateCode($"dialog.InterfaceSettings.AdvancedSettings = [{string.Join(", ", x.Split(',').Select(x => $"PrintDialogX.InterfaceSettings.Option.{x.Trim()}"))}];");
             });
             HandleConfiguration<bool>("interfaceSettingsExpanded", x =>

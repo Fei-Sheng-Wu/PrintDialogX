@@ -215,6 +215,7 @@ namespace PrintDialogX
     {
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
+        public const double LENGTH_SPACING = 8;
 
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
@@ -293,6 +294,7 @@ namespace PrintDialogX
             iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
             ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).PerformanceStrategy = dialog.PerformanceStrategy;
+            ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).ColorEmulationLevel = dialog.ColorEmulationLevel;
 
             LoadPrinters(server.IsCustomized ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {
@@ -921,7 +923,7 @@ namespace PrintDialogX
 
         private Size ComputePageSize(double? scale = null)
         {
-            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * DocumentHostControl.LENGTH_SPACING);
+            return new(model.PreviewDocument.Value.PageSize.Width * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * LENGTH_SPACING, model.PreviewDocument.Value.PageSize.Height * (scale ?? model.PreviewDocument.Value.ZoomValue) + 2 * LENGTH_SPACING);
         }
 
         private double ComputePageOffset(double index, double? unit = null)
@@ -964,7 +966,7 @@ namespace PrintDialogX
                     double zoom = 0.15 * Math.Sign(e.Delta);
                     model.PreviewDocument.Value.ZoomValue *= 1 + zoom;
                     model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.Custom;
-                    model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.ZoomValue - position.X, y * model.PreviewDocument.Value.ZoomValue - position.Y - ComputePageOffset(Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX), 2 * DocumentHostControl.LENGTH_SPACING) * zoom);
+                    model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.ZoomValue - position.X, y * model.PreviewDocument.Value.ZoomValue - position.Y - ComputePageOffset(Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX), 2 * LENGTH_SPACING) * zoom);
                     model.PreviewDocument.OnPropertyChanged();
                     e.Handled = true;
                     break;

@@ -22,6 +22,27 @@ namespace PrintDialogX
     }
 
     /// <summary>
+    /// Specifies the level of color emulation.
+    /// </summary>
+    public enum ColorEmulationLevel
+    {
+        /// <summary>
+        /// None.
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// Simple.
+        /// </summary>
+        Simple,
+
+        /// <summary>
+        /// Full.
+        /// </summary>
+        Full
+    }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PrintDialog"/> class.
     /// </summary>
     /// <param name="host">The custom <see cref="IPrintDialogHost"/> instance to be used to host the actual control for the print operation.</param>
@@ -61,6 +82,11 @@ namespace PrintDialogX
         /// Gets or sets the performance strategy.
         /// </summary>
         public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
+
+        /// <summary>
+        /// Gets or sets the level of color emulation.
+        /// </summary>
+        public ColorEmulationLevel ColorEmulationLevel { get; set; } = ColorEmulationLevel.Simple;
 
         /// <summary>
         /// Gets the result of the print operation.
