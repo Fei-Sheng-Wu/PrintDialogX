@@ -678,7 +678,7 @@ namespace PrintDialogX
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum, false).Result,
                     _ => null
                 };
-                if ((pages?.Count ?? 0) > 0)
+                if ((pages?.Count ?? 0) <= 0)
                 {
                     pages = null;
                 }

@@ -443,8 +443,8 @@ namespace PrintDialogX
                     case 1 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int single) && single > 0 && single <= maximum:
                         pages?.Add(single);
                         break;
-                    case 2 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int start) && int.TryParse(range[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int end) && start > 0 && start <= end && end <= maximum:
-                        pages?.Add((start, end));
+                    case 2 when int.TryParse(range[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int first) && int.TryParse(range[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int second) && Math.Min(first, second) > 0 && Math.Max(first, second) <= maximum:
+                        pages?.Add((Math.Min(first, second), Math.Max(first, second)));
                         break;
                     default:
                         return (false, null);
