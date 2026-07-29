@@ -13,8 +13,7 @@
                  WindowBackdropType="Mica"
                  Title="{DynamicResource ResourceKey={x:Static Member=local:TextResource.TitlePrint}}"
                  Closing="Exit"
-                 ContentRendered="LoadContent"
-                 PreviewKeyDown="PerformShortcuts">
+                 ContentRendered="LoadContent">
     <ui:FluentWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

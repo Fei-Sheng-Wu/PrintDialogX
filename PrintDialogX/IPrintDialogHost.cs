@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 
@@ -95,9 +96,9 @@ namespace PrintDialogX
         public void SetProgress(PrintDialogProgress progress);
 
         /// <summary>
-        /// Sets the event handler that handles keyboard shortcuts.
+        /// Sets the keyboard shortcut handlers.
         /// </summary>
-        /// <param name="handler">The event handler to be used.</param>
-        public void SetShortcutHandler(KeyEventHandler handler);
+        /// <param name="handlers">The collection of keyboard shortcut handlers.</param>
+        public void SetShortcutHandlers(IEnumerable<KeyBinding> handlers);
     }
 }

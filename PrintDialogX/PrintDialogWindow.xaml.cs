@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +16,6 @@ namespace PrintDialogX
         private bool isAvailable = true;
         private PrintDialogResult result = new();
         private Func<Task<FrameworkElement>>? initializer = null;
-        private KeyEventHandler? handler = null;
 
         public PrintDialogWindow()
         {
@@ -36,11 +36,6 @@ namespace PrintDialogX
             }
 
             content.Child = await initializer();
-        }
-
-        private void PerformShortcuts(object sender, KeyEventArgs e)
-        {
-            handler?.Invoke(sender, e);
         }
 
         private void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
@@ -85,7 +80,7 @@ namespace PrintDialogX
             }
             title.Header = new TextBlock()
             {
-                Margin = new(dialog.InterfaceSettings.Icon == null ? 16 : 0, 10, 0, 10),
+                Margin = new(dialog.InterfaceSettings.Icon != null ? 0 : 16, 10, 0, 10),
                 FontSize = title.FontSize,
                 Text = Title
             };
@@ -124,9 +119,12 @@ namespace PrintDialogX
             TaskbarItemInfo.ProgressValue = progress.Value / 100.0;
         }
 
-        public void SetShortcutHandler(KeyEventHandler value)
+        public void SetShortcutHandlers(IEnumerable<KeyBinding> handlers)
         {
-            handler = value;
+            foreach(KeyBinding handler in handlers)
+            {
+                InputBindings.Add(handler);
+            }
         }
     }
 }

@@ -25,38 +25,6 @@ namespace PrintDialogX
 {
     internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, PrintDialogViewModel.ModelLocker locker, Action retriever, Action visualizer, Action informer)
     {
-        internal sealed class ModelLocker() : IDisposable
-        {
-            internal sealed class Locker(SemaphoreSlim locker) : IDisposable
-            {
-                public void Dispose()
-                {
-                    locker.Release();
-                }
-            }
-
-            private readonly SemaphoreSlim locker = new(1, 1);
-
-            public Locker Lock()
-            {
-                locker.Wait();
-
-                return new(locker);
-            }
-
-            public async Task<Locker> LockAsync()
-            {
-                await locker.WaitAsync();
-
-                return new(locker);
-            }
-
-            public void Dispose()
-            {
-                locker.Dispose();
-            }
-        }
-
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? updater = null) : INotifyPropertyChanged
         {
             public event PropertyChangedEventHandler? PropertyChanged = null;
@@ -166,6 +134,53 @@ namespace PrintDialogX
             }
         }
 
+        internal sealed class ModelLocker() : IDisposable
+        {
+            internal sealed class Scope(SemaphoreSlim locker) : IDisposable
+            {
+                public void Dispose()
+                {
+                    locker.Release();
+                }
+            }
+
+            private readonly SemaphoreSlim locker = new(1, 1);
+
+            public Scope Lock()
+            {
+                locker.Wait();
+
+                return new(locker);
+            }
+
+            public async Task<Scope> LockAsync()
+            {
+                await locker.WaitAsync();
+
+                return new(locker);
+            }
+
+            public void Dispose()
+            {
+                locker.Dispose();
+            }
+        }
+
+        internal sealed class ModelCommand(Action executer) : ICommand
+        {
+            public event EventHandler? CanExecuteChanged = null;
+
+            public bool CanExecute(object? parameter)
+            {
+                return true;
+            }
+
+            public void Execute(object? parameter)
+            {
+                executer();
+            }
+        }
+
         public PrintDocument PrintDocument { get; } = document;
         public PrintSettings PrintSettings { get; } = settings;
         public InterfaceSettings InterfaceSettings { get; } = appearance;
@@ -234,36 +249,17 @@ namespace PrintDialogX
             }
 
             host = window;
-            host.SetShortcutHandler((x, e) =>
+            host.SetShortcutHandlers((new (Action Executer, IEnumerable<KeyGesture> Gestures)[]
             {
-                Action? handler = (Keyboard.Modifiers, e.Key) switch
-                {
-                    (ModifierKeys.Control, Key.P) => Print,
-                    (ModifierKeys.Control, Key.OemPlus) => ZoomIn,
-                    (ModifierKeys.Control, Key.Add) => ZoomIn,
-                    (ModifierKeys.Control, Key.OemMinus) => ZoomOut,
-                    (ModifierKeys.Control, Key.Subtract) => ZoomOut,
-                    (ModifierKeys.Control, Key.D0) => ZoomActual,
-                    (ModifierKeys.Control, Key.NumPad0) => ZoomActual,
-                    (ModifierKeys.Alt, Key.System) => e.SystemKey switch
-                    {
-                        Key.Home => NavigatePageFirst,
-                        Key.Left => NavigatePagePrevious,
-                        Key.Right => NavigatePageNext,
-                        Key.End => NavigatePageLast,
-                        _ => null
-                    },
-                    (ModifierKeys.None, Key.PageUp) => NavigatePagePrevious,
-                    (ModifierKeys.None, Key.PageDown) => NavigatePageNext,
-                    _ => null
-                };
-
-                if (handler != null)
-                {
-                    e.Handled = true;
-                    handler();
-                }
-            });
+                (Print, [new(Key.P, ModifierKeys.Control)]),
+                (ZoomIn, [new(Key.OemPlus, ModifierKeys.Control), new(Key.Add, ModifierKeys.Control)]),
+                (ZoomOut, [new(Key.OemMinus, ModifierKeys.Control), new(Key.Subtract, ModifierKeys.Control)]),
+                (ZoomActual, [new(Key.D0, ModifierKeys.Control), new(Key.NumPad0, ModifierKeys.Control)]),
+                (NavigatePageFirst, [new(Key.Home, ModifierKeys.Alt)]),
+                (NavigatePagePrevious, [new(Key.PageUp, ModifierKeys.Alt), new(Key.Left, ModifierKeys.Alt)]),
+                (NavigatePageNext, [new(Key.PageDown, ModifierKeys.Alt), new(Key.Right, ModifierKeys.Alt)]),
+                (NavigatePageLast, [new(Key.End, ModifierKeys.Alt)]),
+            }).SelectMany(x => x.Gestures.Select(y => new KeyBinding(new PrintDialogViewModel.ModelCommand(x.Executer), y))));
             model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, lockers.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (!await UpdateDocument())
