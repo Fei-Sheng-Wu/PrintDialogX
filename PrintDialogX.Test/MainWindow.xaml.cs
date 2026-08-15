@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Printing;
 using System.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
@@ -44,9 +43,9 @@ namespace PrintDialogX.Test
             optionTemplate.SelectedItem = "UI Library Test";
 
             AddOption(containerDocument, "documentAsynchronous", "Generation", CreateCheck("Asynchronous"), true);
-            AddOption(containerDocument, "documentName", "Name", new TextBox(), string.Empty);
+            AddOption(containerDocument, "documentName", "Name", CreateText(), string.Empty);
             AddOption(containerDocument, "documentSize", "Size", CreateCombo<Enums.Size.DefinedSize>("(Dynamic Size)"), "(Dynamic Size)");
-            AddOption(containerDocument, "documentMargin", "Margin", new TextBox(), "60.0");
+            AddOption(containerDocument, "documentMargin", "Margin", CreateText(), "60.0");
 
             AddOption(containerCore, "corePerformance", "Performance Strategy", CreateCombo<PerformanceStrategy>(), null);
             AddOption(containerCore, "coreColorEmulation", "Color Emulation Level", CreateCombo<ColorEmulationLevel>(), null);
@@ -55,23 +54,23 @@ namespace PrintDialogX.Test
             AddOption(containerWindow, "windowTopmost", null, CreateCheck("Topmost"), false);
             AddOption(containerWindow, "windowResizable", null, CreateCheck("Resizable"), true);
             AddOption(containerWindow, "windowTaskbar", null, CreateCheck("Show In Taskbar"), true);
-            AddOption(containerWindow, "windowWidth", "Window Width", new TextBox(), string.Empty);
-            AddOption(containerWindow, "windowHeight", "Window Height", new TextBox(), string.Empty);
+            AddOption(containerWindow, "windowWidth", "Window Width", CreateText(), string.Empty);
+            AddOption(containerWindow, "windowHeight", "Window Height", CreateText(), string.Empty);
 
-            AddOption(containerInterface, "interfaceTitle", "Title", new TextBox(), string.Empty);
-            AddOption(containerInterface, "interfaceIcon", "Icon", new TextBox(), string.Empty);
+            AddOption(containerInterface, "interfaceTitle", "Title", CreateText(), string.Empty);
+            AddOption(containerInterface, "interfaceIcon", "Icon", CreateText(), string.Empty);
             AddOption(containerInterface, "interfaceLanguage", "Display Language", CreateCombo<InterfaceSettings.Language>(), InterfaceSettings.Language.System);
-            AddOption(containerInterface, "interfaceSettingsBasic", "Basic Settings", new TextBox(), "Printer, PrinterPreferences, Void, Copies, Collation, Pages, Layout, Size");
-            AddOption(containerInterface, "interfaceSettingsAdvanced", "Advanced Settings", new TextBox(), "Color, Quality, PagesPerSheet, PageOrder, Scale, Margin, DoubleSided, Type, Source");
+            AddOption(containerInterface, "interfaceSettingsBasic", "Basic Settings", CreateText(), "Printer, PrinterPreferences, Void, Copies, Collation, Pages, Layout, Size");
+            AddOption(containerInterface, "interfaceSettingsAdvanced", "Advanced Settings", CreateText(), "Color, Quality, PagesPerSheet, PageOrder, Scale, Margin, DoubleSided, Type, Source");
             AddOption(containerInterface, "interfaceSettingsExpanded", null, CreateCheck("Expand Settings"), false);
 
-            AddOption(containerPrinter, "printerServer", "Print Server", new TextBox(), string.Empty);
+            AddOption(containerPrinter, "printerServer", "Print Server", CreateText(), string.Empty);
             AddOption(containerPrinter, "printerDefault", "Default Printer", CreateCombo(new PrintServer().GetPrintQueues().Select(x => x.FullName), "(System Default)"), "(System Default)");
 
-            AddOption(containerDefault, "defaultCopies", "Default Copies", new TextBox(), string.Empty);
+            AddOption(containerDefault, "defaultCopies", "Default Copies", CreateText(), string.Empty);
             AddOption(containerDefault, "defaultCollation", "Default Collation", CreateCombo<Enums.Collation>(), null);
             AddOption(containerDefault, "defaultPages", "Default Pages", CreateCombo<Enums.Pages>(), null);
-            AddOption(containerDefault, "defaultPagesCustom", "Default Custom Pages", new TextBox(), string.Empty);
+            AddOption(containerDefault, "defaultPagesCustom", "Default Custom Pages", CreateText(), string.Empty);
             AddOption(containerDefault, "defaultLayout", "Default Layout", CreateCombo<Enums.Layout>(), null);
             AddOption(containerDefault, "defaultSize", "Default Size", CreateCombo<Enums.Size.DefinedSize>("(Printer Default)"), "(Printer Default)");
             AddOption(containerDefault, "defaultColor", "Default Color", CreateCombo<Enums.Color>("(Printer Default)"), "(Printer Default)");
@@ -79,12 +78,17 @@ namespace PrintDialogX.Test
             AddOption(containerDefault, "defaultPagesPerSheet", "Default Pages per Sheet", CreateCombo<Enums.PagesPerSheet>(), null);
             AddOption(containerDefault, "defaultPageOrder", "Default Page Order", CreateCombo<Enums.PageOrder>(), null);
             AddOption(containerDefault, "defaultScale", "Default Scale", CreateCombo<Enums.Scale>(), null);
-            AddOption(containerDefault, "defaultScaleCustom", "Default Custom Scale", new TextBox(), string.Empty);
+            AddOption(containerDefault, "defaultScaleCustom", "Default Custom Scale", CreateText(), string.Empty);
             AddOption(containerDefault, "defaultMargin", "Default Margin", CreateCombo<Enums.Margin>(), null);
-            AddOption(containerDefault, "defaultMarginCustom", "Default Custom Margin", new TextBox(), string.Empty);
+            AddOption(containerDefault, "defaultMarginCustom", "Default Custom Margin", CreateText(), string.Empty);
             AddOption(containerDefault, "defaultDoubleSided", "Default Double-Sided", CreateCombo<Enums.DoubleSided>(), null);
             AddOption(containerDefault, "defaultType", "Default Type", CreateCombo<Enums.Type>("(Printer Default)"), "(Printer Default)");
             AddOption(containerDefault, "defaultSource", "Default Source", CreateCombo<Enums.Source>("(Printer Default)"), "(Printer Default)");
+        }
+
+        private static TextBox CreateText()
+        {
+            return new TextBox();
         }
 
         private static CheckBox CreateCheck(string content)
@@ -97,13 +101,13 @@ namespace PrintDialogX.Test
 
         private static ComboBox CreateCombo<T>(object? initial = null)
         {
-            return CreateCombo(Enum.GetValues(typeof(T)), initial);
+            return CreateCombo(Enum.GetValues(typeof(T)).Cast<object>(), initial);
         }
 
-        private static ComboBox CreateCombo(IEnumerable collection, object? initial = null)
+        private static ComboBox CreateCombo(IEnumerable<object> collection, object? initial = null)
         {
             ComboBox combo = new();
-            if (initial != null)
+            if (initial is not null)
             {
                 combo.Items.Add(initial);
             }
@@ -125,19 +129,19 @@ namespace PrintDialogX.Test
             TextBlock description = new()
             {
                 Width = 140,
-                Text = header != null ? $"{header}:" : string.Empty
+                Text = header is not null ? $"{header}:" : string.Empty
             };
             DockPanel.SetDock(description, Dock.Left);
             container.Children.Add(description);
 
             switch (content)
             {
-                case TextBox text:
-                    text.Text = Convert.ToString(initial);
+                case TextBox text when initial is string value:
+                    text.Text = value;
                     CONFIGURATIONS.Add(name, (initial, () => text.Text));
                     break;
-                case CheckBox check:
-                    check.IsChecked = Convert.ToBoolean(initial);
+                case CheckBox check when initial is bool isTrue:
+                    check.IsChecked = isTrue;
                     CONFIGURATIONS.Add(name, (initial, () => check.IsChecked));
                     break;
                 case ComboBox combo:
@@ -560,7 +564,7 @@ namespace PrintDialogX.Test
             panel.Children.Add(new TextBlock() { Padding = new(8, 4, 8, 4), FontSize = 24, FontWeight = FontWeights.Bold, Background = brushPlaceholder, Text = $"Test Page #{index + 1}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 16, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Document Information" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Name:",-25} \"{document.DocumentName}\"" });
-            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Size:",-25} {(document.DocumentSize != null ? $"\"{document.DocumentSize.Value.DefinedName?.ToString() ?? document.DocumentSize.Value.FallbackName}\" ({document.DocumentSize.Value.Width} × {document.DocumentSize.Value.Height} px)" : "(Dynamic Size)")}" });
+            panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Size:",-25} {(document.DocumentSize is not null ? $"\"{document.DocumentSize.Value.DefinedName?.ToString() ?? document.DocumentSize.Value.FallbackName}\" ({document.DocumentSize.Value.Width} × {document.DocumentSize.Value.Height} px)" : "(Dynamic Size)")}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Margin:",-25} {document.DocumentMargin}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Document Page Count:",-25} {document.PageCount}" });
             panel.Children.Add(new TextBlock() { Margin = new(0, 32, 0, 0), FontSize = 16, FontWeight = FontWeights.Medium, Text = "Print Settings Information" });
@@ -577,7 +581,7 @@ namespace PrintDialogX.Test
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Pages:",-20} {settings.Pages}" });
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Custom Pages:",-20} {settings.CustomPages}" });
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Layout:",-20} {settings.Layout}" });
-            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Size:",-20} {(settings.Size != null ? settings.Size.Value.DefinedName?.ToString() ?? settings.Size.Value.FallbackName : string.Empty)}" });
+            left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Size:",-20} {(settings.Size is not null ? settings.Size.Value.DefinedName?.ToString() ?? settings.Size.Value.FallbackName : string.Empty)}" });
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Color:",-20} {settings.Color}" });
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Quality:",-20} {settings.Quality}" });
             left.Children.Add(new TextBlock() { Margin = new(0, 8, 0, 0), FontFamily = fontInformation, Text = $"{"Pages per Sheet:",-20} {settings.PagesPerSheet}" });

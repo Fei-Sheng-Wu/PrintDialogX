@@ -4,7 +4,7 @@ namespace PrintDialogX
 {
     internal enum ValueResource
     {
-        LengthOption,
+        LengthWidthOption,
         CollectionPrinter,
     }
 
@@ -16,27 +16,26 @@ namespace PrintDialogX
         EqualityToVisibility,
         ThresholdToBoolean,
         ThresholdToVisibility,
+        CollectionToRange,
+        CollectionToBoolean,
         PrinterToIcon,
         PrinterToStatus,
         PrinterToDescription,
-        CollationToBoolean,
         SizeToDescription,
         SizeToMarginMaximum,
-        DoubleSidedToBoolean,
-        DoubleSidedToRange,
         DocumentToContent,
         DocumentToDescription
+    }
+
+    internal enum ValidationResource
+    {
+        PagesCustom,
     }
 
     internal enum TemplateResource
     {
         Value,
         PrinterIcon
-    }
-
-    internal enum ValidationResource
-    {
-        PagesCustom,
     }
 
     internal enum TextResource

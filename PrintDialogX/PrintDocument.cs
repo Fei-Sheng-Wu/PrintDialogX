@@ -15,7 +15,7 @@ namespace PrintDialogX
         public FrameworkElement? Content
         {
             get;
-            set => field = value?.Parent == null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
+            set => field = value?.Parent is null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
         } = null;
     }
 

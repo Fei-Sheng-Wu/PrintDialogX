@@ -9,7 +9,7 @@ namespace PrintDialogX
     {
         public static T2? Map<T1, T2>(T1? key, IDictionary<T1, T2> mapping) where T1 : notnull where T2 : struct
         {
-            return key != null && mapping.TryGetValue(key, out T2 value) ? value : null;
+            return key is not null && mapping.TryGetValue(key, out T2 value) ? value : null;
         }
 
         public static T1 Map<T1, T2>(T2? value, IDictionary<T1, T2> mapping) where T1 : notnull where T2 : struct

@@ -54,18 +54,18 @@ namespace PrintDialogX
 
         internal sealed class ModelCollection<T>(Action<Action> invoker, IEnumerable<T> initial, T? selection, T fallback, Action? updater = null) : INotifyPropertyChanged where T : struct
         {
-            internal sealed class Entries(Action<Action> invoker, IEnumerable<T> initial) : List<T>(initial), INotifyCollectionChanged
+            internal sealed class Collection(Action<Action> invoker, IEnumerable<T> initial) : List<T>(initial), INotifyCollectionChanged
             {
                 public event NotifyCollectionChangedEventHandler? CollectionChanged = null;
 
-                public void Reset(IEnumerable<T?>? entries, T fallback)
+                public void Reset(IEnumerable<T?>? items, T fallback)
                 {
                     Clear();
-                    foreach (T? entry in entries ?? [])
+                    foreach (T? item in items ?? [])
                     {
-                        if (entry != null && !Contains(entry.Value))
+                        if (item is not null && !Contains(item.Value))
                         {
-                            Add(entry.Value);
+                            Add(item.Value);
                         }
                     }
                     if (Count <= 0)
@@ -97,27 +97,27 @@ namespace PrintDialogX
                 }
             }
 
-            public Entries Collection { get; } = new(invoker, [.. initial]);
+            public Collection Items { get; } = new(invoker, [.. initial]);
 
             private T? current = selection ?? null;
             private bool isCustomized = false;
 
             public void Load<T2>(IEnumerable<T2>? collection, T2? target, Func<T2, T?> converter) where T2 : struct
             {
-                Collection.Reset(collection?.Select(converter), fallback);
-                OnPropertyChanged(nameof(Collection));
+                Items.Reset(collection?.Select(converter), fallback);
+                OnPropertyChanged(nameof(Items));
 
-                if (!isCustomized && selection != null && Collection.Contains(selection.Value))
+                if (!isCustomized && selection is not null && Items.Contains(selection.Value))
                 {
                     current = selection;
                 }
-                else if ((!isCustomized || (current != null && !Collection.Contains(current.Value))) && target != null && converter(target.Value) is T value && Collection.Contains(value))
+                else if ((!isCustomized || (current is not null && !Items.Contains(current.Value))) && target is not null && converter(target.Value) is T value && Items.Contains(value))
                 {
                     current = value;
                 }
-                else if (current == null || !Collection.Contains(current.Value))
+                else if (current is null || !Items.Contains(current.Value))
                 {
-                    current = Collection.Contains(fallback) ? fallback : Collection.First();
+                    current = Items.Contains(fallback) ? fallback : Items.First();
                 }
                 OnPropertyChanged(nameof(Selection));
             }
@@ -230,7 +230,14 @@ namespace PrintDialogX
     {
         public const int DURATION_SLEEP = 50;
         public const double EPSILON_INDEX = 0.01;
+        public const double EPSILON_ZOOM = 0.35;
+        public const double RATIO_CENTIMETER = 1 / 96.0 * 2.54;
+        public const double RATIO_MICRON = 1 / 25400.0 * 96.0;
         public const double LENGTH_SPACING = 8;
+        public const double LENGTH_PADDING_VIEWER_HORIZONTAL = 16;
+        public const double LENGTH_PADDING_VIEWER_VERTICAL = 12;
+        public const double PERCENTAGE_ZOOM_DELTA_BUTTON = 0.25;
+        public const double PERCENTAGE_ZOOM_DELTA_WHEEL = 0.15;
 
         private readonly IPrintDialogHost host;
         private readonly PrintDialogViewModel model;
@@ -243,7 +250,7 @@ namespace PrintDialogX
         {
             InitializeComponent();
 
-            if (dialog.Document == null)
+            if (dialog.Document is null)
             {
                 throw new InvalidOperationException("The document is unset.");
             }
@@ -269,7 +276,7 @@ namespace PrintDialogX
 
                 LoadDocument();
             });
-            server = (dialog.PrintServer ?? new(), dialog.PrintServer != null);
+            server = (dialog.PrintServer ?? new(), dialog.PrintServer is not null);
 
             DataContext = model;
             Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
@@ -348,7 +355,7 @@ namespace PrintDialogX
         {
             using (await lockers.Task.LockAsync())
             {
-                if (task == null || task.Value.Task.IsCompleted)
+                if (task is null || task.Value.Task.IsCompleted)
                 {
                     return;
                 }
@@ -376,7 +383,7 @@ namespace PrintDialogX
 
         private void UpdateDialog(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DataContext == null)
+            if (DataContext is null)
             {
                 return;
             }
@@ -408,7 +415,7 @@ namespace PrintDialogX
                     model.PrinterEntries.Add(printer);
                 }
 
-                if (selection != null && PrinterComparer.Instance.Equals(printer, selection))
+                if (selection is not null && PrinterComparer.Instance.Equals(printer, selection))
                 {
                     model.Printer.Value = printer;
                 }
@@ -449,7 +456,7 @@ namespace PrintDialogX
         private void AddPrinter(object sender, SelectionChangedEventArgs e)
         {
             Selector selector = (Selector)sender;
-            if (selector.SelectedItem is PrintQueue || DataContext == null)
+            if (selector.SelectedItem is PrintQueue || DataContext is null)
             {
                 return;
             }
@@ -474,7 +481,7 @@ namespace PrintDialogX
 
         private void OpenPrinter(object sender, RoutedEventArgs e)
         {
-            if (model.Printer.Value == null)
+            if (model.Printer.Value is null)
             {
                 return;
             }
@@ -498,7 +505,7 @@ namespace PrintDialogX
 
         private void LoadSettings()
         {
-            if (model.Printer.Value == null)
+            if (model.Printer.Value is null)
             {
                 return;
             }
@@ -562,8 +569,8 @@ namespace PrintDialogX
                             {
                                 DefinedName = ValueMappings.Map(node.Attributes?["name"]?.Value.Split(':').Last(), ValueMappings.MAPPING_SIZE_XML),
                                 FallbackName = node.SelectSingleNode(string.Format(CultureInfo.InvariantCulture, search, "DisplayName"), namespaces)?.InnerText,
-                                Width = 96.0 * width / 25400.0,
-                                Height = 96.0 * height / 25400.0
+                                Width = width * RATIO_MICRON,
+                                Height = height * RATIO_MICRON
                             };
                             sizes.Add(size);
 
@@ -602,7 +609,7 @@ namespace PrintDialogX
 
         private void LoadDocument()
         {
-            if (model.Printer.Value == null)
+            if (model.Printer.Value is null)
             {
                 return;
             }
@@ -672,7 +679,7 @@ namespace PrintDialogX
                     {
                         using (await lockers.Preview.LockAsync())
                         {
-                            return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
+                            return model.PreviewDocument.Value.PageCount > 0 ? [model.PreviewDocument.Value.Pages[Math.Max(0, Math.Min(model.PreviewDocument.Value.PageCount - 1, (int)Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX) - 1))].Index] : null;
                         }
                     })(),
                     Enums.Pages.CustomPages => PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum, false).Result,
@@ -688,7 +695,7 @@ namespace PrintDialogX
                 await UpdateDocument(true);
                 x.ThrowIfCancellationRequested();
 
-                Size extent = model.PrintDocument.DocumentSize != null ? new(model.PrintDocument.DocumentSize.Value.Width - 2 * model.PrintDocument.DocumentMargin, model.PrintDocument.DocumentSize.Value.Height - 2 * model.PrintDocument.DocumentMargin) : model.PrintDocument.MeasuredSize;
+                Size extent = model.PrintDocument.DocumentSize is not null ? new(model.PrintDocument.DocumentSize.Value.Width - 2 * model.PrintDocument.DocumentMargin, model.PrintDocument.DocumentSize.Value.Height - 2 * model.PrintDocument.DocumentMargin) : model.PrintDocument.MeasuredSize;
                 Size cell = new(model.PrintDocument.MeasuredSize.Width / arrangement.Columns, model.PrintDocument.MeasuredSize.Height / arrangement.Rows);
                 double factor = scale ?? Math.Min(cell.Width / extent.Width, cell.Height / extent.Height);
                 if (double.IsNaN(factor))
@@ -726,7 +733,7 @@ namespace PrintDialogX
                                 continue;
                             }
 
-                            if (chunk == null)
+                            if (chunk is null)
                             {
                                 chunk = [];
                                 model.PreviewDocument.Value.Pages.Add((index, new(chunk, settings)));
@@ -749,7 +756,7 @@ namespace PrintDialogX
 
         private async Task<bool> UpdateDocument(bool isUpdating = false)
         {
-            if (model.Printer.Value == null)
+            if (model.Printer.Value is null)
             {
                 return isUpdating;
             }
@@ -779,7 +786,7 @@ namespace PrintDialogX
                 }, isUpdating);
                 Dispatcher.Invoke(() => model.PrintDocument.OnPrintSettingsChanged(settings));
 
-                while (settings.IsUpdating == null)
+                while (settings.IsUpdating is null)
                 {
                     await Task.Delay(DURATION_SLEEP);
                 }
@@ -796,7 +803,7 @@ namespace PrintDialogX
 
         private void Print()
         {
-            if (!model.IsDocumentReady.Value || model.Printer.Value == null)
+            if (!model.IsDocumentReady.Value || model.Printer.Value is null)
             {
                 return;
             }
@@ -809,7 +816,7 @@ namespace PrintDialogX
                     CopyCount = model.Copies.Value,
                     Collation = ValueMappings.Map(model.CollationEntries.Selection, ValueMappings.MAPPING_COLLATION),
                     PageOrientation = ValueMappings.Map(model.LayoutEntries.Selection, ValueMappings.MAPPING_LAYOUT),
-                    PageMediaSize = new(model.SizeEntries.Selection.DefinedName != null ? ValueMappings.Map(model.SizeEntries.Selection.DefinedName, ValueMappings.MAPPING_SIZE) : PageMediaSizeName.Unknown, model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
+                    PageMediaSize = new(model.SizeEntries.Selection.DefinedName is not null ? ValueMappings.Map(model.SizeEntries.Selection.DefinedName, ValueMappings.MAPPING_SIZE) : PageMediaSizeName.Unknown, model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                     OutputColor = ValueMappings.Map(model.ColorEntries.Selection, ValueMappings.MAPPING_COLOR),
                     OutputQuality = ValueMappings.Map(model.QualityEntries.Selection, ValueMappings.MAPPING_QUALITY),
                     PagesPerSheet = 1,
@@ -865,7 +872,7 @@ namespace PrintDialogX
                         Cancel(TextResource.MessageCancelledPrintJob);
                         return;
                     }
-                    else if (e.Error != null)
+                    else if (e.Error is not null)
                     {
                         Cancel(TextResource.MessageErrorPrintJob);
                         return;
@@ -875,7 +882,7 @@ namespace PrintDialogX
                     host.SetResult(new()
                     {
                         IsSuccess = true,
-                        PaperCount = model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? count : (int)Math.Ceiling(0.5 * count)
+                        PaperCount = model.DoubleSidedEntries.Selection == Enums.DoubleSided.OneSided ? count : (count + 1) / 2
                     });
                 };
                 writer.WriteAsync(model.PreviewDocument.Value);
@@ -934,7 +941,7 @@ namespace PrintDialogX
 
         private void UpdateViewerDescription(object sender, ScrollChangedEventArgs e)
         {
-            if (!model.IsDocumentReady.Value || model.PreviewDocument.Value.Viewer == null)
+            if (!model.IsDocumentReady.Value || model.PreviewDocument.Value.Viewer is null)
             {
                 return;
             }
@@ -944,7 +951,7 @@ namespace PrintDialogX
 
         private void UpdateViewerScroll(object sender, MouseWheelEventArgs e)
         {
-            if (model.PreviewDocument.Value.Viewer == null)
+            if (model.PreviewDocument.Value.Viewer is null)
             {
                 return;
             }
@@ -959,7 +966,7 @@ namespace PrintDialogX
                     Point position = e.GetPosition(model.PreviewDocument.Value.Viewer);
                     double x = (model.PreviewDocument.Value.Viewer.HorizontalOffset + position.X) / model.PreviewDocument.Value.ZoomValue;
                     double y = (model.PreviewDocument.Value.Viewer.VerticalOffset + position.Y) / model.PreviewDocument.Value.ZoomValue;
-                    double zoom = 0.15 * Math.Sign(e.Delta);
+                    double zoom = Math.Sign(e.Delta) * PERCENTAGE_ZOOM_DELTA_WHEEL;
                     model.PreviewDocument.Value.ZoomValue *= 1 + zoom;
                     model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.Custom;
                     model.PreviewDocument.Value.ZoomTarget = new(x * model.PreviewDocument.Value.ZoomValue - position.X, y * model.PreviewDocument.Value.ZoomValue - position.Y - ComputePageOffset(Math.Floor(model.PagesCurrent.Value + EPSILON_INDEX), 2 * LENGTH_SPACING) * zoom);
@@ -971,7 +978,7 @@ namespace PrintDialogX
 
         private void UpdateViewerZoom(object sender, EventArgs e)
         {
-            if (model.PreviewDocument.Value.ZoomTarget == null || model.PreviewDocument.Value.Viewer == null)
+            if (model.PreviewDocument.Value.ZoomTarget is null || model.PreviewDocument.Value.Viewer is null)
             {
                 return;
             }
@@ -984,24 +991,25 @@ namespace PrintDialogX
             }
         }
 
-        private double ZoomHorizontal(double padding = 16)
+        private double ZoomHorizontal()
         {
-            return model.PreviewDocument.Value.Viewer != null ? (model.PreviewDocument.Value.Viewer.ViewportWidth - padding * model.PreviewDocument.Value.ColumnCount) / ComputePageSize(1).Width / model.PreviewDocument.Value.ColumnCount : 1;
+            return model.PreviewDocument.Value.Viewer is not null ? (model.PreviewDocument.Value.Viewer.ViewportWidth - LENGTH_PADDING_VIEWER_HORIZONTAL * model.PreviewDocument.Value.ColumnCount) / ComputePageSize(1).Width / model.PreviewDocument.Value.ColumnCount : 1;
         }
 
-        private double ZoomVertical(double padding = 12)
+        private double ZoomVertical()
         {
-            return model.PreviewDocument.Value.Viewer != null ? (model.PreviewDocument.Value.Viewer.ViewportHeight - padding) / ComputePageSize(1).Height : 1;
+            return model.PreviewDocument.Value.Viewer is not null ? (model.PreviewDocument.Value.Viewer.ViewportHeight - LENGTH_PADDING_VIEWER_VERTICAL) / ComputePageSize(1).Height : 1;
         }
 
         private double ZoomDelta(double delta)
         {
-            double interval = Math.Abs(delta);
-            double step = model.PreviewDocument.Value.ZoomValue / interval;
+            double absolute = Math.Abs(delta);
+            double step = model.PreviewDocument.Value.ZoomValue / absolute;
+
             return delta switch
             {
-                > 0 => ((Math.Ceiling(step) - step < 0.35 ? Math.Ceiling(step) : Math.Floor(step)) + 1) * interval,
-                < 0 => ((step - Math.Floor(step) < 0.35 ? Math.Floor(step) : Math.Ceiling(step)) - 1) * interval,
+                > 0 => ((Math.Ceiling(step) - step < EPSILON_ZOOM ? Math.Ceiling(step) : Math.Floor(step)) + 1) * absolute,
+                < 0 => ((step - Math.Floor(step) < EPSILON_ZOOM ? Math.Floor(step) : Math.Ceiling(step)) - 1) * absolute,
                 _ => model.PreviewDocument.Value.ZoomValue
             };
         }
@@ -1030,7 +1038,7 @@ namespace PrintDialogX
 
         private void ZoomIn()
         {
-            model.PreviewDocument.Value.ZoomValue = ZoomDelta(0.25);
+            model.PreviewDocument.Value.ZoomValue = ZoomDelta(PERCENTAGE_ZOOM_DELTA_BUTTON);
             model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.Custom;
             model.PreviewDocument.OnPropertyChanged();
         }
@@ -1042,7 +1050,7 @@ namespace PrintDialogX
 
         private void ZoomOut()
         {
-            model.PreviewDocument.Value.ZoomValue = ZoomDelta(-0.25);
+            model.PreviewDocument.Value.ZoomValue = ZoomDelta(-PERCENTAGE_ZOOM_DELTA_BUTTON);
             model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.Custom;
             model.PreviewDocument.OnPropertyChanged();
         }
@@ -1096,7 +1104,7 @@ namespace PrintDialogX
 
         private void NavigatePage(double index)
         {
-            if (model.PreviewDocument.Value.Viewer == null)
+            if (model.PreviewDocument.Value.Viewer is null)
             {
                 return;
             }

@@ -111,7 +111,7 @@ namespace PrintDialogX
         {
             return async () =>
             {
-                if (generator != null)
+                if (generator is not null)
                 {
                     await generator();
                 }

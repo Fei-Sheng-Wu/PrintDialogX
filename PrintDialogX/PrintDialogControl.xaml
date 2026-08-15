@@ -17,31 +17,32 @@
                 <ResourceDictionary Source="/PrintDialogX;component/Global.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
+            <CollectionViewSource x:Key="{x:Static Member=local:ValueResource.CollectionPrinter}" Source="{Binding Path=PrinterEntries}" />
+
             <local:ValueToDescriptionConverter x:Key="{x:Static Member=local:ConverterResource.ValueToDescription}" />
-            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.EqualityToBoolean}" />
-            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.EqualityToVisibility}" StateTrue="{x:Static Member=Visibility.Visible}" StateFalse="{x:Static Member=Visibility.Collapsed}" />
+            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.EqualityToBoolean}" Mode="Equality" />
+            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.EqualityToVisibility}" Mode="Equality" StateTrue="{x:Static Member=Visibility.Visible}" StateFalse="{x:Static Member=Visibility.Collapsed}" />
             <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.ThresholdToBoolean}" Mode="Threshold" />
             <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.ThresholdToVisibility}" Mode="Threshold" StateTrue="{x:Static Member=Visibility.Visible}" StateFalse="{x:Static Member=Visibility.Collapsed}" />
-            <local:PrinterToIconConverter x:Key="{x:Static Member=local:ConverterResource.PrinterToIcon}" />
+            <local:CollectionToRangeConverter x:Key="{x:Static Member=local:ConverterResource.CollectionToRange}" />
+            <local:CollectionToBooleanConverter x:Key="{x:Static Member=local:ConverterResource.CollectionToBoolean}" />
+            <local:PrinterToIconConverter x:Key="{x:Static Member=local:ConverterResource.PrinterToIcon}" SizeSmall="16" SizeLarge="32" />
             <local:PrinterToStatusConverter x:Key="{x:Static Member=local:ConverterResource.PrinterToStatus}" />
             <local:PrinterToDescriptionConverter x:Key="{x:Static Member=local:ConverterResource.PrinterToDescription}" />
-            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.CollationToBoolean}" Fallback="{x:Static Member=enums:Collation.Uncollated}" />
             <local:SizeToDescriptionConverter x:Key="{x:Static Member=local:ConverterResource.SizeToDescription}" />
             <local:SizeToMarginMaximumConverter x:Key="{x:Static Member=local:ConverterResource.SizeToMarginMaximum}" />
-            <local:ComparisonToStateConverter x:Key="{x:Static Member=local:ConverterResource.DoubleSidedToBoolean}" Fallback="{x:Static Member=enums:DoubleSided.DoubleSidedLongEdge}" IsInverted="True" />
-            <local:CollectionToRangeConverter x:Key="{x:Static Member=local:ConverterResource.DoubleSidedToRange}" TrimStart="1" />
             <local:DocumentToContentConverter x:Key="{x:Static Member=local:ConverterResource.DocumentToContent}" />
             <local:DocumentToDescriptionConverter x:Key="{x:Static Member=local:ConverterResource.DocumentToDescription}" />
 
-            <CollectionViewSource x:Key="{x:Static Member=local:ValueResource.CollectionPrinter}" Source="{Binding Path=PrinterEntries}" />
+            <local:PagesCustomValidationRule x:Key="{x:Static Member=local:ValidationResource.PagesCustom}" />
 
             <DataTemplate x:Key="{x:Static Member=local:TemplateResource.Value}">
                 <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ValueToDescription}}}" />
             </DataTemplate>
             <DataTemplate x:Key="{x:Static Member=local:TemplateResource.PrinterIcon}">
                 <Grid>
-                    <Image Name="PART_Image" Source="{Binding Path=Icon}" Opacity="{Binding Path=Opacity}" />
-                    <ui:SymbolIcon Name="PART_Placeholder" Symbol="Print20" FontSize="{Binding Path=Size}" Opacity="{Binding Path=Opacity}" Visibility="Collapsed" />
+                    <Image Name="PART_Image" Width="{Binding Path=Size}" Height="{Binding Path=Size}" Source="{Binding Path=Icon}" Opacity="{Binding Path=Opacity}" />
+                    <ui:SymbolIcon Name="PART_Placeholder" FontSize="{Binding Path=Size}" Symbol="Print20" Opacity="{Binding Path=Opacity}" Visibility="Collapsed" />
                 </Grid>
                 <DataTemplate.Triggers>
                     <DataTrigger Binding="{Binding Path=Icon}" Value="{x:Null}">
@@ -50,8 +51,6 @@
                     </DataTrigger>
                 </DataTemplate.Triggers>
             </DataTemplate>
-
-            <local:PagesCustomValidationRule x:Key="{x:Static Member=local:ValidationResource.PagesCustom}" />
 
             <local:InterfaceToContentConverter x:Key="{x:Static Member=local:ConverterResource.InterfaceToContent}">
                 <local:InterfaceToContentConverter.Resources>
@@ -62,7 +61,7 @@
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Printer}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPrinter}}" />
-                            <ComboBox DockPanel.Dock="Right" Padding="0,7" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" SelectedItem="{Binding Path=Printer.Value, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPrinter}}" DropDownOpened="LoadPrinters" SelectionChanged="AddPrinter">
+                            <ComboBox DockPanel.Dock="Right" Padding="0,8" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" SelectedItem="{Binding Path=Printer.Value, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPrinter}}" DropDownOpened="LoadPrinters" SelectionChanged="AddPrinter">
                                 <ComboBox.ItemsSource>
                                     <CompositeCollection>
                                         <CollectionContainer Collection="{Binding Source={StaticResource ResourceKey={x:Static Member=local:ValueResource.CollectionPrinter}}, Path=.}" />
@@ -72,7 +71,7 @@
                                         <ComboBoxItem>
                                             <DockPanel Margin="8,4" LastChildFill="False">
                                                 <TextBlock DockPanel.Dock="Left" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonAddPrinter}}" />
-                                                <ui:SymbolIcon DockPanel.Dock="Right" Symbol="Open20" FontSize="18" />
+                                                <ui:SymbolIcon DockPanel.Dock="Right" FontSize="18" Symbol="Open20" />
                                             </DockPanel>
                                         </ComboBoxItem>
                                     </CompositeCollection>
@@ -83,8 +82,16 @@
                                             <ContentPresenter.ContentTemplate>
                                                 <DataTemplate>
                                                     <DockPanel Background="Transparent" ToolTip="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToDescription}}}">
-                                                        <ContentPresenter DockPanel.Dock="Left" Width="40" Height="40" ContentTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.PrinterIcon}}" Content="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToIcon}}, ConverterParameter=False}" />
-                                                        <StackPanel DockPanel.Dock="Right" MaxWidth="300" Margin="16,0,6,0" VerticalAlignment="Center" Orientation="Vertical">
+                                                        <ContentPresenter DockPanel.Dock="Left" ContentTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.PrinterIcon}}">
+                                                            <ContentPresenter.Content>
+                                                                <Binding Path="." Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToIcon}}">
+                                                                    <Binding.ConverterParameter>
+                                                                        <system:Boolean>False</system:Boolean>
+                                                                    </Binding.ConverterParameter>
+                                                                </Binding>
+                                                            </ContentPresenter.Content>
+                                                        </ContentPresenter>
+                                                        <StackPanel DockPanel.Dock="Right" Margin="14,0,6,0" MaxWidth="300" VerticalAlignment="Center" Orientation="Vertical">
                                                             <TextBlock FontWeight="Medium" TextTrimming="CharacterEllipsis" Text="{Binding Path=Name}" />
                                                             <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToStatus}}}" />
                                                         </StackPanel>
@@ -98,7 +105,15 @@
                                                     <Setter.Value>
                                                         <DataTemplate>
                                                             <DockPanel>
-                                                                <ContentPresenter DockPanel.Dock="Left" Margin="8,0,0,0" Width="20" Height="20" ContentTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.PrinterIcon}}" Content="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToIcon}}, ConverterParameter=True}" />
+                                                                <ContentPresenter DockPanel.Dock="Left" Margin="10,1,0,0" ContentTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.PrinterIcon}}">
+                                                                    <ContentPresenter.Content>
+                                                                        <Binding Path="." Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.PrinterToIcon}}">
+                                                                            <Binding.ConverterParameter>
+                                                                                <system:Boolean>True</system:Boolean>
+                                                                            </Binding.ConverterParameter>
+                                                                        </Binding>
+                                                                    </ContentPresenter.Content>
+                                                                </ContentPresenter>
                                                                 <TextBlock DockPanel.Dock="Right" Margin="8,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Text="{Binding Path=Name}" />
                                                             </DockPanel>
                                                         </DataTemplate>
@@ -119,13 +134,14 @@
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Copies}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCopies}}" />
-                            <ui:NumberBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" Minimum="1" Maximum="{Binding Path=CopiesMaximum.Value}" Value="{Binding Path=Copies.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCopies}}">
+                            <ui:NumberBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" Minimum="1" Maximum="{Binding Path=CopiesMaximum.Value}" Value="{Binding Path=Copies.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCopies}}">
                                 <ui:NumberBox.IsEnabled>
-                                    <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
-                                        <MultiBinding.ConverterParameter>
-                                            <system:Boolean>True</system:Boolean>
-                                        </MultiBinding.ConverterParameter>
-                                        <Binding Path="CopiesMaximum.Value" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToBoolean}}" ConverterParameter="2" />
+                                    <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollectionToBoolean}}">
+                                        <Binding Path="CopiesMaximum.Value" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToBoolean}}">
+                                            <Binding.ConverterParameter>
+                                                <system:Int32>2</system:Int32>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
                                         <Binding Path="IsSettingsReady.Value" />
                                     </MultiBinding>
                                 </ui:NumberBox.IsEnabled>
@@ -134,16 +150,30 @@
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Collation}" TargetType="{x:Type TypeName=ContentControl}">
-                        <CheckBox MinWidth="0" Margin="0,4" Padding="6,0" HorizontalAlignment="Right" IsChecked="{Binding Path=CollationEntries.Selection, Mode=TwoWay, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollationToBoolean}}, ConverterParameter={x:Static Member=enums:Collation.Collated}}" Content="{DynamicResource ResourceKey={x:Static Member=local:TextResource.SelectionCollation}}" Visibility="{Binding Path=Copies.Value, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter=2}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                        <CheckBox Margin="0,4" Padding="6,0" MinWidth="0" HorizontalAlignment="Right" Content="{DynamicResource ResourceKey={x:Static Member=local:TextResource.SelectionCollation}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                            <CheckBox.IsChecked>
+                                <Binding Path="CollationEntries.Selection" Mode="TwoWay" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
+                                    <Binding.ConverterParameter>
+                                        <x:Array Type="{x:Type TypeName=system:Object}">
+                                            <enums:Collation>Collated</enums:Collation>
+                                            <enums:Collation>Uncollated</enums:Collation>
+                                        </x:Array>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </CheckBox.IsChecked>
                             <CheckBox.IsEnabled>
-                                <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
-                                    <MultiBinding.ConverterParameter>
-                                        <system:Boolean>True</system:Boolean>
-                                    </MultiBinding.ConverterParameter>
+                                <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollectionToBoolean}}">
                                     <Binding Path="IsCollationSupported.Value" />
                                     <Binding Path="IsSettingsReady.Value" />
                                 </MultiBinding>
                             </CheckBox.IsEnabled>
+                            <CheckBox.Visibility>
+                                <Binding Path="Copies.Value" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}">
+                                    <Binding.ConverterParameter>
+                                        <system:Int32>2</system:Int32>
+                                    </Binding.ConverterParameter>
+                                </Binding>
+                            </CheckBox.Visibility>
                         </CheckBox>
                     </ControlTemplate>
 
@@ -151,9 +181,9 @@
                         <StackPanel Orientation="Vertical" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <DockPanel Margin="0,4" LastChildFill="False">
                                 <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPages}}" />
-                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=PagesEntries.Collection}" SelectedValue="{Binding Path=PagesEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPages}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=PagesEntries.Items}" SelectedValue="{Binding Path=PagesEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPages}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                             </DockPanel>
-                            <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomPages}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=local:TextResource.TipCustomPages}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}">
+                            <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomPages}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=local:TextResource.TipCustomPages}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}">
                                 <ui:TextBox.Text>
                                     <Binding Path="PagesCustom.Value" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                                         <Binding.ValidationRules>
@@ -172,7 +202,7 @@
                                             <Trigger Property="Validation.HasError" Value="True">
                                                 <Setter Property="Icon">
                                                     <Setter.Value>
-                                                        <ui:SymbolIcon Symbol="ErrorCircle20" FontSize="18">
+                                                        <ui:SymbolIcon FontSize="18" Symbol="ErrorCircle20">
                                                             <ui:SymbolIcon.Foreground>
                                                                 <SolidColorBrush Color="{DynamicResource ResourceKey=PaletteRedColor}" />
                                                             </ui:SymbolIcon.Foreground>
@@ -203,17 +233,32 @@
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Layout}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionLayout}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=LayoutEntries.Collection}" SelectedValue="{Binding Path=LayoutEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionLayout}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=LayoutEntries.Items}" SelectedValue="{Binding Path=LayoutEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionLayout}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Size}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionSize}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=SizeEntries.Collection}" SelectedValue="{Binding Path=SizeEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionSize}}" IsEnabled="{Binding Path=IsSettingsReady.Value}">
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=SizeEntries.Items}" SelectedValue="{Binding Path=SizeEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionSize}}" IsEnabled="{Binding Path=IsSettingsReady.Value}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToDescription}}, ConverterParameter=False}" ToolTip="{Binding Path=., Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToDescription}}, ConverterParameter=True}" />
+                                        <TextBlock TextTrimming="CharacterEllipsis">
+                                            <TextBlock.Text>
+                                                <Binding Path="." Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToDescription}}">
+                                                    <Binding.ConverterParameter>
+                                                        <system:Boolean>False</system:Boolean>
+                                                    </Binding.ConverterParameter>
+                                                </Binding>
+                                            </TextBlock.Text>
+                                            <TextBlock.ToolTip>
+                                                <Binding Path="." Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToDescription}}">
+                                                    <Binding.ConverterParameter>
+                                                        <system:Boolean>True</system:Boolean>
+                                                    </Binding.ConverterParameter>
+                                                </Binding>
+                                            </TextBlock.ToolTip>
+                                        </TextBlock>
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
@@ -223,28 +268,28 @@
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Color}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionColor}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=ColorEntries.Collection}" SelectedValue="{Binding Path=ColorEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionColor}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=ColorEntries.Items}" SelectedValue="{Binding Path=ColorEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionColor}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Quality}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionQuality}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=QualityEntries.Collection}" SelectedValue="{Binding Path=QualityEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionQuality}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=QualityEntries.Items}" SelectedValue="{Binding Path=QualityEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionQuality}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PagesPerSheet}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPagesPerSheet}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=PagesPerSheetEntries.Collection}" SelectedValue="{Binding Path=PagesPerSheetEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPagesPerSheet}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=PagesPerSheetEntries.Items}" SelectedValue="{Binding Path=PagesPerSheetEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPagesPerSheet}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PageOrder}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" Visibility="{Binding Path=PagesPerSheetEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:PagesPerSheet.Two}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPageOrder}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=PageOrderEntries.Collection}" SelectedValue="{Binding Path=PageOrderEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPageOrder}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=PageOrderEntries.Items}" SelectedValue="{Binding Path=PageOrderEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPageOrder}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
@@ -252,9 +297,9 @@
                         <StackPanel Orientation="Vertical" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <DockPanel Margin="0,4" LastChildFill="False">
                                 <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionScale}}" />
-                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=ScaleEntries.Collection}" SelectedValue="{Binding Path=ScaleEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionScale}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=ScaleEntries.Items}" SelectedValue="{Binding Path=ScaleEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionScale}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                             </DockPanel>
-                            <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" HorizontalAlignment="Right" Minimum="1" Maximum="1000" Value="{Binding Path=ScaleCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomScale}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=ScaleEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Scale.Custom}}" />
+                            <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="1" Maximum="1000" Value="{Binding Path=ScaleCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomScale}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=ScaleEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Scale.Custom}}" />
                         </StackPanel>
                     </ControlTemplate>
 
@@ -262,9 +307,9 @@
                         <StackPanel Orientation="Vertical" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <DockPanel Margin="0,4" LastChildFill="False">
                                 <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionMargin}}" />
-                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=MarginEntries.Collection}" SelectedValue="{Binding Path=MarginEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionMargin}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                                <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=MarginEntries.Items}" SelectedValue="{Binding Path=MarginEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionMargin}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                             </DockPanel>
-                            <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" HorizontalAlignment="Right" Minimum="0" Maximum="{Binding Path=SizeEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToMarginMaximum}}}" Value="{Binding Path=MarginCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomMargin}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=MarginEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Margin.Custom}}" />
+                            <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="0" Maximum="{Binding Path=SizeEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.SizeToMarginMaximum}}}" Value="{Binding Path=MarginCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionCustomMargin}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=MarginEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Margin.Custom}}" />
                         </StackPanel>
                     </ControlTemplate>
 
@@ -272,33 +317,54 @@
                         <StackPanel Orientation="Vertical" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <DockPanel Margin="0,4" LastChildFill="False">
                                 <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionDoubleSided}}" />
-                                <CheckBox DockPanel.Dock="Right" MinWidth="0" Padding="6,0" IsChecked="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.DoubleSidedToBoolean}}, ConverterParameter={x:Static Member=enums:DoubleSided.OneSided}}" Content="{DynamicResource ResourceKey={x:Static Member=local:TextResource.SelectionDoubleSided}}">
+                                <CheckBox DockPanel.Dock="Right" Padding="6,0" MinWidth="0" Content="{DynamicResource ResourceKey={x:Static Member=local:TextResource.SelectionDoubleSided}}">
+                                    <CheckBox.IsChecked>
+                                        <Binding Path="DoubleSidedEntries.Selection" Mode="TwoWay" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
+                                            <Binding.ConverterParameter>
+                                                <x:Array Type="{x:Type TypeName=system:Object}">
+                                                    <x:Array Type="{x:Type TypeName=system:Object}">
+                                                        <enums:DoubleSided>DoubleSidedLongEdge</enums:DoubleSided>
+                                                        <enums:DoubleSided>DoubleSidedShortEdge</enums:DoubleSided>
+                                                    </x:Array>
+                                                    <enums:DoubleSided>OneSided</enums:DoubleSided>
+                                                </x:Array>
+                                            </Binding.ConverterParameter>
+                                        </Binding>
+                                    </CheckBox.IsChecked>
                                     <CheckBox.IsEnabled>
-                                        <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
-                                            <MultiBinding.ConverterParameter>
-                                                <system:Boolean>True</system:Boolean>
-                                            </MultiBinding.ConverterParameter>
+                                        <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollectionToBoolean}}">
                                             <Binding Path="IsDoubleSidedSupported.Value" />
                                             <Binding Path="IsSettingsReady.Value" />
                                         </MultiBinding>
                                     </CheckBox.IsEnabled>
                                 </CheckBox>
                             </DockPanel>
-                            <ComboBox Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" HorizontalAlignment="Right" ItemsSource="{Binding Path=DoubleSidedEntries.Collection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.DoubleSidedToRange}}}" SelectedValue="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionDoubleSided}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=DoubleSidedEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}}" />
+                            <ComboBox Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" SelectedValue="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionDoubleSided}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" Visibility="{Binding Path=DoubleSidedEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}}">
+                                <ComboBox.ItemsSource>
+                                    <Binding Path="DoubleSidedEntries.Items" Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollectionToRange}}">
+                                        <Binding.ConverterParameter>
+                                            <x:Array Type="{x:Type TypeName=system:Int32}">
+                                                <system:Int32>1</system:Int32>
+                                                <system:Int32>0</system:Int32>
+                                            </x:Array>
+                                        </Binding.ConverterParameter>
+                                    </Binding>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
                         </StackPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Type}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperType}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=TypeEntries.Collection}" SelectedValue="{Binding Path=TypeEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperType}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=TypeEntries.Items}" SelectedValue="{Binding Path=TypeEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperType}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
 
                     <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Source}" TargetType="{x:Type TypeName=ContentControl}">
                         <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                             <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperSource}}" />
-                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthOption}}" ItemsSource="{Binding Path=SourceEntries.Collection}" SelectedValue="{Binding Path=SourceEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperSource}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
+                            <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=local:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=SourceEntries.Items}" SelectedValue="{Binding Path=SourceEntries.Selection, Mode=TwoWay}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=local:TemplateResource.Value}}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.OptionPaperSource}}" IsEnabled="{Binding Path=IsSettingsReady.Value}" />
                         </DockPanel>
                     </ControlTemplate>
                 </local:InterfaceToContentConverter.Resources>
@@ -322,12 +388,12 @@
                         <ControlTemplate TargetType="{x:Type TypeName=ContentControl}">
                             <StackPanel Orientation="Vertical">
                                 <StackPanel.Resources>
-                                    <system:Double x:Key="{x:Static Member=local:ValueResource.LengthOption}">190</system:Double>
+                                    <system:Double x:Key="{x:Static Member=local:ValueResource.LengthWidthOption}">190</system:Double>
                                 </StackPanel.Resources>
                                 <StackPanel Name="PART_Basic" Orientation="Vertical" />
                                 <Expander Name="PART_Expander" Margin="0,16,0,0" Padding="0,0,12,0">
                                     <Expander.Resources>
-                                        <system:Double x:Key="{x:Static Member=local:ValueResource.LengthOption}">160</system:Double>
+                                        <system:Double x:Key="{x:Static Member=local:ValueResource.LengthWidthOption}">160</system:Double>
                                     </Expander.Resources>
                                     <Expander.Header>
                                         <Border Padding="12" Background="Transparent">
@@ -345,10 +411,7 @@
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="8" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
             <ui:Button Appearance="Primary" Width="100" IsDefault="True" Content="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonPrint}}" Click="Print">
                 <ui:Button.IsEnabled>
-                    <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.EqualityToBoolean}}">
-                        <MultiBinding.ConverterParameter>
-                            <system:Boolean>True</system:Boolean>
-                        </MultiBinding.ConverterParameter>
+                    <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=local:ConverterResource.CollectionToBoolean}}">
                         <Binding Path="IsSettingsReady.Value" />
                         <Binding Path="IsDocumentReady.Value" />
                     </MultiBinding>
@@ -359,12 +422,12 @@
         <DockPanel Grid.Column="1" Grid.Row="0">
             <ui:Card DockPanel.Dock="Top" Margin="4" Padding="6,4">
                 <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                    <ui:Button Padding="8,6" Content="{ui:SymbolIcon Symbol=ZoomIn20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonZoomIn}}" Click="ZoomIn" />
-                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon Symbol=ZoomOut20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonZoomOut}}" Click="ZoomOut" />
-                    <ui:Button Margin="24,0,0,0" Padding="8,6" Content="{ui:SymbolIcon Symbol=PageFit20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonActualSize}}" Click="ZoomActual" />
-                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon Symbol=ScaleFit20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonFitToWidth}}" Click="ZoomFit" />
-                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon Symbol=Document20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonWholePage}}" Click="ZoomPageWhole" />
-                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon Symbol=DocumentMultiple20, FontSize=18}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonTwoPages}}" Click="ZoomPageTwo" />
+                    <ui:Button Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=ZoomIn20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonZoomIn}}" Click="ZoomIn" />
+                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=ZoomOut20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonZoomOut}}" Click="ZoomOut" />
+                    <ui:Button Margin="24,0,0,0" Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=PageFit20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonActualSize}}" Click="ZoomActual" />
+                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=ScaleFit20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonFitToWidth}}" Click="ZoomFit" />
+                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=Document20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonWholePage}}" Click="ZoomPageWhole" />
+                    <ui:Button Margin="6,0,0,0" Padding="8,6" Content="{ui:SymbolIcon FontSize=18, Symbol=DocumentMultiple20}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonTwoPages}}" Click="ZoomPageTwo" />
                 </StackPanel>
             </ui:Card>
             <ItemsControl DockPanel.Dock="Bottom" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingPanel.VirtualizationMode="Recycling" ItemsSource="{Binding Path=PreviewDocument.Value, Converter={StaticResource ResourceKey={x:Static Member=local:ConverterResource.DocumentToContent}}}">
@@ -411,10 +474,10 @@
                     </TextBlock.Text>
                 </TextBlock>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" FlowDirection="LeftToRight">
-                    <ui:Button Padding="10,8" Content="{ui:SymbolIcon Symbol=ArrowPrevious24, FontSize=14}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonFirstPage}}" Click="NavigatePageFirst" />
-                    <ui:Button Margin="6,0,0,0" Padding="12,8,8,8" Content="{ui:SymbolIcon Symbol=IosArrowLtr24, FontSize=14}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonPreviousPage}}" Click="NavigatePagePrevious" />
-                    <ui:Button Margin="6,0,0,0" Padding="8,8,12,8" Content="{ui:SymbolIcon Symbol=IosArrowRtl24, FontSize=14}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonNextPage}}" Click="NavigatePageNext" />
-                    <ui:Button Margin="6,0,0,0" Padding="10,8" Content="{ui:SymbolIcon Symbol=ArrowNext24, FontSize=14}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonLastPage}}" Click="NavigatePageLast" />
+                    <ui:Button Padding="10,8" Content="{ui:SymbolIcon FontSize=14, Symbol=ArrowPrevious24}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonFirstPage}}" Click="NavigatePageFirst" />
+                    <ui:Button Margin="6,0,0,0" Padding="12,8,8,8" Content="{ui:SymbolIcon FontSize=14, Symbol=IosArrowLtr24}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonPreviousPage}}" Click="NavigatePagePrevious" />
+                    <ui:Button Margin="6,0,0,0" Padding="8,8,12,8" Content="{ui:SymbolIcon FontSize=14, Symbol=IosArrowRtl24}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonNextPage}}" Click="NavigatePageNext" />
+                    <ui:Button Margin="6,0,0,0" Padding="10,8" Content="{ui:SymbolIcon FontSize=14, Symbol=ArrowNext24}" ToolTip="{DynamicResource ResourceKey={x:Static Member=local:TextResource.ButtonLastPage}}" Click="NavigatePageLast" />
                 </StackPanel>
             </DockPanel>
         </ui:Card>

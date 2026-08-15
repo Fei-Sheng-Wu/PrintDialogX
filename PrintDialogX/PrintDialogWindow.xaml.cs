@@ -30,7 +30,7 @@ namespace PrintDialogX
 
         private async void LoadContent(object sender, EventArgs e)
         {
-            if (initializer == null)
+            if (initializer is null)
             {
                 return;
             }
@@ -58,7 +58,7 @@ namespace PrintDialogX
             isAvailable = false;
             initializer = instantiator;
 
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 Application application = new();
             }
@@ -74,14 +74,13 @@ namespace PrintDialogX
                 Resources.MergedDictionaries.Add(z);
             });
 
-            if (dialog.InterfaceSettings.Title != null)
+            if (dialog.InterfaceSettings.Title is not null)
             {
                 Title = dialog.InterfaceSettings.Title;
             }
             title.Header = new TextBlock()
             {
-                Margin = new(dialog.InterfaceSettings.Icon != null ? 0 : 16, 10, 0, 10),
-                FontSize = title.FontSize,
+                Margin = new(dialog.InterfaceSettings.Icon is not null ? 0 : 16, 10, 0, 10),
                 Text = Title
             };
             title.Icon = dialog.InterfaceSettings.Icon;

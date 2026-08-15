@@ -169,8 +169,8 @@ namespace PrintDialogX
         /// </summary>
         public Wpf.Ui.Controls.IconElement? Icon { get; set; } = new Wpf.Ui.Controls.SymbolIcon()
         {
-            Symbol = Wpf.Ui.Controls.SymbolRegular.Print20,
-            FontSize = 18
+            FontSize = 18,
+            Symbol = Wpf.Ui.Controls.SymbolRegular.Print20
         };
 
         /// <summary>
