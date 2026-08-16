@@ -228,8 +228,11 @@ namespace PrintDialogX
         private struct N_IconInfo
         {
             public uint Size;
+
             public IntPtr Icon;
+
             public int SystemIndex;
+
             public int ResourceIndex;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
@@ -315,6 +318,8 @@ namespace PrintDialogX
                 isFaded = printer.IsOffline;
             }
             catch { }
+
+            //TODO: automation description of icon
 
             return new PrinterIcon(icon, isFaded ? 0.5 : 1, isSmall ? SizeSmall : SizeLarge);
         }
@@ -735,6 +740,8 @@ namespace PrintDialogX
                 Brush?.Container.Fill = null;
                 Brush = null;
             };
+
+            //TODO: automation description of page
         }
 
         private void UpdateViewport(object? sender, EventArgs e)
