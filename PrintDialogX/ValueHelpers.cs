@@ -863,13 +863,13 @@ namespace PrintDialogX
                 return Binding.DoNothing;
             }
 
-            List<IEnumerable<Content>> rows = [];
+            List<Content[]> rows = [];
             using (document.Locker.Lock())
             {
                 int index = 0;
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
+                    rows.Add([.. document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
                     {
                         if (PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
                         {
@@ -879,7 +879,7 @@ namespace PrintDialogX
                         index++;
 
                         return new Content(viewer, document, x.Page, string.Format(culture, (string)Resources[TextResource.ConstructionPage], index, document.PageCount), ColorEmulationLevel);
-                    }));
+                    })]);
                 }
             }
 
