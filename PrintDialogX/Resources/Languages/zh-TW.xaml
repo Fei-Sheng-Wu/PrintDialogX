@@ -6,9 +6,12 @@
         <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/zh-HK.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterAdd}">新增印表機</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterPreferences}">印表機內容</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCurrentPage}">目前頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPrinter}">印表機</system:String>
+
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPageCurrent}">目前頁</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryHorizontal}">從左到右</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryHorizontalReverse}">從右到左</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryVertical}">從上到下</system:String>
@@ -16,7 +19,14 @@
     <system:String x:Key="{x:Static Member=local:TextResource.EntryMultiLayerForm}">連體多聯表單</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryMultiPartForm}">單體多聯表單</system:String>
 
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinter}">印表機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterNetwork}">網絡印表機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterFile}">檔案印表機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFax}">傳真機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFaxNetwork}">網絡傳真機</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelPagePunt}">目前頁列印失敗</system:String>
 
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageNoPrinter}">未偵測到印表機！</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterAdd}">無法打開新增印表機視窗！</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">無法打開印表機內容視窗！</system:String>
 </ResourceDictionary>

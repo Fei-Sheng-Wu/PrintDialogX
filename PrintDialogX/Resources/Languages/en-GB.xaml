@@ -8,6 +8,6 @@
 
     <system:String x:Key="{x:Static Member=local:TextResource.LabelInitializing}">Initialising</system:String>
 
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterAdd}">Unable to open the system printer installation dialogue!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">Unable to open the printer preferences dialogue!</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedAddPrinter}">Unable to open the system printer installation dialogue!</system:String>
 </ResourceDictionary>

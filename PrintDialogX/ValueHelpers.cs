@@ -105,6 +105,40 @@ namespace PrintDialogX
         }
     }
 
+    internal sealed class CompositeItemTemplateSelector() : DataTemplateSelector()
+    {
+        public DataTemplate? Data { get; set; } = null;
+        public DataTemplate? Element { get; set; } = null;
+        public DataTemplate? Decoration { get; set; } = null;
+
+        public override DataTemplate? SelectTemplate(object item, DependencyObject container)
+        {
+            return item switch
+            {
+                Separator => Decoration,
+                FrameworkElement => Element,
+                _ => Data
+            };
+        }
+    }
+
+    internal sealed class CompositeContainerStyleSelector() : StyleSelector()
+    {
+        public Style? Data { get; set; } = null;
+        public Style? Element { get; set; } = null;
+        public Style? Decoration { get; set; } = null;
+
+        public override Style? SelectStyle(object item, DependencyObject container)
+        {
+            return item switch
+            {
+                Separator => Decoration,
+                FrameworkElement => Element,
+                _ => Data
+            };
+        }
+    }
+
     internal sealed class ValueToDescriptionConverter() : LanguageHostConverter(), IValueConverter
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
@@ -222,17 +256,14 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class PrinterToIconConverter() : IValueConverter
+    internal sealed class PrinterToIconConverter() : LanguageHostConverter(), IValueConverter
     {
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct N_IconInfo
         {
             public uint Size;
-
             public IntPtr Icon;
-
             public int SystemIndex;
-
             public int ResourceIndex;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
@@ -245,9 +276,10 @@ namespace PrintDialogX
         [DllImport("user32.dll", EntryPoint = "DestroyIcon")]
         private static extern bool N_ReleaseIcon(IntPtr icon);
 
-        internal sealed class PrinterIcon(ImageSource? icon, double opacity, double size)
+        internal sealed class PrinterIcon(ImageSource? icon, string name, double opacity, double size)
         {
             public ImageSource? Icon { get; } = icon;
+            public string Name { get; } = name;
             public double Opacity { get; } = opacity;
             public double Size { get; } = size;
         }
@@ -273,18 +305,18 @@ namespace PrintDialogX
 
         public object? Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not PrintQueue printer || parameter is not bool isSmall)
+            if (value is not PrintQueue printer || parameter is not bool isSmall || Resources is null)
             {
                 return Binding.DoNothing;
             }
 
-            uint index = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance) || CheckFilter(printer, FILTER_NETWORK), CheckFilter(printer, FILTER_FILE)) switch
+            (uint index, TextResource name) = (CollectionFax.Contains(printer, PrinterComparer.Instance), CollectionNetwork.Contains(printer, PrinterComparer.Instance) || CheckFilter(printer, FILTER_NETWORK), CheckFilter(printer, FILTER_FILE)) switch
             {
-                (true, true, _) => INDEX_FAX_NETWORK,
-                (true, _, _) => INDEX_FAX,
-                (_, true, _) => INDEX_PRINTER_NETWORK,
-                (_, _, true) => INDEX_PRINTER_FILE,
-                _ => INDEX_PRINTER,
+                (true, true, _) => (INDEX_FAX_NETWORK, TextResource.LabelFaxNetwork),
+                (true, _, _) => (INDEX_FAX, TextResource.LabelFax),
+                (_, true, _) => (INDEX_PRINTER_NETWORK, TextResource.LabelPrinterNetwork),
+                (_, _, true) => (INDEX_PRINTER_FILE, TextResource.LabelPrinterFile),
+                _ => (INDEX_PRINTER, TextResource.LabelPrinter),
             };
 
             (uint, bool) key = (index, isSmall);
@@ -319,9 +351,7 @@ namespace PrintDialogX
             }
             catch { }
 
-            //TODO: automation description of icon
-
-            return new PrinterIcon(icon, isFaded ? 0.5 : 1, isSmall ? SizeSmall : SizeLarge);
+            return new PrinterIcon(icon, (string)Resources[name], isFaded ? 0.5 : 1, isSmall ? SizeSmall : SizeLarge);
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -740,8 +770,6 @@ namespace PrintDialogX
                 Brush?.Container.Fill = null;
                 Brush = null;
             };
-
-            //TODO: automation description of page
         }
 
         private void UpdateViewport(object? sender, EventArgs e)
@@ -811,14 +839,15 @@ namespace PrintDialogX
         }
     }
 
-    internal sealed class DocumentToContentConverter() : IValueConverter
+    internal sealed class DocumentToContentConverter() : LanguageHostConverter(), IValueConverter
     {
-        internal sealed class Content(VirtualizingStackPanel viewer, DocumentHostControl.Document document, DocumentHostControl.DocumentPage page, ColorEmulationLevel color)
+        internal sealed class Content(VirtualizingStackPanel viewer, DocumentHostControl.Document document, DocumentHostControl.DocumentPage page, string name, ColorEmulationLevel color)
         {
             public VirtualizingStackPanel? Viewer { get; } = viewer;
             public object DataContext { get; } = viewer.DataContext;
 
             public DocumentHostControl.DocumentPage Page { get; } = page;
+            public string Name { get; } = name;
             public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
             public double Zoom { get; } = document.ZoomValue;
             public ColorEmulationLevel ColorEmulationLevel { get; } = color;
@@ -829,7 +858,7 @@ namespace PrintDialogX
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer)
+            if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer || Resources is null)
             {
                 return Binding.DoNothing;
             }
@@ -837,6 +866,7 @@ namespace PrintDialogX
             List<IEnumerable<Content>> rows = [];
             using (document.Locker.Lock())
             {
+                int index = 0;
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
                     rows.Add(document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
@@ -846,7 +876,9 @@ namespace PrintDialogX
                             x.Page.UpdateContent();
                         }
 
-                        return new Content(viewer, document, x.Page, ColorEmulationLevel);
+                        index++;
+
+                        return new Content(viewer, document, x.Page, string.Format(culture, (string)Resources[TextResource.ConstructionPage], index, document.PageCount), ColorEmulationLevel);
                     }));
                 }
             }

@@ -4,27 +4,29 @@
                     xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
     <system:String x:Key="{x:Static Member=local:TextResource.TitlePrint}">列印</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonOK}">確定</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.AreaPreview}">預覽</system:String>
+
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonOkay}">確定</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrint}">列印</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonCancel}">取消</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonAddPrinter}">新增印表機</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterPreferences}">印表機設定</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterAdd}">新增打印機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterPreferences}">打印機設定</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonMoreSettings}">更多設定</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomIn}">放大</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomOut}">縮小</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonActualSize}">實際尺寸</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFitToWidth}">符合寬度</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonWholePage}">整頁檢視</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonTwoPages}">雙頁檢視</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFirstPage}">首頁</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPreviousPage}">上一頁</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNextPage}">下一頁</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonLastPage}">末頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomActual}">實際尺寸</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomFitWidth}">符合寬度</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomPageWhole}">整頁檢視</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomPageTwo}">雙頁檢視</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageFirst}">首頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePagePrevious}">上一頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageNext}">下一頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageLast}">末頁</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionPrinter}">印表機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPrinter}">打印機</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionCopies}">份數</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPages}">範圍</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomPages}">自訂範圍</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPagesCustom}">自訂範圍</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionSize}">尺寸</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionLayout}">方向</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionColor}">顏色</system:String>
@@ -32,16 +34,17 @@
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPagesPerSheet}">併印</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPageOrder}">併印順序</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionScale}">縮放</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomScale}">自訂縮放</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionScaleCustom}">自訂縮放</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionMargin}">邊距</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomMargin}">自訂邊距</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionMarginCustom}">自訂邊距</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionDoubleSided}">雙面列印</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperType}">紙張類型</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperSource}">紙張來源</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryAllPages}">全部頁</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCurrentPage}">當前頁</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustomPages}">自訂</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustom}">自訂</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPagesAll}">全部頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPageCurrent}">當前頁</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPagesCustom}">自訂</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPortrait}">縱向</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryLandscape}">橫向</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA0}">A0</system:String>
@@ -241,7 +244,6 @@
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent100}">100%</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent150}">150%</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent200}">200%</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustom}">自訂</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryDefault}">預設</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryNone}">無</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryMinimum}">最小</system:String>
@@ -284,6 +286,11 @@
 
     <system:String x:Key="{x:Static Member=local:TextResource.LabelError}">錯誤</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelUnknown}">未知</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinter}">打印機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterNetwork}">網絡打印機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterFile}">文件打印機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFax}">傳真機</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFaxNetwork}">網絡傳真機</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelReady}">就緒</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelBusy}">忙碌</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelDoorOpen}">機門開啟</system:String>
@@ -318,12 +325,12 @@
     <system:String x:Key="{x:Static Member=local:TextResource.ConstructionProgress}">進度：{0}%（{1} / {2}）</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ConstructionPage}">第 {0} / {1} 頁</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.TipCustomPages}">例：1，3-5，8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.TipPagesCustom}">例：1，3-5，8</system:String>
 
     <system:String x:Key="{x:Static Member=local:TextResource.MessageInvalidValue}">數值無效！</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.MessageNoPrinter}">未偵測到印表機！</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">無法打開印表機設定視窗！</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedAddPrinter}">無法打開新增印表機視窗！</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageNoPrinter}">未偵測到打印機！</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterAdd}">無法打開新增打印機視窗！</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">無法打開打印機設定視窗！</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrintJob}">無法啟動列印工作！</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageCancelledPrintJob}">列印工作已取消！</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageErrorPrintJob}">列印工作發生錯誤！</system:String>

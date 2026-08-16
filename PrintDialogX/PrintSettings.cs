@@ -216,19 +216,19 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// All pages.
         /// </summary>
-        [StringResource(TextResource.EntryAllPages)]
+        [StringResource(TextResource.EntryPagesAll)]
         AllPages,
 
         /// <summary>
         /// Current page.
         /// </summary>
-        [StringResource(TextResource.EntryCurrentPage)]
+        [StringResource(TextResource.EntryPageCurrent)]
         CurrentPage,
 
         /// <summary>
         /// Custom pages.
         /// </summary>
-        [StringResource(TextResource.EntryCustomPages)]
+        [StringResource(TextResource.EntryPagesCustom)]
         CustomPages
     }
 

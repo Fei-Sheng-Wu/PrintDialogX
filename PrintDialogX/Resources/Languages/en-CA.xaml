@@ -4,27 +4,29 @@
                     xmlns:local="clr-namespace:PrintDialogX;assembly=PrintDialogX">
     <system:String x:Key="{x:Static Member=local:TextResource.TitlePrint}">Print</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonOK}">OK</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.AreaPreview}">Preview</system:String>
+
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonOkay}">OK</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrint}">Print</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonCancel}">Cancel</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonAddPrinter}">Add New Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterAdd}">Add New Printer</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonPrinterPreferences}">Printer Preferences</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonMoreSettings}">More Settings</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomIn}">Zoom In</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomOut}">Zoom Out</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonActualSize}">Actual Size</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFitToWidth}">Fit to Width</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonWholePage}">Whole Page</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonTwoPages}">Two Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonFirstPage}">First Page</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonPreviousPage}">Previous Page</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNextPage}">Next Page</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.ButtonLastPage}">Last Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomActual}">Actual Size</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomFitWidth}">Fit to Width</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomPageWhole}">Whole Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonZoomPageTwo}">Two Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageFirst}">First Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePagePrevious}">Previous Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageNext}">Next Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.ButtonNavigatePageLast}">Last Page</system:String>
 
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPrinter}">Printer</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionCopies}">Copies</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPages}">Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomPages}">Custom Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionPagesCustom}">Custom Pages</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionSize}">Size</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionLayout}">Layout</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionColor}">Colour</system:String>
@@ -32,16 +34,17 @@
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPagesPerSheet}">Pages per Sheet</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPageOrder}">Page Order</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionScale}">Scale</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomScale}">Custom Scale</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionScaleCustom}">Custom Scale</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionMargin}">Margin</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.OptionCustomMargin}">Custom Margin</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.OptionMarginCustom}">Custom Margin</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionDoubleSided}">Double-Sided</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperType}">Paper Type</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.OptionPaperSource}">Paper Source</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryAllPages}">All Pages</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCurrentPage}">Current Page</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustomPages}">Custom Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustom}">Custom</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPagesAll}">All Pages</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPageCurrent}">Current Page</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.EntryPagesCustom}">Custom Pages</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPortrait}">Portrait</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryLandscape}">Landscape</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryISOA0}">A0</system:String>
@@ -241,7 +244,6 @@
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent100}">100%</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent150}">150%</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryPercent200}">200%</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.EntryCustom}">Custom</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryDefault}">Default</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryNone}">None</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.EntryMinimum}">Minimum</system:String>
@@ -284,6 +286,11 @@
 
     <system:String x:Key="{x:Static Member=local:TextResource.LabelError}">Error</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelUnknown}">Unknown</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinter}">Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterNetwork}">Network Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelPrinterFile}">File Printer</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFax}">Fax</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.LabelFaxNetwork}">Network Fax</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelReady}">Ready</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelBusy}">Busy</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.LabelDoorOpen}">Door Open</system:String>
@@ -318,12 +325,12 @@
     <system:String x:Key="{x:Static Member=local:TextResource.ConstructionProgress}">Progress: {0}% ({1} / {2})</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.ConstructionPage}">Page {0} / {1}</system:String>
 
-    <system:String x:Key="{x:Static Member=local:TextResource.TipCustomPages}">e.g. 1, 3-5, 8</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.TipPagesCustom}">e.g. 1, 3-5, 8</system:String>
 
     <system:String x:Key="{x:Static Member=local:TextResource.MessageInvalidValue}">The value is invalid!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageNoPrinter}">No printer was detected!</system:String>
+    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterAdd}">Unable to open the system printer installation dialog!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrinterPreferences}">Unable to open the printer preferences dialog!</system:String>
-    <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedAddPrinter}">Unable to open the system printer installation dialog!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageFailedPrintJob}">Unable to start the print job!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageCancelledPrintJob}">The print job was cancelled!</system:String>
     <system:String x:Key="{x:Static Member=local:TextResource.MessageErrorPrintJob}">An error occurred during the print job!</system:String>

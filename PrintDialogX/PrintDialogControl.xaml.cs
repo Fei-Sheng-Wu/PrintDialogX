@@ -286,7 +286,7 @@ namespace PrintDialogX
                 Language = XmlLanguage.GetLanguage(x);
                 FlowDirection = y;
                 Resources.MergedDictionaries.Add(z);
-                foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToDescription })
+                foreach (object key in new ConverterResource[] { ConverterResource.ValueToDescription, ConverterResource.PrinterToIcon, ConverterResource.PrinterToStatus, ConverterResource.PrinterToDescription, ConverterResource.SizeToDescription, ConverterResource.DocumentToContent, ConverterResource.DocumentToDescription })
                 {
                     ((LanguageHostConverter)Resources[key]).Resources = z;
                 }
@@ -473,7 +473,7 @@ namespace PrintDialogX
             }
             catch
             {
-                model.ErrorContent.Value = Resources[TextResource.MessageFailedAddPrinter];
+                model.ErrorContent.Value = Resources[TextResource.MessageFailedPrinterAdd];
                 model.ErrorDismisser = null;
                 model.IsError.Value = true;
             }
@@ -1073,7 +1073,7 @@ namespace PrintDialogX
             ZoomActual();
         }
 
-        private void ZoomFit(object sender, RoutedEventArgs e)
+        private void ZoomFitWidth(object sender, RoutedEventArgs e)
         {
             model.PreviewDocument.Value.ZoomValue = ZoomHorizontal();
             model.PreviewDocument.Value.ZoomMode = DocumentHostControl.DocumentZoom.FitToWidth;
