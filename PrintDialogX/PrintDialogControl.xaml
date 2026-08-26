@@ -475,7 +475,7 @@
                         <ItemsControl HorizontalAlignment="Center" ItemsSource="{Binding Path=.}" Focusable="False">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Path=ColorEmulationLevel}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
+                                    <local:DocumentHostControl Margin="8" Width="{Binding Path=Size.Width}" Height="{Binding Path=Size.Height}" BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding Path=Viewer}" Content="{Binding Path=Page}" Zoom="{Binding Path=Zoom}" Color="{Binding Path=Context.ColorEntries.Selection}" ColorEmulationLevel="{Binding Path=ColorEmulationLevel}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                             <ItemsControl.ItemsPanel>

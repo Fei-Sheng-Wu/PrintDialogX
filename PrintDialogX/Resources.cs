@@ -365,7 +365,7 @@ namespace PrintDialogX
     }
 
     [AttributeUsage(AttributeTargets.All)]
-    internal sealed class StringResourceAttribute(TextResource resource) : Attribute
+    internal sealed class TextResourceAttribute(TextResource resource) : Attribute
     {
         public TextResource Resource { get; set; } = resource;
     }

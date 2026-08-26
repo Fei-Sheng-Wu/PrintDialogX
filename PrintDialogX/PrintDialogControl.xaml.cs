@@ -23,7 +23,7 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PerformanceStrategy strategy, PrintDialogViewModel.ModelLocker locker, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDocument document, PrintSettings settings, InterfaceSettings appearance, PrintDialogViewModel.ModelLocker locker, Action retriever, Action visualizer, Action informer)
     {
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? updater = null) : INotifyPropertyChanged
         {
@@ -184,7 +184,6 @@ namespace PrintDialogX
         public PrintDocument PrintDocument { get; } = document;
         public PrintSettings PrintSettings { get; } = settings;
         public InterfaceSettings InterfaceSettings { get; } = appearance;
-        public PerformanceStrategy PerformanceStrategy { get; } = strategy;
 
         public ModelValue<DocumentHostControl.Document> PreviewDocument { get; } = new(invoker, new(locker));
 
@@ -267,7 +266,7 @@ namespace PrintDialogX
                 (NavigatePageNext, [new(Key.PageDown, ModifierKeys.Alt), new(Key.Right, ModifierKeys.Alt)]),
                 (NavigatePageLast, [new(Key.End, ModifierKeys.Alt)]),
             }).SelectMany(x => x.Gestures.Select(y => new KeyBinding(new PrintDialogViewModel.ModelCommand(x.Executer), y))));
-            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, dialog.PerformanceStrategy, lockers.Preview, LoadSettings, LoadDocument, async () =>
+            model = new(Dispatcher.Invoke, dialog.Document, dialog.PrintSettings, dialog.InterfaceSettings, lockers.Preview, LoadSettings, LoadDocument, async () =>
             {
                 if (!await UpdateDocument())
                 {
@@ -296,8 +295,7 @@ namespace PrintDialogX
             iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
             iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Connections]);
             ((PagesCustomValidationRule)Resources[ValidationResource.PagesCustom]).Maximum = dialog.Document.PageCount;
-            ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).PerformanceStrategy = dialog.PerformanceStrategy;
-            ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).ColorEmulationLevel = dialog.ColorEmulationLevel;
+            ((DocumentToContentConverter)Resources[ConverterResource.DocumentToContent]).Settings = dialog;
 
             LoadPrinters(server.IsCustomized ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? new Func<PrintQueue?>(() =>
             {

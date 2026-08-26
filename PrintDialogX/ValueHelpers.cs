@@ -25,8 +25,6 @@ namespace PrintDialogX
 
     internal sealed class InterfaceToContentConverter() : IValueConverter
     {
-        public const string NAME_LANGUAGE_DEFAULT = "en-US";
-
         public ResourceDictionary Resources { get; set; } = [];
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
@@ -97,10 +95,10 @@ namespace PrintDialogX
                 };
             }
 
-            LanguageAttribute? attribute = Enum.GetName(typeof(InterfaceSettings.Language), language) is string name ? typeof(InterfaceSettings.Language).GetField(name)?.GetCustomAttribute<LanguageAttribute>() : null;
-            applier(attribute?.Language ?? NAME_LANGUAGE_DEFAULT, attribute?.Direction ?? FlowDirection.LeftToRight, new()
+            LanguageAttribute attribute = (Enum.GetName(typeof(InterfaceSettings.Language), language) is string name ? typeof(InterfaceSettings.Language).GetField(name)?.GetCustomAttribute<LanguageAttribute>() : null) ?? new("en-US", FlowDirection.LeftToRight);
+            applier(attribute.Language, attribute.Direction, new()
             {
-                Source = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Languages/{0}.xaml", attribute?.Language ?? NAME_LANGUAGE_DEFAULT), UriKind.Relative)
+                Source = new(string.Format(CultureInfo.InvariantCulture, "/PrintDialogX;component/Resources/Languages/{0}.xaml", attribute.Language), UriKind.Relative)
             });
         }
     }
@@ -153,7 +151,7 @@ namespace PrintDialogX
 
         public static object GetDescription(Enum value, ResourceDictionary resources)
         {
-            return Enum.GetName(value.GetType(), value) is string name && value.GetType().GetField(name)?.GetCustomAttribute<StringResourceAttribute>()?.Resource is TextResource resource ? resources[resource] : value;
+            return Enum.GetName(value.GetType(), value) is string name && value.GetType().GetField(name)?.GetCustomAttribute<TextResourceAttribute>()?.Resource is TextResource resource ? resources[resource] : value;
         }
     }
 
@@ -527,7 +525,7 @@ namespace PrintDialogX
     {
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            return value is Enums.Size size ? (int)Math.Min(size.Width / 2, size.Height / 2) : Binding.DoNothing;
+            return value is Enums.Size size ? (int)Math.Floor(Math.Min(size.Width / 2, size.Height / 2)) : Binding.DoNothing;
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -841,24 +839,24 @@ namespace PrintDialogX
 
     internal sealed class DocumentToContentConverter() : LanguageHostConverter(), IValueConverter
     {
-        internal sealed class Content(VirtualizingStackPanel viewer, DocumentHostControl.Document document, DocumentHostControl.DocumentPage page, string name, ColorEmulationLevel color)
+        internal sealed class Content(VirtualizingStackPanel viewer, DocumentHostControl.Document document, int index, string name, ColorEmulationLevel color)
         {
-            public VirtualizingStackPanel? Viewer { get; } = viewer;
-            public object DataContext { get; } = viewer.DataContext;
-
-            public DocumentHostControl.DocumentPage Page { get; } = page;
+            public DocumentHostControl.DocumentPage Page { get; } = document.Pages[index].Page;
             public string Name { get; } = name;
             public Size Size { get; } = new(document.PageSize.Width * document.ZoomValue, document.PageSize.Height * document.ZoomValue);
             public double Zoom { get; } = document.ZoomValue;
+
+            public VirtualizingStackPanel? Viewer { get; } = viewer;
+            public object Context { get; } = viewer.DataContext;
+
             public ColorEmulationLevel ColorEmulationLevel { get; } = color;
         }
 
-        public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
-        public ColorEmulationLevel ColorEmulationLevel { get; set; } = ColorEmulationLevel.Simple;
+        public PrintDialog? Settings { get; set; } = null;
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
-            if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer || Resources is null)
+            if (value is not DocumentHostControl.Document document || document.Viewer is not VirtualizingStackPanel viewer || Resources is null || Settings is null)
             {
                 return Binding.DoNothing;
             }
@@ -869,16 +867,16 @@ namespace PrintDialogX
                 int index = 0;
                 for (int i = 0; i < document.PageCount; i += document.ColumnCount)
                 {
-                    rows.Add([.. document.Pages.GetRange(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
+                    rows.Add([.. Enumerable.Range(i, Math.Min(document.ColumnCount, document.PageCount - i)).Select(x =>
                     {
-                        if (PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
+                        if (Settings.PerformanceStrategy == PerformanceStrategy.FavorsPrinting)
                         {
-                            x.Page.UpdateContent();
+                            document.Pages[x].Page.UpdateContent();
                         }
 
                         index++;
 
-                        return new Content(viewer, document, x.Page, string.Format(culture, (string)Resources[TextResource.ConstructionPage], index, document.PageCount), ColorEmulationLevel);
+                        return new Content(viewer, document, x, string.Format(culture, (string)Resources[TextResource.ConstructionPage], index, document.PageCount), Settings.ColorEmulationLevel);
                     })]);
                 }
             }

@@ -27,7 +27,7 @@
 
     <DockPanel>
         <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Height="Auto" VerticalContentAlignment="Top" />
-        <Decorator x:Name="content" DockPanel.Dock="Bottom">
+        <Decorator x:Name="content" DockPanel.Dock="Bottom" AutomationProperties.LiveSetting="Polite">
             <ui:ProgressRing IsIndeterminate="True" />
         </Decorator>
     </DockPanel>
