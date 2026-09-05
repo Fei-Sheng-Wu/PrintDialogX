@@ -56,17 +56,17 @@ namespace PrintDialogX
             {
                 public event NotifyCollectionChangedEventHandler? CollectionChanged = null;
 
-                public void Reset(IEnumerable<T?>? items, T fallback)
+                public void Reset(IEnumerable<T?> items, T fallback)
                 {
                     Clear();
-                    foreach (T? item in items ?? [])
+                    foreach (T item in items.OfType<T>())
                     {
-                        if (item is not T value || Contains(value))
+                        if (Contains(item))
                         {
                             continue;
                         }
 
-                        Add(value);
+                        Add(item);
                     }
                     if (Count <= 0)
                     {
@@ -110,7 +110,7 @@ namespace PrintDialogX
             public void Load(IEnumerable<T?>? items, T? target)
             {
                 T fallback = alternator();
-                Items.Reset(items, fallback);
+                Items.Reset(items ?? [], fallback);
                 OnPropertyChanged(nameof(Items));
 
                 bool isAbsent = selection is T current && !Items.Contains(current);
@@ -195,17 +195,18 @@ namespace PrintDialogX
         public ColorEmulationLevel ColorEmulationLevel { get; } = source.ColorEmulationLevel;
 
         public ModelValue<Internal.PreviewDocument> PreviewDocument { get; } = new(invoker, preview, null);
-        public ModelValue<int> PreviewIndex { get; } = new(invoker, 1, null);
+        public ModelValue<Size> PreviewDocumentSize { get; } = new(invoker, new(0, 0), null);
+        public ModelValue<int> PreviewDocumentIndex { get; } = new(invoker, 1, null);
         public Internal.PreviewDocumentControl? PreviewViewer { get; set; } = null;
 
         public ModelValue<bool> IsPrompting { get; } = new(invoker, false, null);
         public ModelValue<object> PromptingContent { get; } = new(invoker, string.Empty, null);
-        public Action? PromptingDismisser { get; set; } = null;
+        public Action? PromptingAlternator { get; set; } = null;
 
         public ModelValue<bool> IsWorking { get; } = new(invoker, false, null);
         public ModelValue<object> WorkingContent { get; } = new(invoker, string.Empty, null);
         public ModelValue<double> WorkingProgress { get; } = new(invoker, 0, null);
-        public Action? WorkingDismisser { get; set; } = null;
+        public Action? WorkingAlternator { get; set; } = null;
 
         public ModelValue<bool> IsPrinterReady { get; } = new(invoker, true, null);
         public ModelValue<bool> IsSettingReady { get; } = new(invoker, true, null);
@@ -269,7 +270,6 @@ namespace PrintDialogX
             server = (source.PrintServer ?? new(), source.PrintServer is not null);
 
             DataContext = model;
-            Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             (Language, FlowDirection, ResourceDictionary resources) = Internal.LanguageAttribute.Parse(model.InterfaceSettings.DisplayLanguage);
             Resources.MergedDictionaries.Add(resources);
@@ -282,7 +282,6 @@ namespace PrintDialogX
             iconizer.CollectionFax = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Fax]);
             iconizer.CollectionNetwork = server.Server.GetPrintQueues([EnumeratedPrintQueueTypes.Connections]);
             ((Internal.PagesCustomValidationRule)Resources[Internal.ValidationResource.PagesCustom]).Maximum = model.PrintDocument.Pages.Count;
-            ((Internal.DocumentToContentConverter)Resources[Internal.ConverterResource.DocumentToContent]).PerformanceStrategy = model.PerformanceStrategy;
 
             LoadPrinters(server.IsCustomized ? source.DefaultPrinter : (source.DefaultPrinter ?? Internal.Common.Try(LocalPrintServer.GetDefaultPrintQueue, null)));
         }
@@ -342,13 +341,13 @@ namespace PrintDialogX
         private void DismissDialogPrompting(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsPrompting.Value = false;
-            model.PromptingDismisser?.Invoke();
+            model.PromptingAlternator?.Invoke();
         }
 
         private void DismissDialogWorking(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsWorking.Value = false;
-            model.WorkingDismisser?.Invoke();
+            model.WorkingAlternator?.Invoke();
         }
 
         private async Task<bool> UpdateDocument(bool isInitiator)
@@ -422,7 +421,7 @@ namespace PrintDialogX
             if (!model.PrinterEntries.Any())
             {
                 model.PromptingContent.Value = Resources[Internal.TextResource.MessageNoPrinter];
-                model.PromptingDismisser = () => host.SetResult(new()
+                model.PromptingAlternator = () => host.SetResult(new()
                 {
                     IsSuccess = false,
                     PaperCount = 0
@@ -468,7 +467,7 @@ namespace PrintDialogX
             catch
             {
                 model.PromptingContent.Value = Resources[Internal.TextResource.MessageFailedPrinterAdd];
-                model.PromptingDismisser = null;
+                model.PromptingAlternator = null;
                 model.IsPrompting.Value = true;
             }
         }
@@ -492,7 +491,7 @@ namespace PrintDialogX
             catch
             {
                 model.PromptingContent.Value = Resources[Internal.TextResource.MessageFailedPrinterPreferences];
-                model.PromptingDismisser = null;
+                model.PromptingAlternator = null;
                 model.IsPrompting.Value = true;
             }
         }
@@ -588,7 +587,7 @@ namespace PrintDialogX
             });
         }
 
-        private void IntializePreview(object sender, EventArgs e)
+        private void InitializePreview(object sender, EventArgs e)
         {
             Internal.PreviewDocumentControl viewer = (Internal.PreviewDocumentControl)sender;
             model.PreviewViewer = viewer;
@@ -624,7 +623,7 @@ namespace PrintDialogX
                     {
                         using (await lockers.Preview.LockAsync())
                         {
-                            return new object[] { model.PreviewDocument.Value.Pages.Count > 0 ? model.PreviewDocument.Value.Pages[Internal.Common.Clamp(0, model.PreviewDocument.Value.Pages.Count - 1, model.PreviewIndex.Value - 1)].Index : 1 };
+                            return new object[] { model.PreviewDocument.Value.Pages.Count > 0 ? model.PreviewDocument.Value.Pages[Internal.Common.Clamp(0, model.PreviewDocument.Value.Pages.Count - 1, model.PreviewDocumentIndex.Value - 1)].Index : 1 };
                         }
                     }),
                     Enums.Pages.CustomPages => Internal.PagesCustomValidationRule.TryConvert(model.PagesCustom.Value, int.MaxValue, false).Result,
@@ -654,35 +653,31 @@ namespace PrintDialogX
                 };
                 double margin = model.MarginEntries.Selection switch
                 {
-                    Enums.Margin.None => 0,
+                    Enums.Margin.Default => model.PrintDocument.DocumentMargin,
                     Enums.Margin.Minimum => await Dispatcher.InvokeAsync(() => Internal.Common.Try(() => printer.GetPrintCapabilities(new()
                     {
                         PageMediaSize = new(model.SizeEntries.Selection.Width, model.SizeEntries.Selection.Height),
                         PageOrientation = Internal.ValueMappings.Map(model.LayoutEntries.Selection, Internal.ValueMappings.MAPPING_LAYOUT)
                     }).PageImageableArea, null) is PageImageableArea { OriginWidth: double left, OriginHeight: double top } ? Math.Min(Math.Min(size.Width, size.Height) / 2, Math.Max(left, top)) : 0),
                     Enums.Margin.Custom => model.MarginCustom.Value,
-                    _ => model.PrintDocument.DocumentMargin
+                    _ => 0
                 };
                 x.ThrowIfCancellationRequested();
 
-                Size measurement = new(Math.Max(0, size.Width - 2 * margin), Math.Max(0, size.Height - 2 * margin));
-                model.PrintDocument.UpdateMeasurement(measurement);
+                Size available = new(Math.Max(0, size.Width - 2 * margin), Math.Max(0, size.Height - 2 * margin));
+                model.PrintDocument.UpdateMeasurement(available);
                 await UpdateDocument(true);
                 x.ThrowIfCancellationRequested();
 
-                Size extent = model.PrintDocument.DocumentSize is Enums.Size { Width: double width, Height: double height } ? new(width - 2 * model.PrintDocument.DocumentMargin, height - 2 * model.PrintDocument.DocumentMargin) : measurement;
-                Size cell = new(measurement.Width / columns, measurement.Height / rows);
-                double factor = Internal.Common.Validate(scale ?? Math.Min(cell.Width / extent.Width, cell.Height / extent.Height), y => !double.IsNaN(y), 0);
-                Internal.PreviewPage.Construction construction = new(extent, cell, margin, columns, rows, model.PageOrderEntries.Selection, new(factor, factor), new(new(0, 0, cell.Width / factor, cell.Height / factor)));
-                construction.Scaling.Freeze();
-                construction.Clip.Freeze();
+                double horizontal = available.Width / columns;
+                double vertical = available.Height / rows;
+                Size extent = model.PrintDocument.DocumentSize is Enums.Size { Width: double width, Height: double height } ? new(width - 2 * model.PrintDocument.DocumentMargin, height - 2 * model.PrintDocument.DocumentMargin) : available;
+                Internal.PreviewPage.Construction construction = new(size, extent, horizontal, vertical, margin, columns, rows, model.PageOrderEntries.Selection, scale ?? Internal.Common.Validate(Math.Min(horizontal / extent.Width, vertical / extent.Height), y => !double.IsNaN(y), 0));
                 x.ThrowIfCancellationRequested();
 
                 using (await lockers.Preview.LockAsync())
                 {
-                    model.PreviewDocument.Value.PageSize = size;
                     model.PreviewDocument.Value.Pages.Clear();
-
                     using (await lockers.Source.LockAsync())
                     {
                         int index = 0;
@@ -709,13 +704,27 @@ namespace PrintDialogX
                             }
                         }
                     }
+
+                    if (model.PerformanceStrategy is PerformanceStrategy.FavorsPrinting)
+                    {
+                        await Dispatcher.InvokeAsync(async () =>
+                        {
+                            foreach (Internal.PreviewPage page in model.PreviewDocument.Value.Pages)
+                            {
+                                page.ConstructContent();
+
+                                await Dispatcher.Yield();
+                            }
+                        });
+                    }
                 }
 
-                int original = model.PreviewIndex.Value;
+                int current = model.PreviewDocumentIndex.Value;
+                model.PreviewDocumentSize.Value = size;
                 model.PreviewDocument.OnPropertyChanged();
                 model.IsPreviewReady.Value = true;
 
-                await Dispatcher.InvokeAsync(() => model.PreviewViewer?.NavigateIndex(original));
+                await Dispatcher.InvokeAsync(() => model.PreviewViewer?.NavigateIndex(current));
             });
         }
 
@@ -804,7 +813,7 @@ namespace PrintDialogX
                 });
                 model.WorkingContent.Value = Resources[Internal.TextResource.LabelInitializing];
                 model.WorkingProgress.Value = 0;
-                model.WorkingDismisser = () => Internal.Common.Try(writer.CancelAsync, () =>
+                model.WorkingAlternator = () => Internal.Common.Try(writer.CancelAsync, () =>
                 {
                     scope.Dispose();
                     StopPrinting(Internal.TextResource.MessageCancelledPrintJob);
@@ -865,7 +874,7 @@ namespace PrintDialogX
         private void StopPrinting(Internal.TextResource message)
         {
             model.PromptingContent.Value = Resources[message];
-            model.PromptingDismisser = () => host.SetProgress(new()
+            model.PromptingAlternator = () => host.SetProgress(new()
             {
                 State = IPrintDialogHost.PrintDialogProgressState.None,
                 Value = 0

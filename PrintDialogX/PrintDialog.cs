@@ -107,7 +107,7 @@ namespace PrintDialogX
             customizer((Window)Host);
         }
 
-        private Func<Task<FrameworkElement>> CreateInstantiator(Func<Task>? executor)
+        private Func<Task<FrameworkElement>> CreateInitializer(Func<Task>? executor)
         {
             return async () =>
             {
@@ -126,7 +126,7 @@ namespace PrintDialogX
         /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public void Show()
         {
-            Host.Start(this, false, CreateInstantiator(null));
+            Host.Start(this, false, CreateInitializer(null));
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace PrintDialogX
         /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public void Show(Func<Task> generator)
         {
-            Host.Start(this, false, CreateInstantiator(generator));
+            Host.Start(this, false, CreateInitializer(generator));
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace PrintDialogX
         /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public bool ShowDialog()
         {
-            Host.Start(this, true, CreateInstantiator(null));
+            Host.Start(this, true, CreateInitializer(null));
 
             return Host.GetResult().IsSuccess;
         }
@@ -162,7 +162,7 @@ namespace PrintDialogX
         /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public bool ShowDialog(Func<Task> generator)
         {
-            Host.Start(this, true, CreateInstantiator(generator));
+            Host.Start(this, true, CreateInitializer(generator));
 
             return Host.GetResult().IsSuccess;
         }

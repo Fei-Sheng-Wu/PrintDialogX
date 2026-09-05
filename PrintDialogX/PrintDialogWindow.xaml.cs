@@ -28,7 +28,7 @@ namespace PrintDialogX
 
         private async void LoadContent(object sender, EventArgs e)
         {
-            content.Content = executor is Func<Task<FrameworkElement>> instantiator ? await instantiator() : null;
+            content.Content = executor is Func<Task<FrameworkElement>> initializer ? await initializer() : null;
         }
 
         private void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
@@ -41,7 +41,7 @@ namespace PrintDialogX
             }
         }
 
-        public void Start(PrintDialog source, bool isDialog, Func<Task<FrameworkElement>> instantiator)
+        public void Start(PrintDialog source, bool isDialog, Func<Task<FrameworkElement>> initializer)
         {
             if (!isAvailable)
             {
@@ -49,10 +49,9 @@ namespace PrintDialogX
             }
 
             isAvailable = false;
-            executor = instantiator;
+            executor = initializer;
 
             Application application = Application.Current ?? new();
-            Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);

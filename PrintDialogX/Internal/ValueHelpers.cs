@@ -60,6 +60,13 @@ namespace PrintDialogX.Internal
             return validator(value) ? value : fallback;
         }
 
+        public static T Freeze<T>(T value) where T : Freezable
+        {
+            value.Freeze();
+
+            return value;
+        }
+
         public static int Partition(int total, int unit)
         {
             return (total + unit - 1) / unit;
@@ -116,7 +123,7 @@ namespace PrintDialogX.Internal
         }
     }
 
-    internal sealed class ValidatableBinding() : Binding()
+    internal sealed class ValidatingBinding() : Binding()
     {
         public ValidationRule? Validation
         {
@@ -154,10 +161,10 @@ namespace PrintDialogX.Internal
             Threshold
         }
 
-        internal sealed class Parameter(IEnumerable<object> trues, IEnumerable<object> falses)
+        internal sealed class Parameter(IEnumerable<object> truths, IEnumerable<object> falsehoods)
         {
-            public IEnumerable<object> ValuesTrue { get; set; } = trues;
-            public IEnumerable<object> ValuesFalse { get; set; } = falses;
+            public IEnumerable<object> ValuesTrue { get; set; } = truths;
+            public IEnumerable<object> ValuesFalse { get; set; } = falsehoods;
         }
 
         public Comparison? Mode { get; set; } = null;
@@ -178,7 +185,7 @@ namespace PrintDialogX.Internal
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
         {
-            return parameter is Parameter { ValuesTrue: IEnumerable<object> trues, ValuesFalse: IEnumerable<object> falses } ? (Equals(value, StateTrue) ? trues : falses).First() : Binding.DoNothing;
+            return parameter is Parameter { ValuesTrue: IEnumerable<object> truths, ValuesFalse: IEnumerable<object> falsehoods } ? (Equals(value, StateTrue) ? truths : falsehoods).First() : Binding.DoNothing;
         }
     }
 
@@ -334,8 +341,7 @@ namespace PrintDialogX.Internal
                     };
                     if (N_GetIcon(index, FLAG_RECEIVE_ICON | (isSmall ? FLAG_SIZE_SMALL : FLAG_SIZE_LARGE), ref info) == RESULT_SUCCESS && info.Icon != IntPtr.Zero)
                     {
-                        source = Imaging.CreateBitmapSourceFromHIcon(info.Icon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        source.Freeze();
+                        source = Common.Freeze(Imaging.CreateBitmapSourceFromHIcon(info.Icon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()));
                         CACHE[key] = source;
 
                         N_ReleaseIcon(info.Icon);

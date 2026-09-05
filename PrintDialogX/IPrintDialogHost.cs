@@ -74,8 +74,8 @@ namespace PrintDialogX
         /// </summary>
         /// <param name="source">The <see cref="PrintDialog"/> instance with the specified settings.</param>
         /// <param name="isDialog"><see langword="true"/> to start the host in a dialog style and return only when the operation is finished; otherwise, <see langword="false"/>.</param>
-        /// <param name="instantiator">The callback function to be invoked to attain the actual control for the print operation to be attached to the host.</param>
-        public void Start(PrintDialog source, bool isDialog, Func<Task<FrameworkElement>> instantiator);
+        /// <param name="initializer">The callback function to be invoked to attain the actual control for the print operation to be attached to the host.</param>
+        public void Start(PrintDialog source, bool isDialog, Func<Task<FrameworkElement>> initializer);
 
         /// <summary>
         /// Gets the result of the print operation.

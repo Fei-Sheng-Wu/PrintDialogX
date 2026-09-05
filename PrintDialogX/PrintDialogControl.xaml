@@ -46,7 +46,7 @@
                     <ui:SymbolIcon Name="PART_Placeholder" FontSize="{Binding Path=Size}" Symbol="Print20" Opacity="{Binding Path=Opacity}" Visibility="Collapsed" AutomationProperties.Name="{Binding Path=Name}" />
                 </Grid>
                 <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding Path=Icon}" Value="{x:Null}">
+                    <DataTrigger Binding="{Binding Path=Source}" Value="{x:Null}">
                         <Setter TargetName="PART_Image" Property="Visibility" Value="Collapsed" />
                         <Setter TargetName="PART_Placeholder" Property="Visibility" Value="Visible" />
                     </DataTrigger>
@@ -172,7 +172,7 @@
                                 </DockPanel>
                             </ControlTemplate>
                             <ControlTemplate>
-                                <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" Text="{internal:ValidatableBinding Path=PagesCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Validation={StaticResource ResourceKey={x:Static Member=internal:ValidationResource.PagesCustom}}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" AutomationProperties.HelpText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" Text="{internal:ValidatingBinding Path=PagesCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Validation={StaticResource ResourceKey={x:Static Member=internal:ValidationResource.PagesCustom}}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" AutomationProperties.HelpText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <ui:TextBox.Style>
                                         <Style TargetType="{x:Type TypeName=ui:TextBox}" BasedOn="{StaticResource ResourceKey={x:Type TypeName=ui:TextBox}}">
                                             <Setter Property="Margin" Value="0,4" />
@@ -363,13 +363,13 @@
         <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Path=PreviewDocument.Value, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.DocumentToContent}}}" Visibility="{Binding Path=IsPreviewReady.Value, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.EqualityToVisibility}}, ConverterParameter={internal:Boolean Value=True}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.AreaPreview}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type TypeName=internal:DocumentToContentConverter+Content}">
-                    <internal:PreviewPageControl BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding RelativeSource={RelativeSource AncestorType={x:Type TypeName=internal:PreviewDocumentControl}}, Path=.}" Color="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEmulationLevel}" Content="{Binding Path=Page}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
+                    <internal:PreviewPageControl BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TypeName=internal:PreviewDocumentControl}}, Path=.}" Color="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEmulationLevel}" Content="{Binding Path=Page}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.Template>
                 <ControlTemplate TargetType="{x:Type TypeName=ItemsControl}">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" PanningMode="Both" CanContentScroll="True" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                        <internal:PreviewDocumentControl IsItemsHost="True" Spacing="8" Background="Transparent" DocumentSize="{Binding Path=PreviewDocument.Value.PageSize}" DocumentIndex="{Binding Path=PreviewIndex.Value, Mode=TwoWay}" UseLayoutRounding="False"  Initialized="IntializePreview" />
+                        <internal:PreviewDocumentControl IsItemsHost="True" Spacing="8" Background="Transparent" DocumentSize="{Binding Path=PreviewDocumentSize.Value}" DocumentIndex="{Binding Path=PreviewDocumentIndex.Value, Mode=TwoWay}" UseLayoutRounding="False"  Initialized="InitializePreview" />
                     </ScrollViewer>
                 </ControlTemplate>
             </ItemsControl.Template>
@@ -379,7 +379,7 @@
                 <TextBlock Margin="4,0" VerticalAlignment="Center" AutomationProperties.LiveSetting="Polite">
                     <TextBlock.Text>
                         <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=internal:ConverterResource.DocumentToDescription}}">
-                            <Binding Path="PreviewIndex.Value" />
+                            <Binding Path="PreviewDocumentIndex.Value" />
                             <Binding Path="PreviewDocument.Value.Pages.Count" />
                         </MultiBinding>
                     </TextBlock.Text>

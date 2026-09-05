@@ -16,14 +16,22 @@ namespace PrintDialogX.Internal
 {
     internal sealed class PreviewPage(int index, IEnumerable<PrintPage> subpages, PreviewPage.Construction construction)
     {
-        internal sealed class Construction(Size extent, Size cell, double margin, int columns, int rows, Enums.PageOrder order, ScaleTransform scaling, RectangleGeometry clip)
+        internal sealed class Construction(Size document, Size extent, double horizontal, double vertical, double margin, int columns, int rows, Enums.PageOrder order, double scale)
         {
-            public (Size Extent, Size Cell) Size { get; } = (extent, cell);
+            public Size DocumentSize { get; } = document;
+
+            public double ExtentWidth { get; } = extent.Width;
+            public double ExtentHeight { get; } = extent.Height;
+            public double CellWidth { get; } = horizontal;
+            public double CellHeight { get; } = vertical;
             public double Margin { get; } = margin;
-            public (int Columns, int Rows) Arrangement { get; } = (columns, rows);
+
+            public int ColumnCount { get; } = columns;
+            public int RowCount { get; } = rows;
             public Enums.PageOrder Order { get; } = order;
-            public ScaleTransform Scaling { get; } = scaling;
-            public RectangleGeometry Clip { get; } = clip;
+
+            public ScaleTransform Scaling { get; } = Common.Freeze(new ScaleTransform(scale, scale));
+            public RectangleGeometry Clip { get; } = Common.Freeze(new RectangleGeometry(new(0, 0, horizontal / scale, vertical / scale)));
         }
 
         public int Index { get; } = index;
@@ -44,10 +52,11 @@ namespace PrintDialogX.Internal
             {
                 (int column, int row) = construction.Order switch
                 {
-                    Enums.PageOrder.HorizontalReverse => (construction.Arrangement.Columns - step % construction.Arrangement.Columns - 1, step / construction.Arrangement.Columns),
-                    Enums.PageOrder.Vertical => (step / construction.Arrangement.Rows, step % construction.Arrangement.Rows),
-                    Enums.PageOrder.VerticalReverse => (step / construction.Arrangement.Rows, construction.Arrangement.Rows - step % construction.Arrangement.Rows - 1),
-                    _ => (step % construction.Arrangement.Columns, step / construction.Arrangement.Columns)
+                    Enums.PageOrder.Horizontal => (step % construction.ColumnCount, step / construction.ColumnCount),
+                    Enums.PageOrder.HorizontalReverse => (construction.ColumnCount - step % construction.ColumnCount - 1, step / construction.ColumnCount),
+                    Enums.PageOrder.Vertical => (step / construction.RowCount, step % construction.RowCount),
+                    Enums.PageOrder.VerticalReverse => (step / construction.RowCount, construction.RowCount - step % construction.RowCount - 1),
+                    _ => (0, 0)
                 };
                 step++;
 
@@ -67,18 +76,26 @@ namespace PrintDialogX.Internal
 
                 ContentPresenter cell = new()
                 {
-                    Width = construction.Size.Extent.Width,
-                    Height = construction.Size.Extent.Height,
+                    Width = construction.ExtentWidth,
+                    Height = construction.ExtentHeight,
                     Content = element,
                     RenderTransform = construction.Scaling,
                     Clip = construction.Clip
                 };
-                Canvas.SetLeft(cell, construction.Margin + column * construction.Size.Cell.Width);
-                Canvas.SetTop(cell, construction.Margin + row * construction.Size.Cell.Height);
+                Canvas.SetLeft(cell, construction.Margin + construction.CellWidth * column);
+                Canvas.SetTop(cell, construction.Margin + construction.CellHeight * row);
                 content.Children.Add(cell);
             }
 
+            content.Measure(construction.DocumentSize);
+            content.Arrange(new(construction.DocumentSize));
+
             return content;
+        }
+
+        public DocumentPage Paginate()
+        {
+            return new(ConstructContent(), construction.DocumentSize, new(construction.DocumentSize), new(construction.DocumentSize));
         }
     }
 
@@ -87,23 +104,14 @@ namespace PrintDialogX.Internal
         public List<PreviewPage> Pages { get; } = [];
         public PrintDialogViewModel.ModelLocker Locker { get; } = locker;
 
-        public override bool IsPageCountValid { get => true; }
+        public override bool IsPageCountValid { get; } = true;
         public override int PageCount { get => Pages.Count; }
         public override Size PageSize { get; set; } = new(0, 0);
-        public override IDocumentPaginatorSource? Source { get => null; }
+        public override IDocumentPaginatorSource? Source { get; } = null;
 
         public override DocumentPage GetPage(int index)
         {
-            if (index < 0 || index >= Pages.Count)
-            {
-                return DocumentPage.Missing;
-            }
-
-            Canvas content = Pages[index].ConstructContent();
-            content.Measure(PageSize);
-            content.Arrange(new(PageSize));
-
-            return new(content, PageSize, new(PageSize), new(PageSize));
+            return index >= 0 && index < Pages.Count ? Pages[index].Paginate() : DocumentPage.Missing;
         }
     }
 
@@ -115,8 +123,6 @@ namespace PrintDialogX.Internal
             public string Name { get; } = name;
         }
 
-        public PerformanceStrategy PerformanceStrategy { get; set; } = PerformanceStrategy.FavorsPreview;
-
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
             if (value is not PreviewDocument document)
@@ -124,22 +130,17 @@ namespace PrintDialogX.Internal
                 return Binding.DoNothing;
             }
 
-            Content[] contents = new Content[document.Pages.Count];
             using (document.Locker.Lock())
             {
                 string construction = GetText(TextResource.ConstructionPage);
+                Content[] contents = new Content[document.Pages.Count];
                 for (int i = 0; i < contents.Length; i++)
                 {
-                    if (PerformanceStrategy is PerformanceStrategy.FavorsPrinting)
-                    {
-                        document.Pages[i].ConstructContent();
-                    }
-
                     contents[i] = new(document.Pages[i], string.Format(culture, construction, i + 1, document.Pages.Count));
                 }
-            }
 
-            return contents;
+                return contents;
+            }
         }
 
         public object ConvertBack(object value, Type type, object parameter, CultureInfo culture)
@@ -216,19 +217,20 @@ namespace PrintDialogX.Internal
             PreviewPageControl element = (PreviewPageControl)x;
             if (e is not { NewValue: PreviewPage page })
             {
-                element.ContentBrush = null;
+                element.ClearContent();
                 return;
             }
 
             VisualBrush visual = new(page.ConstructContent())
             {
-                ViewboxUnits = BrushMappingMode.Absolute
+                ViewboxUnits = BrushMappingMode.Absolute,
+                AutoLayoutContent = false
             };
-            Rectangle area = new()
+            Rectangle bound = new()
             {
                 Fill = visual
             };
-            element.ContentBrush = (new(area), area, visual);
+            element.ContentBrush = (new(bound), bound, visual);
         }));
         public static readonly DependencyProperty ViewerProperty = DependencyProperty.Register(nameof(Viewer), typeof(PreviewDocumentControl), typeof(PreviewPageControl), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Enums.Color), typeof(PreviewPageControl), new FrameworkPropertyMetadata(Enums.Color.Color, FrameworkPropertyMetadataOptions.AffectsRender, (x, e) =>
@@ -272,7 +274,18 @@ namespace PrintDialogX.Internal
         public PreviewPageControl() : base()
         {
             Loaded += (x, e) => CompositionTarget.Rendering += UpdateViewport;
-            Unloaded += (x, e) => CompositionTarget.Rendering -= UpdateViewport;
+            Unloaded += (x, e) =>
+            {
+                CompositionTarget.Rendering -= UpdateViewport;
+                ClearContent();
+            };
+        }
+
+        private void ClearContent()
+        {
+            ContentBrush?.Visual.Visual = null;
+            ContentBrush?.Bound.Fill = null;
+            ContentBrush = null;
         }
 
         private void UpdateViewport(object? sender, EventArgs e)
@@ -440,8 +453,8 @@ namespace PrintDialogX.Internal
 
         private void UpdateNavigation(int index)
         {
-            SetHorizontalOffset(ComputeLayoutOffset(zoom.Percentage * DocumentSize.Width, index % columns));
-            SetVerticalOffset(ComputeLayoutOffset(zoom.Percentage * DocumentSize.Height, index / columns));
+            SetHorizontalOffset(ComputeLayoutOffset(zoom.Percentage * DocumentSize.Width, index % columns) - Spacing);
+            SetVerticalOffset(ComputeLayoutOffset(zoom.Percentage * DocumentSize.Height, index / columns) - Spacing);
         }
 
         public void ZoomMode(Zoom mode)
@@ -470,10 +483,10 @@ namespace PrintDialogX.Internal
 
         public void ZoomColumns(int count)
         {
-            int index = DocumentIndex - 1;
+            int current = DocumentIndex - 1;
             columns = count;
             UpdateZoom(Zoom.FitToPage, ComputeZoomPercentage(Zoom.FitToPage), null);
-            UpdateNavigation(index);
+            UpdateNavigation(current);
             InvalidateMeasure();
         }
 
@@ -641,8 +654,7 @@ namespace PrintDialogX.Internal
                 GeneratorPosition position = generator.GeneratorPositionFromIndex(start);
                 using (generator.StartAt(position, GeneratorDirection.Forward, true))
                 {
-                    int index = position.Offset != 0 ? position.Index + 1 : position.Index;
-                    for (int i = start; i < end; i++, index++)
+                    for (int i = start, j = position.Offset != 0 ? position.Index + 1 : position.Index; i < end; i++, j++)
                     {
                         ContentPresenter element = (ContentPresenter)generator.GenerateNext(out bool isRealized);
                         element.Measure(new(width, height));
@@ -651,13 +663,13 @@ namespace PrintDialogX.Internal
                             continue;
                         }
 
-                        if (index >= Children.Count)
+                        if (j >= Children.Count)
                         {
                             AddInternalChild(element);
                         }
                         else
                         {
-                            InsertInternalChild(index, element);
+                            InsertInternalChild(j, element);
                         }
                         generator.PrepareItemContainer(element);
                     }
@@ -691,11 +703,11 @@ namespace PrintDialogX.Internal
 
             double width = zoom.Percentage * DocumentSize.Width;
             double height = zoom.Percentage * DocumentSize.Height;
-            double padding = Math.Max(0, (ViewportWidth - ComputeLayoutOffset(width, columns)) / 2);
+            double margin = Math.Max(0, (ViewportWidth - ComputeLayoutOffset(width, columns)) / 2);
             for (int i = 0; i < Children.Count; i++)
             {
                 int index = generator.IndexFromGeneratorPosition(new(i, 0));
-                Children[i].Arrange(new(ComputeLayoutOffset(width, index % columns) + padding - HorizontalOffset, ComputeLayoutOffset(height, index / columns) - VerticalOffset, width, height));
+                Children[i].Arrange(new(margin + ComputeLayoutOffset(width, index % columns) - HorizontalOffset, ComputeLayoutOffset(height, index / columns) - VerticalOffset, width, height));
             }
 
             return available;
