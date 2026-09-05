@@ -8,7 +8,7 @@
         <d:ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary />
-                <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-US.xaml" />
+                <ResourceDictionary Source="/PrintDialogX;component/Resources/Languages/en-CA.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </d:ResourceDictionary>
 

@@ -2,7 +2,7 @@
 
 ![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)
 ![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)
-![.NET](https://img.shields.io/badge/.NET-%E2%89%A56.0-orange.svg?style=flat-square)
+![.NET](https://img.shields.io/badge/.NET-%E2%89%A58.0-orange.svg?style=flat-square)
 ![.NET Framework](https://img.shields.io/badge/.NET%20Framework-%E2%89%A54.7.1-orange.svg?style=flat-square)
 [![NuGet](https://img.shields.io/nuget/v/PrintDialogX?label=NuGet&logo=nuget&logoColor=white&style=flat-square)](https://www.nuget.org/packages/PrintDialogX)
 [![Downloads](https://img.shields.io/nuget/dt/PrintDialogX?label=Downloads&logo=nuget&logoColor=white&style=flat-square)](https://www.nuget.org/packages/PrintDialogX)
@@ -18,7 +18,7 @@
 
 ## Dependencies
 
-- [WPF-UI](https://github.com/lepoco/wpfui) ≥ 4.2.0, < 5.0.0
+- [WPF-UI](https://github.com/lepoco/wpfui) ≥ 4.2.1, < 5.0.0
 
 ## Versioning
 

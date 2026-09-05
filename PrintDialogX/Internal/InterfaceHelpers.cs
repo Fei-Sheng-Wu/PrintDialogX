@@ -71,7 +71,23 @@ namespace PrintDialogX.Internal
 
     internal sealed class InterfaceToContentConverter() : IValueConverter
     {
-        public ResourceDictionary Components { get; set; } = [];
+        public List<ControlTemplate> ComponentsVoid { get; set; } = [];
+        public List<ControlTemplate> ComponentsPrinter { get; set; } = [];
+        public List<ControlTemplate> ComponentsPrinterPreferences { get; set; } = [];
+        public List<ControlTemplate> ComponentsCopies { get; set; } = [];
+        public List<ControlTemplate> ComponentsCollation { get; set; } = [];
+        public List<ControlTemplate> ComponentsPages { get; set; } = [];
+        public List<ControlTemplate> ComponentsLayout { get; set; } = [];
+        public List<ControlTemplate> ComponentsSize { get; set; } = [];
+        public List<ControlTemplate> ComponentsColor { get; set; } = [];
+        public List<ControlTemplate> ComponentsQuality { get; set; } = [];
+        public List<ControlTemplate> ComponentsPagesPerSheet { get; set; } = [];
+        public List<ControlTemplate> ComponentsPageOrder { get; set; } = [];
+        public List<ControlTemplate> ComponentsScale { get; set; } = [];
+        public List<ControlTemplate> ComponentsMargin { get; set; } = [];
+        public List<ControlTemplate> ComponentsDoubleSided { get; set; } = [];
+        public List<ControlTemplate> ComponentsType { get; set; } = [];
+        public List<ControlTemplate> ComponentsSource { get; set; } = [];
 
         public object Convert(object value, Type type, object parameter, CultureInfo culture)
         {
@@ -84,10 +100,25 @@ namespace PrintDialogX.Internal
             foreach ((string name, InterfaceSettings.Option[] options) in new (string, InterfaceSettings.Option[])[] { ("PART_Basic", settings.BasicSettings), ("PART_Advanced", settings.AdvancedSettings) })
             {
                 Panel area = (Panel)element.FindName(name);
-                foreach (ControlTemplate template in options.SelectMany(x => Components[x] switch
+                foreach (ControlTemplate template in options.SelectMany(x => x switch
                 {
-                    ControlTemplate single => [single],
-                    IEnumerable<ControlTemplate> siblings => siblings,
+                    InterfaceSettings.Option.Void => ComponentsVoid,
+                    InterfaceSettings.Option.Printer => ComponentsPrinter,
+                    InterfaceSettings.Option.PrinterPreferences => ComponentsPrinterPreferences,
+                    InterfaceSettings.Option.Copies => ComponentsCopies,
+                    InterfaceSettings.Option.Collation => ComponentsCollation,
+                    InterfaceSettings.Option.Pages => ComponentsPages,
+                    InterfaceSettings.Option.Layout => ComponentsLayout,
+                    InterfaceSettings.Option.Size => ComponentsSize,
+                    InterfaceSettings.Option.Color => ComponentsColor,
+                    InterfaceSettings.Option.Quality => ComponentsQuality,
+                    InterfaceSettings.Option.PagesPerSheet => ComponentsPagesPerSheet,
+                    InterfaceSettings.Option.PageOrder => ComponentsPageOrder,
+                    InterfaceSettings.Option.Scale => ComponentsScale,
+                    InterfaceSettings.Option.Margin => ComponentsMargin,
+                    InterfaceSettings.Option.DoubleSided => ComponentsDoubleSided,
+                    InterfaceSettings.Option.Type => ComponentsType,
+                    InterfaceSettings.Option.Source => ComponentsSource,
                     _ => []
                 }))
                 {

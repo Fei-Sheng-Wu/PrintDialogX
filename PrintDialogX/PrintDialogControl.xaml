@@ -1,5 +1,6 @@
 <UserControl x:Class="PrintDialogX.PrintDialogControl"
              x:ClassModifier="internal"
+             x:Name="ROOT"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -18,9 +19,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/PrintDialogX;component/Global.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <internal:DataContextProxy x:Key="{x:Static Member=internal:ValueResource.ObjectDataContext}" DataContext="{Binding Path=.}" />
-            <CollectionViewSource x:Key="{x:Static Member=internal:ValueResource.CollectionPrinter}" Source="{Binding Path=PrinterEntries}" />
 
             <internal:ValueToDescriptionConverter x:Key="{x:Static Member=internal:ConverterResource.ValueToDescription}" />
             <internal:ComparisonToStateConverter x:Key="{x:Static Member=internal:ConverterResource.EqualityToBoolean}" Mode="Equality" />
@@ -44,7 +42,7 @@
             </DataTemplate>
             <DataTemplate x:Key="{x:Static Member=internal:TemplateResource.PrinterIcon}">
                 <Grid>
-                    <Image Name="PART_Image" Width="{Binding Path=Size}" Height="{Binding Path=Size}" Source="{Binding Path=Icon}" Opacity="{Binding Path=Opacity}" AutomationProperties.Name="{Binding Path=Name}" />
+                    <Image Name="PART_Image" Width="{Binding Path=Size}" Height="{Binding Path=Size}" Source="{Binding Path=Source}" Opacity="{Binding Path=Opacity}" AutomationProperties.Name="{Binding Path=Name}" />
                     <ui:SymbolIcon Name="PART_Placeholder" FontSize="{Binding Path=Size}" Symbol="Print20" Opacity="{Binding Path=Opacity}" Visibility="Collapsed" AutomationProperties.Name="{Binding Path=Name}" />
                 </Grid>
                 <DataTemplate.Triggers>
@@ -71,12 +69,13 @@
             <Binding Path="InterfaceSettings" d:Source="{d:DesignInstance Type=local:InterfaceSettings, IsDesignTimeCreatable=True}" d:Path=".">
                 <Binding.Converter>
                     <internal:InterfaceToContentConverter>
-                        <internal:InterfaceToContentConverter.Components>
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Void}">
+                        <internal:InterfaceToContentConverter.ComponentsVoid>
+                            <ControlTemplate>
                                 <Decorator Height="20" />
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Printer}">
+                        </internal:InterfaceToContentConverter.ComponentsVoid>
+                        <internal:InterfaceToContentConverter.ComponentsPrinter>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPrinter}}" />
                                     <ComboBox DockPanel.Dock="Right" Padding="0,8" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" SelectedItem="{Binding Path=Printer.Value, Mode=TwoWay}" DropDownOpened="RefreshPrinters" SelectionChanged="AddPrinter">
@@ -121,7 +120,7 @@
                                         </ComboBox.ItemContainerStyleSelector>
                                         <ComboBox.ItemsSource>
                                             <CompositeCollection>
-                                                <CollectionContainer Collection="{Binding Source={StaticResource ResourceKey={x:Static Member=internal:ValueResource.CollectionPrinter}}, Path=.}" />
+                                                <CollectionContainer Collection="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.PrinterEntries}" />
                                                 <Separator />
                                                 <DockPanel Margin="8,4" LastChildFill="False">
                                                     <TextBlock DockPanel.Dock="Left" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.ButtonPrinterAdd}}" />
@@ -132,12 +131,14 @@
                                     </ComboBox>
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PrinterPreferences}">
+                        </internal:InterfaceToContentConverter.ComponentsPrinter>
+                        <internal:InterfaceToContentConverter.ComponentsPrinterPreferences>
+                            <ControlTemplate>
                                 <ui:Button Margin="0,4" Padding="20,6" HorizontalAlignment="Right" Content="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.ButtonPrinterPreferences}}" Click="OpenPrinter" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Copies}">
+                        </internal:InterfaceToContentConverter.ComponentsPrinterPreferences>
+                        <internal:InterfaceToContentConverter.ComponentsCopies>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionCopies}}" />
                                     <ui:NumberBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" Minimum="1" Maximum="{Binding Path=CopiesMaximum.Value}" Value="{Binding Path=Copies.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -150,8 +151,9 @@
                                     </ui:NumberBox>
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Collation}">
+                        </internal:InterfaceToContentConverter.ComponentsCopies>
+                        <internal:InterfaceToContentConverter.ComponentsCollation>
+                            <ControlTemplate>
                                 <CheckBox Margin="0,4" Padding="6,0" MinWidth="0" HorizontalAlignment="Right" IsChecked="{Binding Path=CollationEntries.Selection, Mode=TwoWay, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.EqualityToBoolean}}, ConverterParameter={internal:ComparisonToStateParameter TrueFirst={x:Static Member=enums:Collation.Collated}, FalseFirst={x:Static Member=enums:Collation.Uncollated}}}" Content="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.SelectionCollation}}" Visibility="{Binding Path=Copies.Value, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={internal:Integer Value=2}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <CheckBox.IsEnabled>
                                         <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=internal:ConverterResource.CollectionToBoolean}}">
@@ -161,51 +163,52 @@
                                     </CheckBox.IsEnabled>
                                 </CheckBox>
                             </ControlTemplate>
-
-                            <x:Array x:Key="{x:Static Member=local:InterfaceSettings+Option.Pages}" Type="{x:Type TypeName=ControlTemplate}">
-                                <ControlTemplate>
-                                    <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPages}}" />
-                                        <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=PagesEntries.Items}" SelectedValue="{Binding Path=PagesEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
-                                    </DockPanel>
-                                </ControlTemplate>
-                                <ControlTemplate>
-                                    <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" Text="{internal:ValidatableBinding Path=PagesCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Validation={StaticResource ResourceKey={x:Static Member=internal:ValidationResource.PagesCustom}}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" AutomationProperties.HelpText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                                        <ui:TextBox.Style>
-                                            <Style TargetType="{x:Type TypeName=ui:TextBox}" BasedOn="{StaticResource ResourceKey={x:Type TypeName=ui:TextBox}}">
-                                                <Setter Property="Margin" Value="0,4" />
-                                                <Style.Triggers>
-                                                    <Trigger Property="Validation.HasError" Value="True">
-                                                        <Setter Property="Icon">
-                                                            <Setter.Value>
-                                                                <ui:SymbolIcon FontSize="18" Symbol="ErrorCircle20" Foreground="{DynamicResource ResourceKey=PaletteRedBrush}" />
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                        <Setter Property="Margin" Value="0,4,0,24" />
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ui:TextBox.Style>
-                                        <Validation.ErrorTemplate>
-                                            <ControlTemplate TargetType="{x:Type TypeName=Control}">
-                                                <StackPanel Orientation="Vertical">
-                                                    <AdornedElementPlaceholder />
-                                                    <TextBlock Margin="4,2,4,0" Foreground="{DynamicResource ResourceKey=PaletteRedBrush}" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.MessageInvalidValue}}" />
-                                                </StackPanel>
-                                            </ControlTemplate>
-                                        </Validation.ErrorTemplate>
-                                    </ui:TextBox>
-                                </ControlTemplate>
-                            </x:Array>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Layout}">
+                        </internal:InterfaceToContentConverter.ComponentsCollation>
+                        <internal:InterfaceToContentConverter.ComponentsPages>
+                            <ControlTemplate>
+                                <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPages}}" />
+                                    <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=PagesEntries.Items}" SelectedValue="{Binding Path=PagesEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
+                                </DockPanel>
+                            </ControlTemplate>
+                            <ControlTemplate>
+                                <ui:TextBox Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" PlaceholderText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" Text="{internal:ValidatableBinding Path=PagesCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Validation={StaticResource ResourceKey={x:Static Member=internal:ValidationResource.PagesCustom}}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=PagesEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Pages.CustomPages}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesCustom}}" AutomationProperties.HelpText="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TipPagesCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                    <ui:TextBox.Style>
+                                        <Style TargetType="{x:Type TypeName=ui:TextBox}" BasedOn="{StaticResource ResourceKey={x:Type TypeName=ui:TextBox}}">
+                                            <Setter Property="Margin" Value="0,4" />
+                                            <Style.Triggers>
+                                                <Trigger Property="Validation.HasError" Value="True">
+                                                    <Setter Property="Icon">
+                                                        <Setter.Value>
+                                                            <ui:SymbolIcon FontSize="18" Symbol="ErrorCircle20" Foreground="{DynamicResource ResourceKey=PaletteRedBrush}" />
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Setter Property="Margin" Value="0,4,0,24" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:TextBox.Style>
+                                    <Validation.ErrorTemplate>
+                                        <ControlTemplate TargetType="{x:Type TypeName=Control}">
+                                            <StackPanel Orientation="Vertical">
+                                                <AdornedElementPlaceholder />
+                                                <TextBlock Margin="4,2,4,0" Foreground="{DynamicResource ResourceKey=PaletteRedBrush}" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.MessageInvalidValue}}" />
+                                            </StackPanel>
+                                        </ControlTemplate>
+                                    </Validation.ErrorTemplate>
+                                </ui:TextBox>
+                            </ControlTemplate>
+                        </internal:InterfaceToContentConverter.ComponentsPages>
+                        <internal:InterfaceToContentConverter.ComponentsLayout>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionLayout}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=LayoutEntries.Items}" SelectedValue="{Binding Path=LayoutEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Size}">
+                        </internal:InterfaceToContentConverter.ComponentsLayout>
+                        <internal:InterfaceToContentConverter.ComponentsSize>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionSize}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemsSource="{Binding Path=SizeEntries.Items}" SelectedValue="{Binding Path=SizeEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}">
@@ -224,92 +227,95 @@
                                     </ComboBox>
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Color}">
+                        </internal:InterfaceToContentConverter.ComponentsSize>
+                        <internal:InterfaceToContentConverter.ComponentsColor>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionColor}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=ColorEntries.Items}" SelectedValue="{Binding Path=ColorEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Quality}">
+                        </internal:InterfaceToContentConverter.ComponentsColor>
+                        <internal:InterfaceToContentConverter.ComponentsQuality>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionQuality}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=QualityEntries.Items}" SelectedValue="{Binding Path=QualityEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PagesPerSheet}">
+                        </internal:InterfaceToContentConverter.ComponentsQuality>
+                        <internal:InterfaceToContentConverter.ComponentsPagesPerSheet>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPagesPerSheet}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=PagesPerSheetEntries.Items}" SelectedValue="{Binding Path=PagesPerSheetEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.PageOrder}">
+                        </internal:InterfaceToContentConverter.ComponentsPagesPerSheet>
+                        <internal:InterfaceToContentConverter.ComponentsPageOrder>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" Visibility="{Binding Path=PagesPerSheetEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:PagesPerSheet.Two}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPageOrder}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=PageOrderEntries.Items}" SelectedValue="{Binding Path=PageOrderEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <x:Array x:Key="{x:Static Member=local:InterfaceSettings+Option.Scale}" Type="{x:Type TypeName=ControlTemplate}">
-                                <ControlTemplate>
-                                    <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScale}}" />
-                                        <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=ScaleEntries.Items}" SelectedValue="{Binding Path=ScaleEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
-                                    </DockPanel>
-                                </ControlTemplate>
-                                <ControlTemplate>
-                                    <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="1" Maximum="1000" Value="{Binding Path=ScaleCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScaleCustom}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=ScaleEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Scale.Custom}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScaleCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
-                                </ControlTemplate>
-                            </x:Array>
-
-                            <x:Array x:Key="{x:Static Member=local:InterfaceSettings+Option.Margin}" Type="{x:Type TypeName=ControlTemplate}">
-                                <ControlTemplate>
-                                    <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMargin}}" />
-                                        <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=MarginEntries.Items}" SelectedValue="{Binding Path=MarginEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
-                                    </DockPanel>
-                                </ControlTemplate>
-                                <ControlTemplate>
-                                    <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="0" Maximum="{Binding Path=SizeEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.SizeToMarginMaximum}}}" Value="{Binding Path=MarginCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMarginCustom}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=MarginEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Margin.Custom}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMarginCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
-                                </ControlTemplate>
-                            </x:Array>
-
-                            <x:Array x:Key="{x:Static Member=local:InterfaceSettings+Option.DoubleSided}" Type="{x:Type TypeName=ControlTemplate}">
-                                <ControlTemplate>
-                                    <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
-                                        <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" />
-                                        <CheckBox DockPanel.Dock="Right" Padding="6,0" MinWidth="0" IsChecked="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.EqualityToBoolean}}, ConverterParameter={internal:ComparisonToStateParameter TrueFirst={x:Static Member=enums:DoubleSided.DoubleSidedLongEdge}, TrueSecond={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}, FalseFirst={x:Static Member=enums:DoubleSided.OneSided}}}" Content="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.SelectionDoubleSided}}">
-                                            <CheckBox.IsEnabled>
-                                                <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=internal:ConverterResource.CollectionToBoolean}}">
-                                                    <Binding Path="IsDoubleSidedSupported.Value" />
-                                                    <Binding Path="IsSettingReady.Value" />
-                                                </MultiBinding>
-                                            </CheckBox.IsEnabled>
-                                        </CheckBox>
-                                    </DockPanel>
-                                </ControlTemplate>
-                                <ControlTemplate>
-                                    <ComboBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=DoubleSidedEntries.Items, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.CollectionToRange}}, ConverterParameter={internal:CollectionToRangeParameter TrimStart=1}}" SelectedValue="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=DoubleSidedEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
-                                </ControlTemplate>
-                            </x:Array>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Type}">
+                        </internal:InterfaceToContentConverter.ComponentsPageOrder>
+                        <internal:InterfaceToContentConverter.ComponentsScale>
+                            <ControlTemplate>
+                                <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScale}}" />
+                                    <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=ScaleEntries.Items}" SelectedValue="{Binding Path=ScaleEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
+                                </DockPanel>
+                            </ControlTemplate>
+                            <ControlTemplate>
+                                <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="1" Maximum="1000" Value="{Binding Path=ScaleCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScaleCustom}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=ScaleEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Scale.Custom}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionScaleCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
+                            </ControlTemplate>
+                        </internal:InterfaceToContentConverter.ComponentsScale>
+                        <internal:InterfaceToContentConverter.ComponentsMargin>
+                            <ControlTemplate>
+                                <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMargin}}" />
+                                    <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=MarginEntries.Items}" SelectedValue="{Binding Path=MarginEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
+                                </DockPanel>
+                            </ControlTemplate>
+                            <ControlTemplate>
+                                <ui:NumberBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" Minimum="0" Maximum="{Binding Path=SizeEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.SizeToMarginMaximum}}}" Value="{Binding Path=MarginCustom.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMarginCustom}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=MarginEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:Margin.Custom}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionMarginCustom}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
+                            </ControlTemplate>
+                        </internal:InterfaceToContentConverter.ComponentsMargin>
+                        <internal:InterfaceToContentConverter.ComponentsDoubleSided>
+                            <ControlTemplate>
+                                <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
+                                    <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" />
+                                    <CheckBox DockPanel.Dock="Right" Padding="6,0" MinWidth="0" IsChecked="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.EqualityToBoolean}}, ConverterParameter={internal:ComparisonToStateParameter TrueFirst={x:Static Member=enums:DoubleSided.DoubleSidedLongEdge}, TrueSecond={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}, FalseFirst={x:Static Member=enums:DoubleSided.OneSided}}}" Content="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.SelectionDoubleSided}}">
+                                        <CheckBox.IsEnabled>
+                                            <MultiBinding Converter="{StaticResource ResourceKey={x:Static Member=internal:ConverterResource.CollectionToBoolean}}">
+                                                <Binding Path="IsDoubleSidedSupported.Value" />
+                                                <Binding Path="IsSettingReady.Value" />
+                                            </MultiBinding>
+                                        </CheckBox.IsEnabled>
+                                    </CheckBox>
+                                </DockPanel>
+                            </ControlTemplate>
+                            <ControlTemplate>
+                                <ComboBox Margin="0,4" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" HorizontalAlignment="Right" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=DoubleSidedEntries.Items, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.CollectionToRange}}, ConverterParameter={internal:CollectionToRangeParameter TrimStart=1}}" SelectedValue="{Binding Path=DoubleSidedEntries.Selection, Mode=TwoWay}" ToolTip="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" IsEnabled="{Binding Path=IsSettingReady.Value}" Visibility="{Binding Path=DoubleSidedEntries.Selection, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.ThresholdToVisibility}}, ConverterParameter={x:Static Member=enums:DoubleSided.DoubleSidedShortEdge}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionDoubleSided}}" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}" />
+                            </ControlTemplate>
+                        </internal:InterfaceToContentConverter.ComponentsDoubleSided>
+                        <internal:InterfaceToContentConverter.ComponentsType>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPaperType}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=TypeEntries.Items}" SelectedValue="{Binding Path=TypeEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-
-                            <ControlTemplate x:Key="{x:Static Member=local:InterfaceSettings+Option.Source}">
+                        </internal:InterfaceToContentConverter.ComponentsType>
+                        <internal:InterfaceToContentConverter.ComponentsSource>
+                            <ControlTemplate>
                                 <DockPanel Margin="0,4" LastChildFill="False" d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}">
                                     <TextBlock DockPanel.Dock="Left" VerticalAlignment="Center" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.OptionPaperSource}}" />
                                     <ComboBox DockPanel.Dock="Right" Width="{DynamicResource ResourceKey={x:Static Member=internal:ValueResource.LengthWidthOption}}" ItemTemplate="{StaticResource ResourceKey={x:Static Member=internal:TemplateResource.Value}}" ItemsSource="{Binding Path=SourceEntries.Items}" SelectedValue="{Binding Path=SourceEntries.Selection, Mode=TwoWay}" IsEnabled="{Binding Path=IsSettingReady.Value}" />
                                 </DockPanel>
                             </ControlTemplate>
-                        </internal:InterfaceToContentConverter.Components>
+                        </internal:InterfaceToContentConverter.ComponentsSource>
                     </internal:InterfaceToContentConverter>
                 </Binding.Converter>
                 <Binding.ConverterParameter>
@@ -357,7 +363,7 @@
         <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Path=PreviewDocument.Value, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.DocumentToContent}}}" Visibility="{Binding Path=IsPreviewReady.Value, Converter={StaticResource ResourceKey={x:Static Member=internal:ConverterResource.EqualityToVisibility}}, ConverterParameter={internal:Boolean Value=True}}" AutomationProperties.Name="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.AreaPreview}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type TypeName=internal:DocumentToContentConverter+Content}">
-                    <internal:PreviewPageControl BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding RelativeSource={RelativeSource AncestorType={x:Type TypeName=internal:PreviewDocumentControl}}, Path=.}" Color="{Binding Source={StaticResource ResourceKey={x:Static Member=internal:ValueResource.ObjectDataContext}}, Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Source={StaticResource ResourceKey={x:Static Member=internal:ValueResource.ObjectDataContext}}, Path=DataContext.ColorEmulationLevel}" Content="{Binding Path=Page}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
+                    <internal:PreviewPageControl BorderBrush="{DynamicResource ResourceKey=CardBorderBrush}" BorderThickness="{DynamicResource ResourceKey=CardBorderThemeThickness}" Viewer="{Binding RelativeSource={RelativeSource AncestorType={x:Type TypeName=internal:PreviewDocumentControl}}, Path=.}" Color="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEntries.Selection}" ColorEmulationLevel="{Binding Source={x:Reference Name=ROOT}, Path=DataContext.ColorEmulationLevel}" Content="{Binding Path=Page}" Focusable="True" AutomationProperties.Name="{Binding Path=Name}" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
             <ItemsControl.Template>

@@ -41,7 +41,7 @@ namespace PrintDialogX
             }
         }
 
-        public void Start(PrintDialog dialog, bool isDialog, Func<Task<FrameworkElement>> instantiator)
+        public void Start(PrintDialog source, bool isDialog, Func<Task<FrameworkElement>> instantiator)
         {
             if (!isAvailable)
             {
@@ -56,15 +56,15 @@ namespace PrintDialogX
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
-            (Language, FlowDirection, ResourceDictionary resources) = Internal.LanguageAttribute.Parse(dialog.InterfaceSettings.DisplayLanguage);
+            (Language, FlowDirection, ResourceDictionary resources) = Internal.LanguageAttribute.Parse(source.InterfaceSettings.DisplayLanguage);
             Resources.MergedDictionaries.Add(resources);
 
-            if (dialog.InterfaceSettings.Title is string text)
+            if (source.InterfaceSettings.Title is string text)
             {
                 Title = text;
                 header.Text = text;
             }
-            if (dialog.InterfaceSettings.Icon is Wpf.Ui.Controls.IconElement icon)
+            if (source.InterfaceSettings.Icon is Wpf.Ui.Controls.IconElement icon)
             {
                 title.Icon = icon;
                 header.Margin = new(0, 10, 0, 10);

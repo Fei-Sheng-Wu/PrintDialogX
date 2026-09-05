@@ -2,9 +2,7 @@ namespace PrintDialogX.Internal
 {
     internal enum ValueResource
     {
-        ObjectDataContext,
-        LengthWidthOption,
-        CollectionPrinter
+        LengthWidthOption
     }
 
     internal enum ConverterResource

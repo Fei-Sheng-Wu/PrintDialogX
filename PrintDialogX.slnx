@@ -1,4 +1,9 @@
 <Solution>
   <Project Path="PrintDialogX/PrintDialogX.csproj" />
   <Project Path="PrintDialogX.Test/PrintDialogX.Test.csproj" />
+  <Folder Name="/Information/">
+    <File Path="README.md" />
+    <File Path="LICENSE.txt" />
+    <File Path="preview.png" />
+  </Folder>
 </Solution>

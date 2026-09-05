@@ -21,7 +21,7 @@ using System.Windows.Documents.Serialization;
 
 namespace PrintDialogX
 {
-    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDialog dialog, PrintDocument document, PrintSettings settings, Internal.PreviewDocument preview, Action retriever, Action visualizer, Action informer)
+    internal sealed class PrintDialogViewModel(Action<Action> invoker, PrintDialog source, PrintDocument document, PrintSettings settings, Internal.PreviewDocument preview, Action retriever, Action visualizer, Action informer)
     {
         internal sealed class ModelValue<T>(Action<Action> invoker, T initial, Action? updater) : INotifyPropertyChanged
         {
@@ -190,9 +190,9 @@ namespace PrintDialogX
 
         public PrintDocument PrintDocument { get; } = document;
         public PrintSettings PrintSettings { get; } = settings;
-        public InterfaceSettings InterfaceSettings { get; } = dialog.InterfaceSettings;
-        public PerformanceStrategy PerformanceStrategy { get; } = dialog.PerformanceStrategy;
-        public ColorEmulationLevel ColorEmulationLevel { get; } = dialog.ColorEmulationLevel;
+        public InterfaceSettings InterfaceSettings { get; } = source.InterfaceSettings;
+        public PerformanceStrategy PerformanceStrategy { get; } = source.PerformanceStrategy;
+        public ColorEmulationLevel ColorEmulationLevel { get; } = source.ColorEmulationLevel;
 
         public ModelValue<Internal.PreviewDocument> PreviewDocument { get; } = new(invoker, preview, null);
         public ModelValue<int> PreviewIndex { get; } = new(invoker, 1, null);
@@ -246,18 +246,18 @@ namespace PrintDialogX
         private (Task Current, CancellationTokenSource Cancellation)? task = null;
         private (PrintDialogViewModel.ModelLocker Task, PrintDialogViewModel.ModelLocker Source, PrintDialogViewModel.ModelLocker Preview) lockers = (new(), new(), new());
 
-        public PrintDialogControl(PrintDialog dialog, IPrintDialogHost window) : base()
+        public PrintDialogControl(PrintDialog source, IPrintDialogHost window) : base()
         {
             InitializeComponent();
 
-            if (dialog.Document is not PrintDocument document)
+            if (source.Document is not PrintDocument document)
             {
                 throw new InvalidOperationException("The document is unset.");
             }
 
             host = window;
             host.AddShortcutHandlers([new(new PrintDialogViewModel.ModelCommand(StartPrinting), new(Key.P, ModifierKeys.Control))]);
-            model = new(Dispatcher.Invoke, dialog, document, dialog.PrintSettings, new(lockers.Preview), LoadSettings, LoadPreview, async () =>
+            model = new(Dispatcher.Invoke, source, document, source.PrintSettings, new(lockers.Preview), LoadSettings, LoadPreview, async () =>
             {
                 if (!await UpdateDocument(false))
                 {
@@ -266,7 +266,7 @@ namespace PrintDialogX
 
                 LoadPreview();
             });
-            server = (dialog.PrintServer ?? new(), dialog.PrintServer is not null);
+            server = (source.PrintServer ?? new(), source.PrintServer is not null);
 
             DataContext = model;
             Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
@@ -284,7 +284,7 @@ namespace PrintDialogX
             ((Internal.PagesCustomValidationRule)Resources[Internal.ValidationResource.PagesCustom]).Maximum = model.PrintDocument.Pages.Count;
             ((Internal.DocumentToContentConverter)Resources[Internal.ConverterResource.DocumentToContent]).PerformanceStrategy = model.PerformanceStrategy;
 
-            LoadPrinters(server.IsCustomized ? dialog.DefaultPrinter : (dialog.DefaultPrinter ?? Internal.Common.Try(LocalPrintServer.GetDefaultPrintQueue, null)));
+            LoadPrinters(server.IsCustomized ? source.DefaultPrinter : (source.DefaultPrinter ?? Internal.Common.Try(LocalPrintServer.GetDefaultPrintQueue, null)));
         }
 
         private async void Exit(object sender, RoutedEventArgs e)

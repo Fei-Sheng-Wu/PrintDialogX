@@ -96,22 +96,6 @@ namespace PrintDialogX.Internal
         }
     }
 
-    internal sealed class DataContextProxy() : Freezable()
-    {
-        public static readonly DependencyProperty DataContextProperty = DependencyProperty.Register(nameof(DataContext), typeof(object), typeof(DataContextProxy), new(null));
-
-        public object? DataContext
-        {
-            get => (object?)GetValue(DataContextProperty);
-            set => SetValue(DataContextProperty, value);
-        }
-
-        protected override Freezable CreateInstanceCore()
-        {
-            return new DataContextProxy();
-        }
-    }
-
     internal sealed class BooleanExtension() : MarkupExtension()
     {
         public bool Value { get; set; } = false;
@@ -296,9 +280,9 @@ namespace PrintDialogX.Internal
         [DllImport("user32.dll", EntryPoint = "DestroyIcon")]
         private static extern bool N_ReleaseIcon(IntPtr icon);
 
-        internal sealed class PrinterIcon(ImageSource? icon, string name, double opacity, double size)
+        internal sealed class Icon(ImageSource? source, string name, double opacity, double size)
         {
-            public ImageSource? Icon { get; } = icon;
+            public ImageSource? Source { get; } = source;
             public string Name { get; } = name;
             public double Size { get; } = size;
             public double Opacity { get; } = opacity;
@@ -340,7 +324,7 @@ namespace PrintDialogX.Internal
             };
 
             (uint, bool) key = (index, isSmall);
-            if (!CACHE.TryGetValue(key, out ImageSource? icon))
+            if (!CACHE.TryGetValue(key, out ImageSource? source))
             {
                 Common.Try(() =>
                 {
@@ -350,16 +334,16 @@ namespace PrintDialogX.Internal
                     };
                     if (N_GetIcon(index, FLAG_RECEIVE_ICON | (isSmall ? FLAG_SIZE_SMALL : FLAG_SIZE_LARGE), ref info) == RESULT_SUCCESS && info.Icon != IntPtr.Zero)
                     {
-                        icon = Imaging.CreateBitmapSourceFromHIcon(info.Icon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                        icon.Freeze();
-                        CACHE[key] = icon;
+                        source = Imaging.CreateBitmapSourceFromHIcon(info.Icon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                        source.Freeze();
+                        CACHE[key] = source;
 
                         N_ReleaseIcon(info.Icon);
                     }
                 }, null);
             }
 
-            return new PrinterIcon(icon, GetText(name), Common.Try(() =>
+            return new Icon(source, GetText(name), Common.Try(() =>
             {
                 printer.Refresh();
                 return printer.IsOffline;
