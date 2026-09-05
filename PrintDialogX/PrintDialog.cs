@@ -107,15 +107,14 @@ namespace PrintDialogX
             customizer((Window)Host);
         }
 
-        private Func<Task<FrameworkElement>> CreateInstantiator(Func<Task>? generator = null)
+        private Func<Task<FrameworkElement>> CreateInstantiator(Func<Task>? executor)
         {
             return async () =>
             {
-                if (generator is not null)
+                if (executor is Func<Task> generator)
                 {
                     await generator();
                 }
-
                 return new PrintDialogControl(this, Host);
             };
         }
@@ -123,15 +122,19 @@ namespace PrintDialogX
         /// <summary>
         /// Opens the dialog.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The print dialog is unable to start.</exception>
+        /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public void Show()
         {
-            Host.Start(this, false, CreateInstantiator());
+            Host.Start(this, false, CreateInstantiator(null));
         }
 
         /// <summary>
         /// Opens the dialog.
         /// </summary>
         /// <param name="generator">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
+        /// <exception cref="InvalidOperationException">The print dialog is unable to start.</exception>
+        /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public void Show(Func<Task> generator)
         {
             Host.Start(this, false, CreateInstantiator(generator));
@@ -141,9 +144,11 @@ namespace PrintDialogX
         /// Opens the dialog and returns only when the dialog is closed.
         /// </summary>
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="InvalidOperationException">The print dialog is unable to start.</exception>
+        /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public bool ShowDialog()
         {
-            Host.Start(this, true, CreateInstantiator());
+            Host.Start(this, true, CreateInstantiator(null));
 
             return Host.GetResult().IsSuccess;
         }
@@ -153,6 +158,8 @@ namespace PrintDialogX
         /// </summary>
         /// <param name="generator">The callback function that is invoked asynchronously to generate the document while a spinner is displayed in the dialog.</param>
         /// <returns><see langword="true"/> if the document was successfully printed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="InvalidOperationException">The print dialog is unable to start.</exception>
+        /// <exception cref="PrintDocumentException">The document is invalid.</exception>
         public bool ShowDialog(Func<Task> generator)
         {
             Host.Start(this, true, CreateInstantiator(generator));

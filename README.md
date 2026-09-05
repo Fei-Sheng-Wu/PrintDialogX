@@ -1,4 +1,4 @@
-# PrintDialogX v3.6.1-dev
+# PrintDialogX v3.7.0-dev
 
 [![Language](https://img.shields.io/badge/Language-C%23-lightgray.svg?style=flat-square)](#)
 [![Framework](https://img.shields.io/badge/Framework-WPF-lightgray.svg?style=flat-square)](#)
@@ -18,7 +18,7 @@
 
 ## Dependencies
 
-- [WPF-UI](https://github.com/lepoco/wpfui) ≥ 4.0.3, < 5.0.0
+- [WPF-UI](https://github.com/lepoco/wpfui) ≥ 4.2.0, < 5.0.0
 
 ## Versioning
 
@@ -26,7 +26,7 @@ For versions ≥ 3.0.0, the versioning of PrintDialogX conforms to the following
 
 | Generation | | Major | | Minor |
 | :--- | :---: | :--- | :---: | :--- |
-| **3** | . | **6** | . | **1** |
+| **3** | . | **7** | . | **0** |
 | _(backward-incompatible)_ | | _(backward-incompatible)_ | | _(backward-compatible)_ |
 | Significant codebase refactors. | | Severe bug fixes and core improvements. | | Mild changes. |
 

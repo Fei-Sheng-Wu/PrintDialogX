@@ -7,7 +7,7 @@ using System.Windows.Input;
 namespace PrintDialogX
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="PrintDialogResult"/> struct.
+    /// Initializes a new instance of the <see cref="PrintDialogResult"/> structure.
     /// </summary>
     public struct PrintDialogResult()
     {
@@ -54,7 +54,7 @@ namespace PrintDialogX
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrintDialogProgress"/> struct.
+        /// Initializes a new instance of the <see cref="PrintDialogProgress"/> structure.
         /// </summary>
         public struct PrintDialogProgress()
         {
@@ -96,9 +96,9 @@ namespace PrintDialogX
         public void SetProgress(PrintDialogProgress progress);
 
         /// <summary>
-        /// Sets the keyboard shortcut handlers.
+        /// Adds the keyboard shortcut handlers.
         /// </summary>
-        /// <param name="handlers">The collection of keyboard shortcut handlers.</param>
-        public void SetShortcutHandlers(IEnumerable<KeyBinding> handlers);
+        /// <param name="handlers">The collection of keyboard shortcut handlers to add.</param>
+        public void AddShortcutHandlers(IEnumerable<KeyBinding> handlers);
     }
 }

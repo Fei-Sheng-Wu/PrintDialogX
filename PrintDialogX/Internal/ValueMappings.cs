@@ -3,13 +3,16 @@ using System.Linq;
 using System.Printing;
 using System.Collections.Generic;
 
-namespace PrintDialogX
+namespace PrintDialogX.Internal
 {
     internal static class ValueMappings
     {
+        public const double RATIO_MICRON = 1 / 25400.0 * 96.0;
+        public const double RATIO_CENTIMETER = 1 / 96.0 * 2.54;
+
         public static T2? Map<T1, T2>(T1? key, IDictionary<T1, T2> mapping) where T1 : notnull where T2 : struct
         {
-            return key is not null && mapping.TryGetValue(key, out T2 value) ? value : null;
+            return key is T1 source && mapping.TryGetValue(source, out T2 value) ? value : null;
         }
 
         public static T1 Map<T1, T2>(T2? value, IDictionary<T1, T2> mapping) where T1 : notnull where T2 : struct

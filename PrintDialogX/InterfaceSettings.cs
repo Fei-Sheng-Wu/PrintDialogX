@@ -1,15 +1,7 @@
-using System;
 using System.Windows;
 
 namespace PrintDialogX
 {
-    [AttributeUsage(AttributeTargets.All)]
-    internal sealed class LanguageAttribute(string language, FlowDirection direction) : Attribute
-    {
-        public string Language { get; set; } = language;
-        public FlowDirection Direction { get; set; } = direction;
-    }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="InterfaceSettings"/> class.
     /// </summary>
@@ -119,43 +111,43 @@ namespace PrintDialogX
             /// <summary>
             /// English (Canada).
             /// </summary>
-            [Language("en-CA", FlowDirection.LeftToRight)]
+            [Internal.Language("en-CA", FlowDirection.LeftToRight)]
             en_CA,
 
             /// <summary>
             /// English (United Kingdom).
             /// </summary>
-            [Language("en-GB", FlowDirection.LeftToRight)]
+            [Internal.Language("en-GB", FlowDirection.LeftToRight)]
             en_GB,
 
             /// <summary>
             /// English (United States).
             /// </summary>
-            [Language("en-US", FlowDirection.LeftToRight)]
+            [Internal.Language("en-US", FlowDirection.LeftToRight)]
             en_US,
 
             /// <summary>
             /// Polish (Poland).
             /// </summary>
-            [Language("pl-PL", FlowDirection.LeftToRight)]
+            [Internal.Language("pl-PL", FlowDirection.LeftToRight)]
             pl_PL,
 
             /// <summary>
             /// Chinese (China).
             /// </summary>
-            [Language("zh-CN", FlowDirection.LeftToRight)]
+            [Internal.Language("zh-CN", FlowDirection.LeftToRight)]
             zh_CN,
 
             /// <summary>
             /// Chinese (Hong Kong).
             /// </summary>
-            [Language("zh-HK", FlowDirection.LeftToRight)]
+            [Internal.Language("zh-HK", FlowDirection.LeftToRight)]
             zh_HK,
 
             /// <summary>
             /// Chinese (Taiwan).
             /// </summary>
-            [Language("zh-TW", FlowDirection.LeftToRight)]
+            [Internal.Language("zh-TW", FlowDirection.LeftToRight)]
             zh_TW
         }
 

@@ -12,10 +12,11 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the content of the page.
         /// </summary>
+        /// <exception cref="PrintDocumentException">The value assigned is already the child of another element.</exception>
         public FrameworkElement? Content
         {
             get;
-            set => field = value?.Parent is null ? value : throw new PrintDocumentException(value, "The value is already the child of another element.");
+            set => field = value?.Parent is not DependencyObject parent ? value : throw new PrintDocumentException(value, "The value is already the child of another element.", parent);
         } = null;
     }
 
@@ -42,10 +43,11 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the default margin of the document in pixels.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value assigned is not positive or zero.</exception>
         public double DocumentMargin
         {
             get;
-            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value cannot be negative.");
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(DocumentMargin), "The value must be positive or zero.");
         } = 60;
 
         /// <summary>
@@ -59,15 +61,18 @@ namespace PrintDialogX
         public int PageCount { get => Pages.Count; }
 
         /// <summary>
-        /// Gets or sets the computed size of the available space for the content of the document, excluding the margin.
+        /// Gets the computed size of the available space for the content of the document, excluding the margin.
         /// </summary>
-        public Size MeasuredSize { get; set; } = Size.Empty;
+        public Size? MeasuredSize { get => measurement; }
 
-        /// <summary>
-        /// Raises the <see cref="PrintSettingsChanged"/> event.
-        /// </summary>
-        /// <param name="settings">The <see cref="PrintSettingsEventArgs"/> instance of the new print settings.</param>
-        public void OnPrintSettingsChanged(PrintSettingsEventArgs settings)
+        private Size? measurement = null;
+
+        internal void UpdateMeasurement(Size size)
+        {
+            measurement = size;
+        }
+
+        internal void OnPrintSettingsChanged(PrintSettingsEventArgs settings)
         {
             PrintSettingsChanged?.Invoke(this, settings);
         }
@@ -78,11 +83,17 @@ namespace PrintDialogX
     /// </summary>
     /// <param name="content">The <see cref="FrameworkElement"/> instance that caused the error.</param>
     /// <param name="message">The message that describes the error.</param>
-    public class PrintDocumentException(FrameworkElement content, string message) : Exception(message)
+    /// <param name="context">The related context that is associated with the error.</param>
+    public class PrintDocumentException(FrameworkElement content, string message, object? context = null) : Exception(message)
     {
         /// <summary>
         /// Gets or sets the <see cref="FrameworkElement"/> instance that caused the error.
         /// </summary>
-        public FrameworkElement Content { get; set; } = content;
+        public FrameworkElement Content { get; } = content;
+
+        /// <summary>
+        /// Gets or sets the related context that is associated with the error.
+        /// </summary>
+        public object? Context { get; } = context;
     }
 }

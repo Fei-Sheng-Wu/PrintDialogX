@@ -6,8 +6,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shell;
-using System.Windows.Markup;
-using System.Windows.Controls;
 
 namespace PrintDialogX
 {
@@ -15,9 +13,9 @@ namespace PrintDialogX
     {
         private bool isAvailable = true;
         private PrintDialogResult result = new();
-        private Func<Task<FrameworkElement>>? initializer = null;
+        private Func<Task<FrameworkElement>>? executor = null;
 
-        public PrintDialogWindow()
+        public PrintDialogWindow() : base()
         {
             InitializeComponent();
         }
@@ -30,19 +28,14 @@ namespace PrintDialogX
 
         private async void LoadContent(object sender, EventArgs e)
         {
-            if (initializer is null)
-            {
-                return;
-            }
-
-            content.Child = await initializer();
+            content.Content = executor is Func<Task<FrameworkElement>> instantiator ? await instantiator() : null;
         }
 
         private void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
         {
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
 
-            if (content.Child is FrameworkElement element)
+            if (content.Content is FrameworkElement element)
             {
                 Wpf.Ui.Appearance.ApplicationThemeManager.Apply(element);
             }
@@ -56,43 +49,28 @@ namespace PrintDialogX
             }
 
             isAvailable = false;
-            initializer = instantiator;
+            executor = instantiator;
 
-            if (Application.Current is null)
-            {
-                Application application = new();
-            }
-
+            Application application = Application.Current ?? new();
             Wpf.Ui.Appearance.ApplicationAccentColorManager.ApplySystemAccent();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
             Wpf.Ui.Appearance.ApplicationThemeManager.Changed += UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.Watch(this);
-            InterfaceToContentConverter.ApplyLanguage(dialog.InterfaceSettings.DisplayLanguage, (x, y, z) =>
-            {
-                Language = XmlLanguage.GetLanguage(x);
-                FlowDirection = y;
-                Resources.MergedDictionaries.Add(z);
-            });
+            (Language, FlowDirection, ResourceDictionary resources) = Internal.LanguageAttribute.Parse(dialog.InterfaceSettings.DisplayLanguage);
+            Resources.MergedDictionaries.Add(resources);
 
-            if (dialog.InterfaceSettings.Title is not null)
+            if (dialog.InterfaceSettings.Title is string text)
             {
-                Title = dialog.InterfaceSettings.Title;
+                Title = text;
+                header.Text = text;
             }
-            title.Header = new TextBlock()
+            if (dialog.InterfaceSettings.Icon is Wpf.Ui.Controls.IconElement icon)
             {
-                Margin = new(dialog.InterfaceSettings.Icon is not null ? 0 : 16, 10, 0, 10),
-                Text = Title
-            };
-            title.Icon = dialog.InterfaceSettings.Icon;
+                title.Icon = icon;
+                header.Margin = new(0, 10, 0, 10);
+            }
 
-            if (isDialog)
-            {
-                ShowDialog();
-            }
-            else
-            {
-                Show();
-            }
+            Internal.Common.Execute(isDialog ? () => ShowDialog() : Show);
         }
 
         public PrintDialogResult GetResult()
@@ -118,9 +96,9 @@ namespace PrintDialogX
             TaskbarItemInfo.ProgressValue = progress.Value / 100.0;
         }
 
-        public void SetShortcutHandlers(IEnumerable<KeyBinding> handlers)
+        public void AddShortcutHandlers(IEnumerable<KeyBinding> handlers)
         {
-            foreach(KeyBinding handler in handlers)
+            foreach (KeyBinding handler in handlers)
             {
                 InputBindings.Add(handler);
             }

@@ -16,6 +16,7 @@ namespace PrintDialogX
             /// <summary>
             /// Gets or sets the fallback value of maximum copies.
             /// </summary>
+            /// <exception cref="ArgumentOutOfRangeException">The value assigned is not positive.</exception>
             public int FallbackMaximumCopies
             {
                 get;
@@ -66,6 +67,7 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the number of copies.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value assigned is not positive.</exception>
         public int Copies
         {
             get;
@@ -85,10 +87,11 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the custom pages to be printed, if <see cref="Pages"/> is set to <see cref="Enums.Pages.CustomPages"/>.
         /// </summary>
+        /// <exception cref="ArgumentException">The value assigned is invalid.</exception>
         public string CustomPages
         {
             get;
-            set => field = PagesCustomValidationRule.TryConvert(value, int.MaxValue, true).IsValid ? value : throw new ArgumentOutOfRangeException(nameof(CustomPages), "The value is invalid.");
+            set => field = Internal.PagesCustomValidationRule.TryConvert(value, int.MaxValue, true).IsValid ? value : throw new ArgumentException("The value is invalid.", nameof(CustomPages));
         } = string.Empty;
 
         /// <summary>
@@ -129,10 +132,11 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the custom scale, if <see cref="Scale"/> is set to <see cref="Enums.Scale.Custom"/>.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value assigned is not positive or zero.</exception>
         public int CustomScale
         {
             get;
-            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomScale), "The value cannot be negative.");
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomScale), "The value must be positive or zero.");
         } = 100;
 
         /// <summary>
@@ -143,10 +147,11 @@ namespace PrintDialogX
         /// <summary>
         /// Gets or sets the custom margin, if <see cref="Margin"/> is set to <see cref="Enums.Margin.Custom"/>.
         /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value assigned is not positive or zero.</exception>
         public int CustomMargin
         {
             get;
-            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomMargin), "The value cannot be negative.");
+            set => field = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(CustomMargin), "The value must be positive or zero.");
         } = 0;
 
         /// <summary>
@@ -171,7 +176,7 @@ namespace PrintDialogX
     /// <param name="printer">The current printer.</param>
     /// <param name="settings">The current print settings.</param>
     /// <param name="isUpdating">Whether the document preview should be updated.</param>
-    public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings, bool isUpdating) : EventArgs
+    public class PrintSettingsEventArgs(PrintQueue printer, PrintSettings settings, bool isUpdating) : EventArgs()
     {
         /// <summary>
         /// Gets or sets the current printer.
@@ -216,19 +221,19 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// All pages.
         /// </summary>
-        [TextResource(TextResource.EntryPagesAll)]
+        [Internal.TextResource(Internal.TextResource.EntryPagesAll)]
         AllPages,
 
         /// <summary>
         /// Current page.
         /// </summary>
-        [TextResource(TextResource.EntryPageCurrent)]
+        [Internal.TextResource(Internal.TextResource.EntryPageCurrent)]
         CurrentPage,
 
         /// <summary>
         /// Custom pages.
         /// </summary>
-        [TextResource(TextResource.EntryPagesCustom)]
+        [Internal.TextResource(Internal.TextResource.EntryPagesCustom)]
         CustomPages
     }
 
@@ -240,18 +245,18 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Standard orientation.
         /// </summary>
-        [TextResource(TextResource.EntryPortrait)]
+        [Internal.TextResource(Internal.TextResource.EntryPortrait)]
         Portrait,
 
         /// <summary>
         /// Content of the imageable area is rotated on the page 90 degrees counterclockwise from standard (portrait) orientation.
         /// </summary>
-        [TextResource(TextResource.EntryLandscape)]
+        [Internal.TextResource(Internal.TextResource.EntryLandscape)]
         Landscape
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Size"/> struct.
+    /// Initializes a new instance of the <see cref="Size"/> structure.
     /// </summary>
     public struct Size()
     {
@@ -263,1021 +268,1021 @@ namespace PrintDialogX.Enums
             /// <summary>
             /// A0.
             /// </summary>
-            [TextResource(TextResource.EntryISOA0)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA0)]
             ISOA0,
 
             /// <summary>
             /// A1.
             /// </summary>
-            [TextResource(TextResource.EntryISOA1)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA1)]
             ISOA1,
 
             /// <summary>
             /// A10.
             /// </summary>
-            [TextResource(TextResource.EntryISOA10)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA10)]
             ISOA10,
 
             /// <summary>
             /// A2.
             /// </summary>
-            [TextResource(TextResource.EntryISOA2)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA2)]
             ISOA2,
 
             /// <summary>
             /// A3.
             /// </summary>
-            [TextResource(TextResource.EntryISOA3)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA3)]
             ISOA3,
 
             /// <summary>
             /// A3 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryISOA3Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA3Rotated)]
             ISOA3Rotated,
 
             /// <summary>
             /// A3 Extra.
             /// </summary>
-            [TextResource(TextResource.EntryISOA3Extra)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA3Extra)]
             ISOA3Extra,
 
             /// <summary>
             /// A4.
             /// </summary>
-            [TextResource(TextResource.EntryISOA4)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA4)]
             ISOA4,
 
             /// <summary>
             /// A4 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryISOA4Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA4Rotated)]
             ISOA4Rotated,
 
             /// <summary>
             /// A4 Extra.
             /// </summary>
-            [TextResource(TextResource.EntryISOA4Extra)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA4Extra)]
             ISOA4Extra,
 
             /// <summary>
             /// A5.
             /// </summary>
-            [TextResource(TextResource.EntryISOA5)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA5)]
             ISOA5,
 
             /// <summary>
             /// A5 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryISOA5Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA5Rotated)]
             ISOA5Rotated,
 
             /// <summary>
             /// A5 Extra.
             /// </summary>
-            [TextResource(TextResource.EntryISOA5Extra)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA5Extra)]
             ISOA5Extra,
 
             /// <summary>
             /// A6.
             /// </summary>
-            [TextResource(TextResource.EntryISOA6)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA6)]
             ISOA6,
 
             /// <summary>
             /// A6 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryISOA6Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA6Rotated)]
             ISOA6Rotated,
 
             /// <summary>
             /// A7.
             /// </summary>
-            [TextResource(TextResource.EntryISOA7)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA7)]
             ISOA7,
 
             /// <summary>
             /// A8.
             /// </summary>
-            [TextResource(TextResource.EntryISOA8)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA8)]
             ISOA8,
 
             /// <summary>
             /// A9.
             /// </summary>
-            [TextResource(TextResource.EntryISOA9)]
+            [Internal.TextResource(Internal.TextResource.EntryISOA9)]
             ISOA9,
 
             /// <summary>
             /// B0.
             /// </summary>
-            [TextResource(TextResource.EntryISOB0)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB0)]
             ISOB0,
 
             /// <summary>
             /// B1.
             /// </summary>
-            [TextResource(TextResource.EntryISOB1)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB1)]
             ISOB1,
 
             /// <summary>
             /// B10.
             /// </summary>
-            [TextResource(TextResource.EntryISOB10)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB10)]
             ISOB10,
 
             /// <summary>
             /// B2.
             /// </summary>
-            [TextResource(TextResource.EntryISOB2)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB2)]
             ISOB2,
 
             /// <summary>
             /// B3.
             /// </summary>
-            [TextResource(TextResource.EntryISOB3)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB3)]
             ISOB3,
 
             /// <summary>
             /// B4.
             /// </summary>
-            [TextResource(TextResource.EntryISOB4)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB4)]
             ISOB4,
 
             /// <summary>
             /// B4 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOB4Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB4Envelope)]
             ISOB4Envelope,
 
             /// <summary>
             /// B5 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOB5Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB5Envelope)]
             ISOB5Envelope,
 
             /// <summary>
             /// B5 Extra.
             /// </summary>
-            [TextResource(TextResource.EntryISOB5Extra)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB5Extra)]
             ISOB5Extra,
 
             /// <summary>
             /// B7.
             /// </summary>
-            [TextResource(TextResource.EntryISOB7)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB7)]
             ISOB7,
 
             /// <summary>
             /// B8.
             /// </summary>
-            [TextResource(TextResource.EntryISOB8)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB8)]
             ISOB8,
 
             /// <summary>
             /// B9.
             /// </summary>
-            [TextResource(TextResource.EntryISOB9)]
+            [Internal.TextResource(Internal.TextResource.EntryISOB9)]
             ISOB9,
 
             /// <summary>
             /// C0.
             /// </summary>
-            [TextResource(TextResource.EntryISOC0)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC0)]
             ISOC0,
 
             /// <summary>
             /// C1.
             /// </summary>
-            [TextResource(TextResource.EntryISOC1)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC1)]
             ISOC1,
 
             /// <summary>
             /// C10.
             /// </summary>
-            [TextResource(TextResource.EntryISOC10)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC10)]
             ISOC10,
 
             /// <summary>
             /// C2.
             /// </summary>
-            [TextResource(TextResource.EntryISOC2)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC2)]
             ISOC2,
 
             /// <summary>
             /// C3.
             /// </summary>
-            [TextResource(TextResource.EntryISOC3)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC3)]
             ISOC3,
 
             /// <summary>
             /// C3 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOC3Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC3Envelope)]
             ISOC3Envelope,
 
             /// <summary>
             /// C4.
             /// </summary>
-            [TextResource(TextResource.EntryISOC4)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC4)]
             ISOC4,
 
             /// <summary>
             /// C4 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOC4Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC4Envelope)]
             ISOC4Envelope,
 
             /// <summary>
             /// C5.
             /// </summary>
-            [TextResource(TextResource.EntryISOC5)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC5)]
             ISOC5,
 
             /// <summary>
             /// C5 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOC5Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC5Envelope)]
             ISOC5Envelope,
 
             /// <summary>
             /// C6.
             /// </summary>
-            [TextResource(TextResource.EntryISOC6)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC6)]
             ISOC6,
 
             /// <summary>
             /// C6 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOC6Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC6Envelope)]
             ISOC6Envelope,
 
             /// <summary>
             /// C6C5 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISOC6C5Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC6C5Envelope)]
             ISOC6C5Envelope,
 
             /// <summary>
             /// C7.
             /// </summary>
-            [TextResource(TextResource.EntryISOC7)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC7)]
             ISOC7,
 
             /// <summary>
             /// C8.
             /// </summary>
-            [TextResource(TextResource.EntryISOC8)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC8)]
             ISOC8,
 
             /// <summary>
             /// C9.
             /// </summary>
-            [TextResource(TextResource.EntryISOC9)]
+            [Internal.TextResource(Internal.TextResource.EntryISOC9)]
             ISOC9,
 
             /// <summary>
             /// DL Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryISODLEnvelope)]
+            [Internal.TextResource(Internal.TextResource.EntryISODLEnvelope)]
             ISODLEnvelope,
 
             /// <summary>
             /// DL Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryISODLEnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryISODLEnvelopeRotated)]
             ISODLEnvelopeRotated,
 
             /// <summary>
             /// SRA 3.
             /// </summary>
-            [TextResource(TextResource.EntryISOSRA3)]
+            [Internal.TextResource(Internal.TextResource.EntryISOSRA3)]
             ISOSRA3,
 
             /// <summary>
             /// Quadruple Hagaki Postcard.
             /// </summary>
-            [TextResource(TextResource.EntryJapanQuadrupleHagakiPostcard)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanQuadrupleHagakiPostcard)]
             JapanQuadrupleHagakiPostcard,
 
             /// <summary>
             /// Japanese Industrial Standard B0.
             /// </summary>
-            [TextResource(TextResource.EntryJISB0)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB0)]
             JISB0,
 
             /// <summary>
             /// Japanese Industrial Standard B1.
             /// </summary>
-            [TextResource(TextResource.EntryJISB1)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB1)]
             JISB1,
 
             /// <summary>
             /// Japanese Industrial Standard B10.
             /// </summary>
-            [TextResource(TextResource.EntryJISB10)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB10)]
             JISB10,
 
             /// <summary>
             /// Japanese Industrial Standard B2.
             /// </summary>
-            [TextResource(TextResource.EntryJISB2)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB2)]
             JISB2,
 
             /// <summary>
             /// Japanese Industrial Standard B3.
             /// </summary>
-            [TextResource(TextResource.EntryJISB3)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB3)]
             JISB3,
 
             /// <summary>
             /// Japanese Industrial Standard B4.
             /// </summary>
-            [TextResource(TextResource.EntryJISB4)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB4)]
             JISB4,
 
             /// <summary>
             /// Japanese Industrial Standard B4 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJISB4Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB4Rotated)]
             JISB4Rotated,
 
             /// <summary>
             /// Japanese Industrial Standard B5.
             /// </summary>
-            [TextResource(TextResource.EntryJISB5)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB5)]
             JISB5,
 
             /// <summary>
             /// Japanese Industrial Standard B5 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJISB5Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB5Rotated)]
             JISB5Rotated,
 
             /// <summary>
             /// Japanese Industrial Standard B6.
             /// </summary>
-            [TextResource(TextResource.EntryJISB6)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB6)]
             JISB6,
 
             /// <summary>
             /// Japanese Industrial Standard B6 Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJISB6Rotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB6Rotated)]
             JISB6Rotated,
 
             /// <summary>
             /// Japanese Industrial Standard B7.
             /// </summary>
-            [TextResource(TextResource.EntryJISB7)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB7)]
             JISB7,
 
             /// <summary>
             /// Japanese Industrial Standard B8.
             /// </summary>
-            [TextResource(TextResource.EntryJISB8)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB8)]
             JISB8,
 
             /// <summary>
             /// Japanese Industrial Standard B9.
             /// </summary>
-            [TextResource(TextResource.EntryJISB9)]
+            [Internal.TextResource(Internal.TextResource.EntryJISB9)]
             JISB9,
 
             /// <summary>
             /// Chou 3 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanChou3Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanChou3Envelope)]
             JapanChou3Envelope,
 
             /// <summary>
             /// Chou 3 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanChou3EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanChou3EnvelopeRotated)]
             JapanChou3EnvelopeRotated,
 
             /// <summary>
             /// Chou 4 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanChou4Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanChou4Envelope)]
             JapanChou4Envelope,
 
             /// <summary>
             /// Chou 4 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanChou4EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanChou4EnvelopeRotated)]
             JapanChou4EnvelopeRotated,
 
             /// <summary>
             /// Hagaki Postcard.
             /// </summary>
-            [TextResource(TextResource.EntryJapanHagakiPostcard)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanHagakiPostcard)]
             JapanHagakiPostcard,
 
             /// <summary>
             /// Hagaki Postcard Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanHagakiPostcardRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanHagakiPostcardRotated)]
             JapanHagakiPostcardRotated,
 
             /// <summary>
             /// Kaku 2 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanKaku2Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanKaku2Envelope)]
             JapanKaku2Envelope,
 
             /// <summary>
             /// Kaku 2 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanKaku2EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanKaku2EnvelopeRotated)]
             JapanKaku2EnvelopeRotated,
 
             /// <summary>
             /// Kaku 3 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanKaku3Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanKaku3Envelope)]
             JapanKaku3Envelope,
 
             /// <summary>
             /// Kaku 3 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanKaku3EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanKaku3EnvelopeRotated)]
             JapanKaku3EnvelopeRotated,
 
             /// <summary>
             /// You 4 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou4Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou4Envelope)]
             JapanYou4Envelope,
 
             /// <summary>
             /// 10 x 11.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica10x11)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica10x11)]
             NorthAmerica10x11,
 
             /// <summary>
             /// 10 x 14.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica10x14)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica10x14)]
             NorthAmerica10x14,
 
             /// <summary>
             /// 11 x 17.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica11x17)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica11x17)]
             NorthAmerica11x17,
 
             /// <summary>
             /// 9 x 11.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica9x11)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica9x11)]
             NorthAmerica9x11,
 
             /// <summary>
             /// Architecture A Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaArchitectureASheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaArchitectureASheet)]
             NorthAmericaArchitectureASheet,
 
             /// <summary>
             /// Architecture B Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaArchitectureBSheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaArchitectureBSheet)]
             NorthAmericaArchitectureBSheet,
 
             /// <summary>
             /// Architecture C Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaArchitectureCSheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaArchitectureCSheet)]
             NorthAmericaArchitectureCSheet,
 
             /// <summary>
             /// Architecture D Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaArchitectureDSheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaArchitectureDSheet)]
             NorthAmericaArchitectureDSheet,
 
             /// <summary>
             /// Architecture E Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaArchitectureESheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaArchitectureESheet)]
             NorthAmericaArchitectureESheet,
 
             /// <summary>
             /// C Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaCSheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaCSheet)]
             NorthAmericaCSheet,
 
             /// <summary>
             /// D Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaDSheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaDSheet)]
             NorthAmericaDSheet,
 
             /// <summary>
             /// E Sheet.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaESheet)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaESheet)]
             NorthAmericaESheet,
 
             /// <summary>
             /// Executive.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaExecutive)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaExecutive)]
             NorthAmericaExecutive,
 
             /// <summary>
             /// German Legal Fanfold.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaGermanLegalFanfold)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaGermanLegalFanfold)]
             NorthAmericaGermanLegalFanfold,
 
             /// <summary>
             /// German Standard Fanfold.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaGermanStandardFanfold)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaGermanStandardFanfold)]
             NorthAmericaGermanStandardFanfold,
 
             /// <summary>
             /// Legal.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLegal)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLegal)]
             NorthAmericaLegal,
 
             /// <summary>
             /// Legal Extra.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLegalExtra)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLegalExtra)]
             NorthAmericaLegalExtra,
 
             /// <summary>
             /// Letter.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLetter)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLetter)]
             NorthAmericaLetter,
 
             /// <summary>
             /// Letter Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLetterRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLetterRotated)]
             NorthAmericaLetterRotated,
 
             /// <summary>
             /// Letter Extra.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLetterExtra)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLetterExtra)]
             NorthAmericaLetterExtra,
 
             /// <summary>
             /// Letter Plus.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaLetterPlus)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaLetterPlus)]
             NorthAmericaLetterPlus,
 
             /// <summary>
             /// Monarch Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaMonarchEnvelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaMonarchEnvelope)]
             NorthAmericaMonarchEnvelope,
 
             /// <summary>
             /// Note.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNote)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNote)]
             NorthAmericaNote,
 
             /// <summary>
             /// #10 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber10Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber10Envelope)]
             NorthAmericaNumber10Envelope,
 
             /// <summary>
             /// #10 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber10EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber10EnvelopeRotated)]
             NorthAmericaNumber10EnvelopeRotated,
 
             /// <summary>
             /// #9 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber9Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber9Envelope)]
             NorthAmericaNumber9Envelope,
 
             /// <summary>
             /// #11 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber11Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber11Envelope)]
             NorthAmericaNumber11Envelope,
 
             /// <summary>
             /// #12 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber12Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber12Envelope)]
             NorthAmericaNumber12Envelope,
 
             /// <summary>
             /// #14 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaNumber14Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaNumber14Envelope)]
             NorthAmericaNumber14Envelope,
 
             /// <summary>
             /// Personal Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaPersonalEnvelope)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaPersonalEnvelope)]
             NorthAmericaPersonalEnvelope,
 
             /// <summary>
             /// Quarto.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaQuarto)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaQuarto)]
             NorthAmericaQuarto,
 
             /// <summary>
             /// Statement.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaStatement)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaStatement)]
             NorthAmericaStatement,
 
             /// <summary>
             /// Super A.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaSuperA)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaSuperA)]
             NorthAmericaSuperA,
 
             /// <summary>
             /// Super B.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaSuperB)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaSuperB)]
             NorthAmericaSuperB,
 
             /// <summary>
             /// Tabloid.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaTabloid)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaTabloid)]
             NorthAmericaTabloid,
 
             /// <summary>
             /// Tabloid Extra.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmericaTabloidExtra)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmericaTabloidExtra)]
             NorthAmericaTabloidExtra,
 
             /// <summary>
             /// A4 Plus.
             /// </summary>
-            [TextResource(TextResource.EntryOtherMetricA4Plus)]
+            [Internal.TextResource(Internal.TextResource.EntryOtherMetricA4Plus)]
             OtherMetricA4Plus,
 
             /// <summary>
             /// A3 Plus.
             /// </summary>
-            [TextResource(TextResource.EntryOtherMetricA3Plus)]
+            [Internal.TextResource(Internal.TextResource.EntryOtherMetricA3Plus)]
             OtherMetricA3Plus,
 
             /// <summary>
             /// Folio.
             /// </summary>
-            [TextResource(TextResource.EntryOtherMetricFolio)]
+            [Internal.TextResource(Internal.TextResource.EntryOtherMetricFolio)]
             OtherMetricFolio,
 
             /// <summary>
             /// Invite Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryOtherMetricInviteEnvelope)]
+            [Internal.TextResource(Internal.TextResource.EntryOtherMetricInviteEnvelope)]
             OtherMetricInviteEnvelope,
 
             /// <summary>
             /// Italian Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryOtherMetricItalianEnvelope)]
+            [Internal.TextResource(Internal.TextResource.EntryOtherMetricItalianEnvelope)]
             OtherMetricItalianEnvelope,
 
             /// <summary>
             /// People's Republic of China #1 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC1Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC1Envelope)]
             PRC1Envelope,
 
             /// <summary>
             /// People's Republic of China #1 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC1EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC1EnvelopeRotated)]
             PRC1EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #10 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC10Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC10Envelope)]
             PRC10Envelope,
 
             /// <summary>
             /// People's Republic of China #10 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC10EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC10EnvelopeRotated)]
             PRC10EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China 16K.
             /// </summary>
-            [TextResource(TextResource.EntryPRC16K)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC16K)]
             PRC16K,
 
             /// <summary>
             /// People's Republic of China 16K Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC16KRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC16KRotated)]
             PRC16KRotated,
 
             /// <summary>
             /// People's Republic of China #2 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC2Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC2Envelope)]
             PRC2Envelope,
 
             /// <summary>
             /// People's Republic of China #2 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC2EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC2EnvelopeRotated)]
             PRC2EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China 32K.
             /// </summary>
-            [TextResource(TextResource.EntryPRC32K)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC32K)]
             PRC32K,
 
             /// <summary>
             /// People's Republic of China 32K Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC32KRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC32KRotated)]
             PRC32KRotated,
 
             /// <summary>
             /// People's Republic of China 32K Big.
             /// </summary>
-            [TextResource(TextResource.EntryPRC32KBig)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC32KBig)]
             PRC32KBig,
 
             /// <summary>
             /// People's Republic of China #3 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC3Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC3Envelope)]
             PRC3Envelope,
 
             /// <summary>
             /// People's Republic of China #3 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC3EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC3EnvelopeRotated)]
             PRC3EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #4 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC4Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC4Envelope)]
             PRC4Envelope,
 
             /// <summary>
             /// People's Republic of China #4 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC4EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC4EnvelopeRotated)]
             PRC4EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #5 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC5Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC5Envelope)]
             PRC5Envelope,
 
             /// <summary>
             /// People's Republic of China #5 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC5EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC5EnvelopeRotated)]
             PRC5EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #6 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC6Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC6Envelope)]
             PRC6Envelope,
 
             /// <summary>
             /// People's Republic of China #6 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC6EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC6EnvelopeRotated)]
             PRC6EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #7 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC7Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC7Envelope)]
             PRC7Envelope,
 
             /// <summary>
             /// People's Republic of China #7 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC7EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC7EnvelopeRotated)]
             PRC7EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #8 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC8Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC8Envelope)]
             PRC8Envelope,
 
             /// <summary>
             /// People's Republic of China #8 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC8EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC8EnvelopeRotated)]
             PRC8EnvelopeRotated,
 
             /// <summary>
             /// People's Republic of China #9 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryPRC9Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC9Envelope)]
             PRC9Envelope,
 
             /// <summary>
             /// People's Republic of China #9 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryPRC9EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryPRC9EnvelopeRotated)]
             PRC9EnvelopeRotated,
 
             /// <summary>
             /// 4-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll04Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll04Inch)]
             Roll04Inch,
 
             /// <summary>
             /// 6-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll06Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll06Inch)]
             Roll06Inch,
 
             /// <summary>
             /// 8-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll08Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll08Inch)]
             Roll08Inch,
 
             /// <summary>
             /// 12-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll12Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll12Inch)]
             Roll12Inch,
 
             /// <summary>
             /// 15-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll15Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll15Inch)]
             Roll15Inch,
 
             /// <summary>
             /// 18-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll18Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll18Inch)]
             Roll18Inch,
 
             /// <summary>
             /// 22-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll22Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll22Inch)]
             Roll22Inch,
 
             /// <summary>
             /// 24-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll24Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll24Inch)]
             Roll24Inch,
 
             /// <summary>
             /// 30-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll30Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll30Inch)]
             Roll30Inch,
 
             /// <summary>
             /// 36-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll36Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll36Inch)]
             Roll36Inch,
 
             /// <summary>
             /// 54-inch wide roll.
             /// </summary>
-            [TextResource(TextResource.EntryRoll54Inch)]
+            [Internal.TextResource(Internal.TextResource.EntryRoll54Inch)]
             Roll54Inch,
 
             /// <summary>
             /// Double Hagaki Postcard.
             /// </summary>
-            [TextResource(TextResource.EntryJapanDoubleHagakiPostcard)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanDoubleHagakiPostcard)]
             JapanDoubleHagakiPostcard,
 
             /// <summary>
             /// Double Hagaki Postcard Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanDoubleHagakiPostcardRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanDoubleHagakiPostcardRotated)]
             JapanDoubleHagakiPostcardRotated,
 
             /// <summary>
             /// L Photo.
             /// </summary>
-            [TextResource(TextResource.EntryJapanLPhoto)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanLPhoto)]
             JapanLPhoto,
 
             /// <summary>
             /// 2L Photo.
             /// </summary>
-            [TextResource(TextResource.EntryJapan2LPhoto)]
+            [Internal.TextResource(Internal.TextResource.EntryJapan2LPhoto)]
             Japan2LPhoto,
 
             /// <summary>
             /// You 1 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou1Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou1Envelope)]
             JapanYou1Envelope,
 
             /// <summary>
             /// You 2 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou2Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou2Envelope)]
             JapanYou2Envelope,
 
             /// <summary>
             /// You 3 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou3Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou3Envelope)]
             JapanYou3Envelope,
 
             /// <summary>
             /// You 4 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou4EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou4EnvelopeRotated)]
             JapanYou4EnvelopeRotated,
 
             /// <summary>
             /// You 6 Envelope.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou6Envelope)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou6Envelope)]
             JapanYou6Envelope,
 
             /// <summary>
             /// You 6 Envelope Rotated.
             /// </summary>
-            [TextResource(TextResource.EntryJapanYou6EnvelopeRotated)]
+            [Internal.TextResource(Internal.TextResource.EntryJapanYou6EnvelopeRotated)]
             JapanYou6EnvelopeRotated,
 
             /// <summary>
             /// 4 x 6.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica4x6)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica4x6)]
             NorthAmerica4x6,
 
             /// <summary>
             /// 4 x 8.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica4x8)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica4x8)]
             NorthAmerica4x8,
 
             /// <summary>
             /// 5 x 7.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica5x7)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica5x7)]
             NorthAmerica5x7,
 
             /// <summary>
             /// 8 x 10.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica8x10)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica8x10)]
             NorthAmerica8x10,
 
             /// <summary>
             /// 10 x 12.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica10x12)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica10x12)]
             NorthAmerica10x12,
 
             /// <summary>
             /// 14 x 17.
             /// </summary>
-            [TextResource(TextResource.EntryNorthAmerica14x17)]
+            [Internal.TextResource(Internal.TextResource.EntryNorthAmerica14x17)]
             NorthAmerica14x17,
 
             /// <summary>
             /// Business card.
             /// </summary>
-            [TextResource(TextResource.EntryBusinessCard)]
+            [Internal.TextResource(Internal.TextResource.EntryBusinessCard)]
             BusinessCard,
 
             /// <summary>
             /// Credit card.
             /// </summary>
-            [TextResource(TextResource.EntryCreditCard)]
+            [Internal.TextResource(Internal.TextResource.EntryCreditCard)]
             CreditCard
         }
 
@@ -1302,9 +1307,9 @@ namespace PrintDialogX.Enums
         public double Height { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Size"/> struct.
+        /// Initializes a new instance of the <see cref="Size"/> structure.
         /// </summary>
-        /// <param name="name">The defined size to set to.</param>
+        /// <param name="name">The defined size to be used to retrieve the corresponding width and height.</param>
         public Size(DefinedSize name) : this()
         {
             DefinedName = name;
@@ -1485,36 +1490,25 @@ namespace PrintDialogX.Enums
         }
 
         /// <summary>
-        /// Gets the size in rounded width and height.
-        /// </summary>
-        /// <param name="digits">The number of decimal places to be used for rounding.</param>
-        /// <returns>The values of the rounded width and height.</returns>
-        public readonly (decimal Width, decimal Height) Round(int digits = 1)
-        {
-            return (Math.Round((decimal)Width, digits), Math.Round((decimal)Height, digits));
-        }
-
-        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="name">The defined size of the specified object.</param>
         /// <param name="width">The width of the specified object.</param>
         /// <param name="height">The height of the specified object.</param>
-        /// <param name="digits">The number of decimal places to be used for rounding.</param>
-        /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
-        public readonly bool Equals(DefinedSize? name, double? width, double? height, int digits = 1)
+        /// <returns><see langword="true"/> if the specified object and this instance represent the same value; otherwise, <see langword="false"/>.</returns>
+        public readonly bool Equals(DefinedSize? name, double? width, double? height)
         {
-            return (name is not null && name == DefinedName) || (width is not null && height is not null && (Math.Round((decimal)width.Value, digits), Math.Round((decimal)height.Value, digits)) == Round(digits));
+            return (name is DefinedSize defined && defined == DefinedName) || ((width, height) is (double horizontal, double vertical) && Internal.Common.Quantize(horizontal, null) == Internal.Common.Quantize(Width, null) && Internal.Common.Quantize(vertical, null) == Internal.Common.Quantize(Height, null));
         }
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="size">The specified object.</param>
-        /// <returns><see langword="true"/> if the specified object and this instance are the same type and represent the same value; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if the specified object and this instance represent the same value; otherwise, <see langword="false"/>.</returns>
         public readonly bool Equals(PageMediaSize? size)
         {
-            return size is not null && Equals(size.PageMediaSizeName is not null ? ValueMappings.Map(size.PageMediaSizeName.Value, ValueMappings.MAPPING_SIZE) : null, size.Width, size.Height);
+            return size is PageMediaSize source && Equals(source.PageMediaSizeName is PageMediaSizeName name ? Internal.ValueMappings.Map(name, Internal.ValueMappings.MAPPING_SIZE) : null, size.Width, size.Height);
         }
 
         /// <inheritdoc />
@@ -1526,7 +1520,7 @@ namespace PrintDialogX.Enums
         /// <inheritdoc />
         public override readonly int GetHashCode()
         {
-            return (DefinedName, Round()).GetHashCode();
+            return (DefinedName, Internal.Common.Quantize(Width, null), Internal.Common.Quantize(Height, null)).GetHashCode();
         }
 
         /// <summary>
@@ -1560,19 +1554,19 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Output that prints in color.
         /// </summary>
-        [TextResource(TextResource.EntryColor)]
+        [Internal.TextResource(Internal.TextResource.EntryColor)]
         Color,
 
         /// <summary>
         /// Output that prints in a grayscale.
         /// </summary>
-        [TextResource(TextResource.EntryGrayscale)]
+        [Internal.TextResource(Internal.TextResource.EntryGrayscale)]
         Grayscale,
 
         /// <summary>
         /// Output that prints in a single color and with the same degree of intensity.
         /// </summary>
-        [TextResource(TextResource.EntryMonochrome)]
+        [Internal.TextResource(Internal.TextResource.EntryMonochrome)]
         Monochrome
     }
 
@@ -1584,43 +1578,43 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Automatically selects a quality type that is based on the contents of a print job.
         /// </summary>
-        [TextResource(TextResource.EntryAutomatic)]
+        [Internal.TextResource(Internal.TextResource.EntryAutomatic)]
         Automatic,
 
         /// <summary>
         /// Draft quality.
         /// </summary>
-        [TextResource(TextResource.EntryDraft)]
+        [Internal.TextResource(Internal.TextResource.EntryDraft)]
         Draft,
 
         /// <summary>
         /// Fax quality.
         /// </summary>
-        [TextResource(TextResource.EntryFax)]
+        [Internal.TextResource(Internal.TextResource.EntryFax)]
         Fax,
 
         /// <summary>
         /// Higher than normal quality.
         /// </summary>
-        [TextResource(TextResource.EntryHigh)]
+        [Internal.TextResource(Internal.TextResource.EntryHigh)]
         High,
 
         /// <summary>
         /// Normal quality.
         /// </summary>
-        [TextResource(TextResource.EntryNormal)]
+        [Internal.TextResource(Internal.TextResource.EntryNormal)]
         Normal,
 
         /// <summary>
         /// Photographic quality.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographic)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographic)]
         Photographic,
 
         /// <summary>
         /// Text quality.
         /// </summary>
-        [TextResource(TextResource.EntryText)]
+        [Internal.TextResource(Internal.TextResource.EntryText)]
         Text
     }
 
@@ -1632,37 +1626,37 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// 1 page per sheet.
         /// </summary>
-        [TextResource(TextResource.EntryOne)]
+        [Internal.TextResource(Internal.TextResource.EntryOne)]
         One,
 
         /// <summary>
         /// 2 pages per sheet.
         /// </summary>
-        [TextResource(TextResource.EntryTwo)]
+        [Internal.TextResource(Internal.TextResource.EntryTwo)]
         Two,
 
         /// <summary>
         /// 4 pages per sheet.
         /// </summary>
-        [TextResource(TextResource.EntryFour)]
+        [Internal.TextResource(Internal.TextResource.EntryFour)]
         Four,
 
         /// <summary>
         /// 6 pages per sheet.
         /// </summary>
-        [TextResource(TextResource.EntrySix)]
+        [Internal.TextResource(Internal.TextResource.EntrySix)]
         Six,
 
         /// <summary>
         /// 9 pages per sheet.
         /// </summary>
-        [TextResource(TextResource.EntryNine)]
+        [Internal.TextResource(Internal.TextResource.EntryNine)]
         Nine,
 
         /// <summary>
         /// 16 pages per sheet.
         /// </summary>
-        [TextResource(TextResource.EntrySixteen)]
+        [Internal.TextResource(Internal.TextResource.EntrySixteen)]
         Sixteen
     }
 
@@ -1674,25 +1668,25 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Pages appear in rows, from left to right and top to bottom, relative to the page orientation.
         /// </summary>
-        [TextResource(TextResource.EntryHorizontal)]
+        [Internal.TextResource(Internal.TextResource.EntryHorizontal)]
         Horizontal,
 
         /// <summary>
         /// Pages appear in rows, from right to left and top to bottom, relative to the page orientation.
         /// </summary>
-        [TextResource(TextResource.EntryHorizontalReverse)]
+        [Internal.TextResource(Internal.TextResource.EntryHorizontalReverse)]
         HorizontalReverse,
 
         /// <summary>
         /// Pages appear in columns, from top to bottom and left to right, relative to the page orientation.
         /// </summary>
-        [TextResource(TextResource.EntryVertical)]
+        [Internal.TextResource(Internal.TextResource.EntryVertical)]
         Vertical,
 
         /// <summary>
         /// Pages appear in columns, from bottom to top and left to right, relative to the page orientation.
         /// </summary>
-        [TextResource(TextResource.EntryVerticalReverse)]
+        [Internal.TextResource(Internal.TextResource.EntryVerticalReverse)]
         VerticalReverse
     }
 
@@ -1704,49 +1698,49 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Auto-fit scale.
         /// </summary>
-        [TextResource(TextResource.EntryAutoFit)]
+        [Internal.TextResource(Internal.TextResource.EntryAutoFit)]
         AutoFit,
 
         /// <summary>
         /// 25% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent25)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent25)]
         Percent25,
 
         /// <summary>
         /// 50% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent50)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent50)]
         Percent50,
 
         /// <summary>
         /// 75% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent75)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent75)]
         Percent75,
 
         /// <summary>
         /// 100% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent100)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent100)]
         Percent100,
 
         /// <summary>
         /// 150% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent150)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent150)]
         Percent150,
 
         /// <summary>
         /// 200% scale.
         /// </summary>
-        [TextResource(TextResource.EntryPercent200)]
+        [Internal.TextResource(Internal.TextResource.EntryPercent200)]
         Percent200,
 
         /// <summary>
         /// Custom scale.
         /// </summary>
-        [TextResource(TextResource.EntryCustom)]
+        [Internal.TextResource(Internal.TextResource.EntryCustom)]
         Custom
     }
 
@@ -1758,25 +1752,25 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Default margin.
         /// </summary>
-        [TextResource(TextResource.EntryDefault)]
+        [Internal.TextResource(Internal.TextResource.EntryDefault)]
         Default,
 
         /// <summary>
         /// No margin.
         /// </summary>
-        [TextResource(TextResource.EntryNone)]
+        [Internal.TextResource(Internal.TextResource.EntryNone)]
         None,
 
         /// <summary>
         /// Minimum margin.
         /// </summary>
-        [TextResource(TextResource.EntryMinimum)]
+        [Internal.TextResource(Internal.TextResource.EntryMinimum)]
         Minimum,
 
         /// <summary>
         /// Custom margin.
         /// </summary>
-        [TextResource(TextResource.EntryCustom)]
+        [Internal.TextResource(Internal.TextResource.EntryCustom)]
         Custom
     }
 
@@ -1793,13 +1787,13 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// Output prints on both sides of each sheet, which flips along the edge parallel to <see cref="System.Printing.PrintDocumentImageableArea.MediaSizeWidth"/>.
         /// </summary>
-        [TextResource(TextResource.EntryDoubleSidedShortEdge)]
+        [Internal.TextResource(Internal.TextResource.EntryDoubleSidedShortEdge)]
         DoubleSidedShortEdge,
 
         /// <summary>
         /// Output prints on both sides of each sheet, which flips along the edge parallel to <see cref="System.Printing.PrintDocumentImageableArea.MediaSizeHeight"/>.
         /// </summary>
-        [TextResource(TextResource.EntryDoubleSidedLongEdge)]
+        [Internal.TextResource(Internal.TextResource.EntryDoubleSidedLongEdge)]
         DoubleSidedLongEdge
     }
 
@@ -1811,169 +1805,169 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// The print device selects the media.
         /// </summary>
-        [TextResource(TextResource.EntryAutoSelect)]
+        [Internal.TextResource(Internal.TextResource.EntryAutoSelect)]
         AutoSelect,
 
         /// <summary>
         /// Archive-quality media.
         /// </summary>
-        [TextResource(TextResource.EntryArchival)]
+        [Internal.TextResource(Internal.TextResource.EntryArchival)]
         Archival,
 
         /// <summary>
         /// Specialty back-printing film.
         /// </summary>
-        [TextResource(TextResource.EntryBackPrintFilm)]
+        [Internal.TextResource(Internal.TextResource.EntryBackPrintFilm)]
         BackPrintFilm,
 
         /// <summary>
         /// Standard bond media.
         /// </summary>
-        [TextResource(TextResource.EntryBond)]
+        [Internal.TextResource(Internal.TextResource.EntryBond)]
         Bond,
 
         /// <summary>
         /// Standard card stock.
         /// </summary>
-        [TextResource(TextResource.EntryCardStock)]
+        [Internal.TextResource(Internal.TextResource.EntryCardStock)]
         CardStock,
 
         /// <summary>
         /// Continuous-feed media.
         /// </summary>
-        [TextResource(TextResource.EntryContinuous)]
+        [Internal.TextResource(Internal.TextResource.EntryContinuous)]
         Continuous,
 
         /// <summary>
         /// Standard envelope.
         /// </summary>
-        [TextResource(TextResource.EntryEnvelopePlain)]
+        [Internal.TextResource(Internal.TextResource.EntryEnvelopePlain)]
         EnvelopePlain,
 
         /// <summary>
         /// Window envelope.
         /// </summary>
-        [TextResource(TextResource.EntryEnvelopeWindow)]
+        [Internal.TextResource(Internal.TextResource.EntryEnvelopeWindow)]
         EnvelopeWindow,
 
         /// <summary>
         /// Fabric media.
         /// </summary>
-        [TextResource(TextResource.EntryFabric)]
+        [Internal.TextResource(Internal.TextResource.EntryFabric)]
         Fabric,
 
         /// <summary>
         /// Specialty high-resolution media.
         /// </summary>
-        [TextResource(TextResource.EntryHighResolution)]
+        [Internal.TextResource(Internal.TextResource.EntryHighResolution)]
         HighResolution,
 
         /// <summary>
         /// Label media.
         /// </summary>
-        [TextResource(TextResource.EntryLabel)]
+        [Internal.TextResource(Internal.TextResource.EntryLabel)]
         Label,
 
         /// <summary>
         /// Attached multipart forms.
         /// </summary>
-        [TextResource(TextResource.EntryMultiLayerForm)]
+        [Internal.TextResource(Internal.TextResource.EntryMultiLayerForm)]
         MultiLayerForm,
 
         /// <summary>
         /// Individual multipart forms.
         /// </summary>
-        [TextResource(TextResource.EntryMultiPartForm)]
+        [Internal.TextResource(Internal.TextResource.EntryMultiPartForm)]
         MultiPartForm,
 
         /// <summary>
         /// Standard photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographic)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographic)]
         Photographic,
 
         /// <summary>
         /// Film photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicFilm)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicFilm)]
         PhotographicFilm,
 
         /// <summary>
         /// Glossy photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicGlossy)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicGlossy)]
         PhotographicGlossy,
 
         /// <summary>
         /// High-gloss photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicHighGloss)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicHighGloss)]
         PhotographicHighGloss,
 
         /// <summary>
         /// Matte photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicMatte)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicMatte)]
         PhotographicMatte,
 
         /// <summary>
         /// Satin photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicSatin)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicSatin)]
         PhotographicSatin,
 
         /// <summary>
         /// Semi-gloss photographic media.
         /// </summary>
-        [TextResource(TextResource.EntryPhotographicSemiGloss)]
+        [Internal.TextResource(Internal.TextResource.EntryPhotographicSemiGloss)]
         PhotographicSemiGloss,
 
         /// <summary>
         /// Plain paper.
         /// </summary>
-        [TextResource(TextResource.EntryPlain)]
+        [Internal.TextResource(Internal.TextResource.EntryPlain)]
         Plain,
 
         /// <summary>
         /// Output to a display in continuous form.
         /// </summary>
-        [TextResource(TextResource.EntryScreen)]
+        [Internal.TextResource(Internal.TextResource.EntryScreen)]
         Screen,
 
         /// <summary>
         /// Output to a display in paged form.
         /// </summary>
-        [TextResource(TextResource.EntryScreenPaged)]
+        [Internal.TextResource(Internal.TextResource.EntryScreenPaged)]
         ScreenPaged,
 
         /// <summary>
         /// Specialty stationary.
         /// </summary>
-        [TextResource(TextResource.EntryStationery)]
+        [Internal.TextResource(Internal.TextResource.EntryStationery)]
         Stationery,
 
         /// <summary>
         /// Tab stock, not precut (single tabs).
         /// </summary>
-        [TextResource(TextResource.EntryTabStockFull)]
+        [Internal.TextResource(Internal.TextResource.EntryTabStockFull)]
         TabStockFull,
 
         /// <summary>
         /// Tab stock, precut (multiple tabs).
         /// </summary>
-        [TextResource(TextResource.EntryTabStockPreCut)]
+        [Internal.TextResource(Internal.TextResource.EntryTabStockPreCut)]
         TabStockPreCut,
 
         /// <summary>
         /// Transparent sheet.
         /// </summary>
-        [TextResource(TextResource.EntryTransparency)]
+        [Internal.TextResource(Internal.TextResource.EntryTransparency)]
         Transparency,
 
         /// <summary>
         /// Media that is used to transfer an image to a T-shirt.
         /// </summary>
-        [TextResource(TextResource.EntryTShirtTransfer)]
+        [Internal.TextResource(Internal.TextResource.EntryTShirtTransfer)]
         TShirtTransfer
     }
 
@@ -1985,31 +1979,31 @@ namespace PrintDialogX.Enums
         /// <summary>
         /// The automatic selection of an input bin according to the page size and media output type.
         /// </summary>
-        [TextResource(TextResource.EntryAutoSelect)]
+        [Internal.TextResource(Internal.TextResource.EntryAutoSelect)]
         AutoSelect,
 
         /// <summary>
         /// A removable paper bin is used.
         /// </summary>
-        [TextResource(TextResource.EntryCassette)]
+        [Internal.TextResource(Internal.TextResource.EntryCassette)]
         Cassette,
 
         /// <summary>
         /// A tractor feed (also called a pin feed) of continuous-feed paper is used.
         /// </summary>
-        [TextResource(TextResource.EntryTractor)]
+        [Internal.TextResource(Internal.TextResource.EntryTractor)]
         Tractor,
 
         /// <summary>
         /// The automatic sheet feeder is used.
         /// </summary>
-        [TextResource(TextResource.EntryAutoSheetFeeder)]
+        [Internal.TextResource(Internal.TextResource.EntryAutoSheetFeeder)]
         AutoSheetFeeder,
 
         /// <summary>
         /// The manual input bin is used.
         /// </summary>
-        [TextResource(TextResource.EntryManual)]
+        [Internal.TextResource(Internal.TextResource.EntryManual)]
         Manual
     }
 }

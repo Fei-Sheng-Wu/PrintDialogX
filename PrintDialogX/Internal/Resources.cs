@@ -1,11 +1,10 @@
-using System;
-
-namespace PrintDialogX
+namespace PrintDialogX.Internal
 {
     internal enum ValueResource
     {
+        ObjectDataContext,
         LengthWidthOption,
-        CollectionPrinter,
+        CollectionPrinter
     }
 
     internal enum ConverterResource
@@ -28,7 +27,7 @@ namespace PrintDialogX
 
     internal enum ValidationResource
     {
-        PagesCustom,
+        PagesCustom
     }
 
     internal enum TemplateResource
@@ -352,8 +351,8 @@ namespace PrintDialogX
         ConstructionComment,
         ConstructionCustom,
         ConstructionSize,
-        ConstructionProgress,
         ConstructionPage,
+        ConstructionProgress,
         TipPagesCustom,
         MessageInvalidValue,
         MessageNoPrinter,
@@ -362,11 +361,5 @@ namespace PrintDialogX
         MessageFailedPrintJob,
         MessageCancelledPrintJob,
         MessageErrorPrintJob
-    }
-
-    [AttributeUsage(AttributeTargets.All)]
-    internal sealed class TextResourceAttribute(TextResource resource) : Attribute
-    {
-        public TextResource Resource { get; set; } = resource;
     }
 }

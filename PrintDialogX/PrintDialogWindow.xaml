@@ -5,13 +5,13 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-                 xmlns:local="clr-namespace:PrintDialogX"
+                 xmlns:internal="clr-namespace:PrintDialogX.Internal"
                  mc:Ignorable="d"
                  Width="740" Height="520"
                  MinWidth="640" MinHeight="360"
                  ExtendsContentIntoTitleBar="True"
                  WindowBackdropType="Mica"
-                 Title="{DynamicResource ResourceKey={x:Static Member=local:TextResource.TitlePrint}}"
+                 Title="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TitlePrint}}"
                  Closing="Exit"
                  ContentRendered="LoadContent">
     <ui:FluentWindow.Resources>
@@ -26,9 +26,15 @@
     </ui:FluentWindow.TaskbarItemInfo>
 
     <DockPanel>
-        <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Height="Auto" VerticalContentAlignment="Top" />
-        <Decorator x:Name="content" DockPanel.Dock="Bottom" AutomationProperties.LiveSetting="Polite">
-            <ui:ProgressRing IsIndeterminate="True" />
-        </Decorator>
+        <ui:TitleBar x:Name="title" DockPanel.Dock="Top" Height="Auto" VerticalContentAlignment="Top">
+            <ui:TitleBar.Header>
+                <TextBlock x:Name="header" Margin="16,10,0,10" Text="{DynamicResource ResourceKey={x:Static Member=internal:TextResource.TitlePrint}}" />
+            </ui:TitleBar.Header>
+        </ui:TitleBar>
+        <ContentPresenter x:Name="content" DockPanel.Dock="Bottom" AutomationProperties.LiveSetting="Polite">
+            <ContentPresenter.Content>
+                <ui:ProgressRing IsIndeterminate="True" />
+            </ContentPresenter.Content>
+        </ContentPresenter>
     </DockPanel>
 </ui:FluentWindow>
