@@ -355,8 +355,8 @@ namespace PrintDialogX.Internal
         }
 
         public const int COUNT_CACHE = 1;
-        public const double EPSILON_ZOOM = 0.35;
-        public const double EPSILON_NAVIGATION = 0.1;
+        public const double TOLERANCE_ZOOM = 0.35;
+        public const double TOLERANCE_NAVIGATION = 0.1;
         public const double LENGTH_SCROLL_DELTA_LINE = 16;
         public const double LENGTH_SCROLL_DELTA_WHEEL = 48;
         public const double PERCENTAGE_ZOOM_MINIMUM = 0.05;
@@ -465,13 +465,13 @@ namespace PrintDialogX.Internal
 
         public void ZoomIn()
         {
-            UpdateZoom(Zoom.Custom, PERCENTAGE_ZOOM_DELTA_BUTTON * (Common.Floor(zoom.Percentage / PERCENTAGE_ZOOM_DELTA_BUTTON, EPSILON_ZOOM) + 1), null);
+            UpdateZoom(Zoom.Custom, PERCENTAGE_ZOOM_DELTA_BUTTON * (Common.Floor(zoom.Percentage / PERCENTAGE_ZOOM_DELTA_BUTTON, TOLERANCE_ZOOM) + 1), null);
             InvalidateMeasure();
         }
 
         public void ZoomOut()
         {
-            UpdateZoom(Zoom.Custom, PERCENTAGE_ZOOM_DELTA_BUTTON * (Common.Ceiling(zoom.Percentage / PERCENTAGE_ZOOM_DELTA_BUTTON, EPSILON_ZOOM) - 1), null);
+            UpdateZoom(Zoom.Custom, PERCENTAGE_ZOOM_DELTA_BUTTON * (Common.Ceiling(zoom.Percentage / PERCENTAGE_ZOOM_DELTA_BUTTON, TOLERANCE_ZOOM) - 1), null);
             InvalidateMeasure();
         }
 
@@ -643,7 +643,7 @@ namespace PrintDialogX.Internal
 
             HorizontalOffset = Common.Clamp(0, ExtentWidth - ViewportWidth, HorizontalOffset);
             VerticalOffset = Common.Clamp(0, ExtentHeight - ViewportHeight, VerticalOffset);
-            DocumentIndex = Common.Clamp(1, count, Common.Floor(ComputeLayoutStep(VerticalOffset, zoom.Percentage * DocumentSize.Height), EPSILON_NAVIGATION) * columns + Common.Floor(ComputeLayoutStep(HorizontalOffset, zoom.Percentage * DocumentSize.Width), EPSILON_NAVIGATION) + 1);
+            DocumentIndex = Common.Clamp(1, count, Common.Floor(ComputeLayoutStep(VerticalOffset, zoom.Percentage * DocumentSize.Height), TOLERANCE_NAVIGATION) * columns + Common.Floor(ComputeLayoutStep(HorizontalOffset, zoom.Percentage * DocumentSize.Width), TOLERANCE_NAVIGATION) + 1);
             ScrollOwner?.InvalidateScrollInfo();
 
             if (ItemsControl.GetItemsOwner(this)?.ItemContainerGenerator is IRecyclingItemContainerGenerator generator)

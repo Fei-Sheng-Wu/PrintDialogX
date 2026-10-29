@@ -12,8 +12,7 @@
              xmlns:enums="clr-namespace:PrintDialogX.Enums"
              xmlns:internal="clr-namespace:PrintDialogX.Internal"
              d:DataContext="{d:DesignInstance Type=local:PrintDialogViewModel}"
-             mc:Ignorable="d"
-             Unloaded="Exit">
+             mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

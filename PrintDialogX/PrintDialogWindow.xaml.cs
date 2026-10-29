@@ -12,23 +12,33 @@ namespace PrintDialogX
     internal partial class PrintDialogWindow : Wpf.Ui.Controls.FluentWindow, IPrintDialogHost
     {
         private bool isAvailable = true;
-        private PrintDialogResult result = new();
-        private Func<Task<FrameworkElement>>? executor = null;
+        private Func<Task<FrameworkElement>>? originator = null;
+        private Func<Task>? terminator = null;
+        private PrintDialogResult result = new()
+        {
+            IsSuccess = false,
+            PaperCount = 0
+        };
 
         public PrintDialogWindow() : base()
         {
             InitializeComponent();
         }
 
-        private void Exit(object sender, CancelEventArgs e)
+        private async void Exit(object sender, CancelEventArgs e)
         {
             Wpf.Ui.Appearance.ApplicationThemeManager.Changed -= UpdateTheme;
             Wpf.Ui.Appearance.SystemThemeWatcher.UnWatch(this);
+
+            if (terminator is Func<Task> executor)
+            {
+                await executor();
+            }
         }
 
         private async void LoadContent(object sender, EventArgs e)
         {
-            content.Content = executor is Func<Task<FrameworkElement>> initializer ? await initializer() : null;
+            content.Content = originator is Func<Task<FrameworkElement>> executor ? await executor() : null;
         }
 
         private void UpdateTheme(Wpf.Ui.Appearance.ApplicationTheme theme, Color accent)
@@ -49,7 +59,7 @@ namespace PrintDialogX
             }
 
             isAvailable = false;
-            executor = initializer;
+            originator = initializer;
 
             Application application = Application.Current ?? new();
             Wpf.Ui.Appearance.ApplicationThemeManager.Apply(this);
@@ -93,6 +103,11 @@ namespace PrintDialogX
                 _ => TaskbarItemProgressState.None
             };
             TaskbarItemInfo.ProgressValue = progress.Value / 100.0;
+        }
+
+        public void SetExitHandler(Func<Task> handler)
+        {
+            terminator = handler;
         }
 
         public void AddShortcutHandlers(IEnumerable<KeyBinding> handlers)

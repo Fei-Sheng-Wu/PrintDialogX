@@ -18,7 +18,7 @@ namespace PrintDialogX.Internal
 {
     internal static class Common
     {
-        public const double EPSILON_DECIMAL = 0.000001;
+        public const double TOLERANCE_DECIMAL = 0.000001;
         public const double RATIO_QUANTIZATION = 10;
 
         public static void Execute(Action executor)
@@ -82,14 +82,14 @@ namespace PrintDialogX.Internal
             return Math.Max(minimum, Math.Min(maximum, value));
         }
 
-        public static int Floor(double value, double? epsilon)
+        public static int Floor(double value, double? tolerance)
         {
-            return (int)Math.Floor(value + (epsilon ?? EPSILON_DECIMAL));
+            return (int)Math.Floor(value + (tolerance ?? TOLERANCE_DECIMAL));
         }
 
-        public static int Ceiling(double value, double? epsilon)
+        public static int Ceiling(double value, double? tolerance)
         {
-            return (int)Math.Ceiling(value - (epsilon ?? EPSILON_DECIMAL));
+            return (int)Math.Ceiling(value - (tolerance ?? TOLERANCE_DECIMAL));
         }
 
         public static double Quantize(double value, double? ratio)

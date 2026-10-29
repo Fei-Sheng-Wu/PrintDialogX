@@ -141,7 +141,19 @@ namespace PrintDialogX
                 {
                     locker.Release();
                 }
+
+                public void Dispose(ModelLocker source)
+                {
+                    if (source.IsDisposed)
+                    {
+                        return;
+                    }
+
+                    locker.Release();
+                }
             }
+
+            public bool IsDisposed { get; set; } = false;
 
             private readonly SemaphoreSlim locker = new(1, 1);
 
@@ -161,6 +173,7 @@ namespace PrintDialogX
 
             public void Dispose()
             {
+                IsDisposed = true;
                 locker.Dispose();
             }
         }
@@ -236,6 +249,7 @@ namespace PrintDialogX
         private readonly PrintDialogViewModel model;
         private readonly (PrintServer Server, bool IsCustomized) server;
 
+        private XpsDocumentWriter? worker = null;
         private (Task Current, CancellationTokenSource Cancellation)? task = null;
         private (PrintDialogViewModel.ModelLocker Task, PrintDialogViewModel.ModelLocker Source, PrintDialogViewModel.ModelLocker Preview) lockers = (new(), new(), new());
 
@@ -249,6 +263,21 @@ namespace PrintDialogX
             }
 
             host = window;
+            host.SetExitHandler(async () =>
+            {
+                await StopTask();
+                Internal.Common.Try(() => worker?.CancelAsync(), null);
+
+                DataContext = null;
+
+                if (!server.IsCustomized)
+                {
+                    server.Server.Dispose();
+                }
+                lockers.Task.Dispose();
+                lockers.Source.Dispose();
+                lockers.Preview.Dispose();
+            });
             host.AddShortcutHandlers([new(new PrintDialogViewModel.ModelCommand(StartPrinting), new(Key.P, ModifierKeys.Control))]);
             model = new(Dispatcher.Invoke, source, document, source.PrintSettings, new(lockers.Preview), LoadSettings, LoadPreview, async () =>
             {
@@ -276,21 +305,6 @@ namespace PrintDialogX
             ((Internal.PagesCustomValidationRule)Resources[Internal.ValidationResource.PagesCustom]).Maximum = model.PrintDocument.Pages.Count;
 
             LoadPrinters(server.IsCustomized ? source.DefaultPrinter : (source.DefaultPrinter ?? Internal.Common.Try(LocalPrintServer.GetDefaultPrintQueue, null)));
-        }
-
-        private async void Exit(object sender, RoutedEventArgs e)
-        {
-            await StopTask();
-
-            DataContext = null;
-
-            if (!server.IsCustomized)
-            {
-                server.Server.Dispose();
-            }
-            lockers.Task.Dispose();
-            lockers.Source.Dispose();
-            lockers.Preview.Dispose();
         }
 
         private async void StartTask(Func<CancellationToken, Task> executor)
@@ -419,10 +433,11 @@ namespace PrintDialogX
                     PaperCount = 0
                 });
                 model.IsPrompting.Value = true;
+
                 host.SetProgress(new()
                 {
                     State = IPrintDialogHost.PrintDialogProgressState.Error,
-                    Value = 0
+                    Value = 100
                 });
             }
             else
@@ -772,15 +787,24 @@ namespace PrintDialogX
 
         private async void StartPrinting()
         {
-            if (model is not { IsPreviewReady.Value: true, Printer.Value: PrintQueue printer })
+            if ((model, worker) is not ({ IsPrompting.Value: false, IsPreviewReady.Value: true, Printer.Value: PrintQueue printer }, null))
             {
+                return;
+            }
+
+            try
+            {
+                worker = PrintQueue.CreateXpsDocumentWriter(printer);
+            }
+            catch
+            {
+                StopPrinting(Internal.TextResource.MessageFailedPrintJob);
                 return;
             }
 
             PrintDialogViewModel.ModelLocker.Scope scope = await lockers.Preview.LockAsync();
             try
             {
-                XpsDocumentWriter writer = PrintQueue.CreateXpsDocumentWriter(printer);
                 printer.CurrentJobSettings.CurrentPrintTicket = new()
                 {
                     CopyCount = model.Copies.Value,
@@ -798,21 +822,22 @@ namespace PrintDialogX
                 };
                 printer.CurrentJobSettings.Description = model.PrintDocument.DocumentName;
 
-                host.SetProgress(new()
-                {
-                    State = IPrintDialogHost.PrintDialogProgressState.Indeterminate,
-                    Value = 0
-                });
                 model.WorkingContent.Value = Resources[Internal.TextResource.LabelInitializing];
                 model.WorkingProgress.Value = 0;
-                model.WorkingAlternator = () => Internal.Common.Try(writer.CancelAsync, () =>
+                model.WorkingAlternator = () => Internal.Common.Try(worker.CancelAsync, () =>
                 {
                     scope.Dispose();
                     StopPrinting(Internal.TextResource.MessageCancelledPrintJob);
                 });
                 model.IsWorking.Value = true;
 
-                writer.WritingProgressChanged += (x, e) =>
+                host.SetProgress(new()
+                {
+                    State = IPrintDialogHost.PrintDialogProgressState.Indeterminate,
+                    Value = 0
+                });
+
+                worker.WritingProgressChanged += (x, e) =>
                 {
                     if (e is not { WritingLevel: WritingProgressChangeLevel.FixedPageWritingProgress })
                     {
@@ -822,20 +847,21 @@ namespace PrintDialogX
                     double progress = 100.0 * e.Number / model.PreviewDocument.Value.Pages.Count;
                     model.WorkingContent.Value = string.Format(Language.GetSpecificCulture(), (string)Resources[Internal.TextResource.ConstructionProgress], (int)Math.Round(progress), e.Number, model.PreviewDocument.Value.Pages.Count);
                     model.WorkingProgress.Value = progress;
+
                     host.SetProgress(new()
                     {
                         State = IPrintDialogHost.PrintDialogProgressState.Normal,
                         Value = progress
                     });
                 };
-                writer.WritingCancelled += (x, e) =>
+                worker.WritingCancelled += (x, e) =>
                 {
-                    scope.Dispose();
+                    scope.Dispose(lockers.Preview);
                     StopPrinting(Internal.TextResource.MessageCancelledPrintJob);
                 };
-                writer.WritingCompleted += (x, e) =>
+                worker.WritingCompleted += (x, e) =>
                 {
-                    scope.Dispose();
+                    scope.Dispose(lockers.Preview);
                     if (e is { Cancelled: true })
                     {
                         StopPrinting(Internal.TextResource.MessageCancelledPrintJob);
@@ -853,8 +879,11 @@ namespace PrintDialogX
                         IsSuccess = true,
                         PaperCount = model.DoubleSidedEntries.Selection is Enums.DoubleSided.OneSided ? count : Internal.Common.Partition(count, 2)
                     });
+
+                    model.IsWorking.Value = false;
+                    worker = null;
                 };
-                writer.WriteAsync(model.PreviewDocument.Value);
+                worker.WriteAsync(model.PreviewDocument.Value);
             }
             catch
             {
@@ -873,10 +902,12 @@ namespace PrintDialogX
             });
             model.IsPrompting.Value = true;
             model.IsWorking.Value = false;
+            worker = null;
+
             host.SetProgress(new()
             {
                 State = IPrintDialogHost.PrintDialogProgressState.Error,
-                Value = 0
+                Value = 100
             });
         }
 

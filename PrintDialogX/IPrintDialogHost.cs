@@ -96,6 +96,12 @@ namespace PrintDialogX
         public void SetProgress(PrintDialogProgress progress);
 
         /// <summary>
+        /// Sets the print dialog exit handler.
+        /// </summary>
+        /// <param name="handler">The print dialog exit handler to be set to.</param>
+        public void SetExitHandler(Func<Task> handler);
+
+        /// <summary>
         /// Adds the keyboard shortcut handlers.
         /// </summary>
         /// <param name="handlers">The collection of keyboard shortcut handlers to add.</param>
