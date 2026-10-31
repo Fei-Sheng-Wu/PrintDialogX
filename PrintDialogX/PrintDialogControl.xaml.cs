@@ -344,6 +344,21 @@ namespace PrintDialogX
             }
         }
 
+        private void UpdateDialog(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (DataContext is null)
+            {
+                return;
+            }
+
+            Wpf.Ui.Controls.ContentDialog dialog = (Wpf.Ui.Controls.ContentDialog)sender;
+            if (dialog.Visibility is Visibility.Visible)
+            {
+                Keyboard.Focus(dialog);
+            }
+        }
+
+
         private void DismissDialogPrompting(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogButtonClickEventArgs e)
         {
             model.IsPrompting.Value = false;
